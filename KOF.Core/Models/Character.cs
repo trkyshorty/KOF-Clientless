@@ -321,10 +321,13 @@ public class Character
     public byte State { get; set; } = (byte)StateAction.BASIC;
 
     [Browsable(false)]
-    public short TraderId { get; set; }
+    public short TradeRequestedUserId { get; set; }
 
     [Browsable(false)]
-    public bool IsTrading { get { return TraderId != 0; } }
+    public short TradedUserId { get; set; }
+
+    [Browsable(false)]
+    public bool IsTrading { get { return TradedUserId != 0 || TradeRequestedUserId != 0; } }
 
     public string Job { get { return GetRepresentClassName(Class); } }
 

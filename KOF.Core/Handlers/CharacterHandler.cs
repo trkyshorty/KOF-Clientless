@@ -75,7 +75,7 @@ public class PriorityQueue<T>
         //list.Remove(highestPriority);
 
         //if (list.Count == 0)
-          //  elements.Remove(priority);
+        //  elements.Remove(priority);
 
         return highestPriority;
     }
@@ -1871,7 +1871,7 @@ public class CharacterHandler : IDisposable
 
     public void ExhangeRequest(short targetId)
     {
-        MySelf.TraderId = targetId;
+        MySelf.TradeRequestedUserId = MySelf.Id;
         Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeRequest(targetId)).ConfigureAwait(false);
     }
 
@@ -1880,10 +1880,20 @@ public class CharacterHandler : IDisposable
         if (Controller == null)
             return;
 
+        MySelf.TradeRequestedUserId = targetId;
+
         var master = PlayerList.FirstOrDefault(x => x.Id == targetId && x.Name == Controller.GetControl("MasterCharacter", ""))!;
 
         if (master != null)
-            Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeAgree(true)).ConfigureAwait(false);
+            ExhangeAgree();
+    }
+
+    public void ExhangeAgree()
+    {
+        MySelf.TradedUserId = MySelf.TradeRequestedUserId;
+        MySelf.TradeRequestedUserId = 0;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeAgree(true)).ConfigureAwait(false);
     }
 
     public void ExhangeAgreeProcess()
@@ -1891,15 +1901,47 @@ public class CharacterHandler : IDisposable
         if (Controller == null)
             return;
 
-        var master = PlayerList.FirstOrDefault(x => x.Id == MySelf.TraderId && x.Name == Controller.GetControl("MasterCharacter", ""))!;
+        MySelf.TradedUserId = MySelf.TradeRequestedUserId;
+        MySelf.TradeRequestedUserId = 0;
+
+        var master = PlayerList.FirstOrDefault(x => x.Name == Controller.GetControl("MasterCharacter", ""))!;
 
         if (master != null)
         {
+            for (int i = Config.SLOT_MAX; i < Config.SLOT_MAX + Config.HAVE_MAX; i++)
+            {
+                var item = MySelf.Inventory[i];
+
+                if (item.ItemID != 0 && item.Table != null)
+                {
+                    if (SQLiteHandler.Table<SupplyFlag>().Any(x => x.Flag == (int)SupplyFlagType.FLAG_TRADE_TO_MASTER && x.ItemId == item.ItemID))
+                    {
+                        ExhangeAdd((byte)(item.Pos - Config.SLOT_MAX), item.ItemID, item.Count);
+                    } 
+                }
+            }
+
             var giveNoah = Controller.GetControl("MasterGiveNoahAmount", 0);
 
             Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeAddGold((uint)giveNoah)).ConfigureAwait(false);
-            Client.Session.SendAsync(MessageBuilder.MsgSend_ExchangeDecision()).ConfigureAwait(false);
+
+            ExhangeDecision();
         }
+    }
+
+    public void ExhangeAdd(byte currentPosition, uint itemId, uint quantity)
+    {
+        Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeAdd(currentPosition, itemId, quantity)).ConfigureAwait(false);
+    }
+
+    public void ExhangeDecision()
+    {
+        Client.Session.SendAsync(MessageBuilder.MsgSend_ExchangeDecision()).ConfigureAwait(false);
+    }
+
+    public void ExhangeCancel()
+    {
+        Client.Session.SendAsync(MessageBuilder.MsgSend_ExchangeCancel()).ConfigureAwait(false);
     }
 
     public void QuestTake(uint questId)

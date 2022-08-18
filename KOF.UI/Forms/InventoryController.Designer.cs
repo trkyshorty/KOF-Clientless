@@ -41,12 +41,17 @@ partial class InventoryController
             this.UseButton = new System.Windows.Forms.Button();
             this.AutoSellButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.AutoTradeToMaster = new System.Windows.Forms.Button();
             this.ClearFlagButton = new System.Windows.Forms.Button();
             this.AutoInnStore = new System.Windows.Forms.Button();
             this.AutoDeleteButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.CancelTradeButton = new System.Windows.Forms.Button();
+            this.AcceptTradeButton = new System.Windows.Forms.Button();
+            this.TradeFinishButton = new System.Windows.Forms.Button();
+            this.TradeAddItemButton = new System.Windows.Forms.Button();
+            this.SendTradeButton = new System.Windows.Forms.Button();
+            this.TradeCharacterName = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.ItemListDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -72,7 +77,7 @@ partial class InventoryController
             this.ItemListDataGridView.Name = "ItemListDataGridView";
             this.ItemListDataGridView.ReadOnly = true;
             this.ItemListDataGridView.RowTemplate.Height = 25;
-            this.ItemListDataGridView.Size = new System.Drawing.Size(839, 530);
+            this.ItemListDataGridView.Size = new System.Drawing.Size(625, 530);
             this.ItemListDataGridView.TabIndex = 0;
             // 
             // groupBox1
@@ -82,7 +87,7 @@ partial class InventoryController
             this.groupBox1.Controls.Add(this.ItemListDataGridView);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(851, 580);
+            this.groupBox1.Size = new System.Drawing.Size(639, 580);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Item List";
@@ -90,7 +95,7 @@ partial class InventoryController
             // WeightLabel
             // 
             this.WeightLabel.AutoSize = true;
-            this.WeightLabel.Location = new System.Drawing.Point(195, 22);
+            this.WeightLabel.Location = new System.Drawing.Point(450, 22);
             this.WeightLabel.Name = "WeightLabel";
             this.WeightLabel.Size = new System.Drawing.Size(54, 15);
             this.WeightLabel.TabIndex = 3;
@@ -110,9 +115,9 @@ partial class InventoryController
             this.groupBox2.Controls.Add(this.EquipButton);
             this.groupBox2.Controls.Add(this.DeleteButton);
             this.groupBox2.Controls.Add(this.UseButton);
-            this.groupBox2.Location = new System.Drawing.Point(857, 0);
+            this.groupBox2.Location = new System.Drawing.Point(645, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(166, 201);
+            this.groupBox2.Size = new System.Drawing.Size(166, 171);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Action";
@@ -130,7 +135,7 @@ partial class InventoryController
             // DeleteButton
             // 
             this.DeleteButton.ForeColor = System.Drawing.Color.Red;
-            this.DeleteButton.Location = new System.Drawing.Point(3, 172);
+            this.DeleteButton.Location = new System.Drawing.Point(3, 136);
             this.DeleteButton.Name = "DeleteButton";
             this.DeleteButton.Size = new System.Drawing.Size(157, 23);
             this.DeleteButton.TabIndex = 1;
@@ -155,27 +160,39 @@ partial class InventoryController
             this.AutoSellButton.Name = "AutoSellButton";
             this.AutoSellButton.Size = new System.Drawing.Size(157, 23);
             this.AutoSellButton.TabIndex = 2;
-            this.AutoSellButton.Text = "Auto Sell";
+            this.AutoSellButton.Text = "Sell";
             this.AutoSellButton.UseVisualStyleBackColor = true;
             this.AutoSellButton.Click += new System.EventHandler(this.AutoSellButton_Click);
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.AutoTradeToMaster);
             this.groupBox3.Controls.Add(this.ClearFlagButton);
             this.groupBox3.Controls.Add(this.AutoInnStore);
             this.groupBox3.Controls.Add(this.AutoDeleteButton);
             this.groupBox3.Controls.Add(this.AutoSellButton);
-            this.groupBox3.Location = new System.Drawing.Point(857, 339);
+            this.groupBox3.Location = new System.Drawing.Point(645, 385);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(166, 174);
+            this.groupBox3.Size = new System.Drawing.Size(166, 195);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Supply Flags";
+            this.groupBox3.Text = "Auto Flags";
+            // 
+            // AutoTradeToMaster
+            // 
+            this.AutoTradeToMaster.ForeColor = System.Drawing.Color.Salmon;
+            this.AutoTradeToMaster.Location = new System.Drawing.Point(3, 109);
+            this.AutoTradeToMaster.Name = "AutoTradeToMaster";
+            this.AutoTradeToMaster.Size = new System.Drawing.Size(157, 23);
+            this.AutoTradeToMaster.TabIndex = 6;
+            this.AutoTradeToMaster.Text = "Trade To Master";
+            this.AutoTradeToMaster.UseVisualStyleBackColor = true;
+            this.AutoTradeToMaster.Click += new System.EventHandler(this.AutoTradeToMaster_Click);
             // 
             // ClearFlagButton
             // 
             this.ClearFlagButton.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClearFlagButton.Location = new System.Drawing.Point(3, 145);
+            this.ClearFlagButton.Location = new System.Drawing.Point(2, 168);
             this.ClearFlagButton.Name = "ClearFlagButton";
             this.ClearFlagButton.Size = new System.Drawing.Size(157, 23);
             this.ClearFlagButton.TabIndex = 5;
@@ -190,7 +207,7 @@ partial class InventoryController
             this.AutoInnStore.Name = "AutoInnStore";
             this.AutoInnStore.Size = new System.Drawing.Size(157, 23);
             this.AutoInnStore.TabIndex = 4;
-            this.AutoInnStore.Text = "Auto Inn Store";
+            this.AutoInnStore.Text = "Inn Store";
             this.AutoInnStore.UseVisualStyleBackColor = true;
             this.AutoInnStore.Click += new System.EventHandler(this.AutoInnStore_Click);
             // 
@@ -201,43 +218,88 @@ partial class InventoryController
             this.AutoDeleteButton.Name = "AutoDeleteButton";
             this.AutoDeleteButton.Size = new System.Drawing.Size(157, 23);
             this.AutoDeleteButton.TabIndex = 3;
-            this.AutoDeleteButton.Text = "Auto Delete";
+            this.AutoDeleteButton.Text = "Delete";
             this.AutoDeleteButton.UseVisualStyleBackColor = true;
             this.AutoDeleteButton.Click += new System.EventHandler(this.AutoDeleteButton_Click);
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.button1);
-            this.groupBox4.Controls.Add(this.textBox2);
-            this.groupBox4.Location = new System.Drawing.Point(857, 207);
+            this.groupBox4.Controls.Add(this.CancelTradeButton);
+            this.groupBox4.Controls.Add(this.AcceptTradeButton);
+            this.groupBox4.Controls.Add(this.TradeFinishButton);
+            this.groupBox4.Controls.Add(this.TradeAddItemButton);
+            this.groupBox4.Controls.Add(this.SendTradeButton);
+            this.groupBox4.Controls.Add(this.TradeCharacterName);
+            this.groupBox4.Location = new System.Drawing.Point(645, 177);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(166, 75);
+            this.groupBox4.Size = new System.Drawing.Size(166, 202);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Trade";
             // 
-            // button1
+            // CancelTradeButton
             // 
-            this.button1.Location = new System.Drawing.Point(3, 48);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(157, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Trade";
-            this.button1.UseVisualStyleBackColor = true;
+            this.CancelTradeButton.Location = new System.Drawing.Point(5, 164);
+            this.CancelTradeButton.Name = "CancelTradeButton";
+            this.CancelTradeButton.Size = new System.Drawing.Size(155, 23);
+            this.CancelTradeButton.TabIndex = 5;
+            this.CancelTradeButton.Text = "Cancel Trade";
+            this.CancelTradeButton.UseVisualStyleBackColor = true;
+            this.CancelTradeButton.Click += new System.EventHandler(this.CancelTradeButton_Click);
             // 
-            // textBox2
+            // AcceptTradeButton
             // 
-            this.textBox2.Location = new System.Drawing.Point(3, 19);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.PlaceholderText = "Nick";
-            this.textBox2.Size = new System.Drawing.Size(157, 23);
-            this.textBox2.TabIndex = 0;
+            this.AcceptTradeButton.Location = new System.Drawing.Point(3, 77);
+            this.AcceptTradeButton.Name = "AcceptTradeButton";
+            this.AcceptTradeButton.Size = new System.Drawing.Size(156, 23);
+            this.AcceptTradeButton.TabIndex = 4;
+            this.AcceptTradeButton.Text = "Accept Dialog";
+            this.AcceptTradeButton.UseVisualStyleBackColor = true;
+            this.AcceptTradeButton.Click += new System.EventHandler(this.AcceptTradeButton_Click);
+            // 
+            // TradeFinishButton
+            // 
+            this.TradeFinishButton.Location = new System.Drawing.Point(4, 135);
+            this.TradeFinishButton.Name = "TradeFinishButton";
+            this.TradeFinishButton.Size = new System.Drawing.Size(155, 23);
+            this.TradeFinishButton.TabIndex = 3;
+            this.TradeFinishButton.Text = "Accept Trade";
+            this.TradeFinishButton.UseVisualStyleBackColor = true;
+            this.TradeFinishButton.Click += new System.EventHandler(this.TradeFinishButton_Click);
+            // 
+            // TradeAddItemButton
+            // 
+            this.TradeAddItemButton.Location = new System.Drawing.Point(4, 106);
+            this.TradeAddItemButton.Name = "TradeAddItemButton";
+            this.TradeAddItemButton.Size = new System.Drawing.Size(155, 23);
+            this.TradeAddItemButton.TabIndex = 2;
+            this.TradeAddItemButton.Text = "Add Item";
+            this.TradeAddItemButton.UseVisualStyleBackColor = true;
+            this.TradeAddItemButton.Click += new System.EventHandler(this.TradeAddItemButton_Click);
+            // 
+            // SendTradeButton
+            // 
+            this.SendTradeButton.Location = new System.Drawing.Point(3, 48);
+            this.SendTradeButton.Name = "SendTradeButton";
+            this.SendTradeButton.Size = new System.Drawing.Size(156, 23);
+            this.SendTradeButton.TabIndex = 1;
+            this.SendTradeButton.Text = "Send Trade";
+            this.SendTradeButton.UseVisualStyleBackColor = true;
+            this.SendTradeButton.Click += new System.EventHandler(this.SendTradeButton_Click);
+            // 
+            // TradeCharacterName
+            // 
+            this.TradeCharacterName.Location = new System.Drawing.Point(3, 19);
+            this.TradeCharacterName.Name = "TradeCharacterName";
+            this.TradeCharacterName.PlaceholderText = "Nick";
+            this.TradeCharacterName.Size = new System.Drawing.Size(157, 23);
+            this.TradeCharacterName.TabIndex = 0;
             // 
             // InventoryController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1028, 585);
+            this.ClientSize = new System.Drawing.Size(816, 585);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -276,7 +338,12 @@ partial class InventoryController
     private Button AutoInnStore;
     private Button AutoDeleteButton;
     private GroupBox groupBox4;
-    private Button button1;
-    private TextBox textBox2;
+    private Button SendTradeButton;
+    private TextBox TradeCharacterName;
     private Button ClearFlagButton;
+    private Button AutoTradeToMaster;
+    private Button TradeFinishButton;
+    private Button TradeAddItemButton;
+    private Button AcceptTradeButton;
+    private Button CancelTradeButton;
 }

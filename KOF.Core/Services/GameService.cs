@@ -1479,7 +1479,10 @@ public partial class GameService
                     var result = msg.Read<byte>();
 
                     if (result == 0)
-                        session.Client.Character.TraderId = 0;
+                    {
+                        session.Client.Character.TradedUserId = 0;
+                        session.Client.Character.TradeRequestedUserId = 0;
+                    }
                     else if (result == 1)
                         session.Client.CharacterHandler.ExhangeAgreeProcess();
                 }
@@ -1507,6 +1510,7 @@ public partial class GameService
 
             case (byte)TradeSubPacket.TRADE_OTHER_DECIDE:
                 {
+                    session.Client.CharacterHandler.ExhangeAgreeProcess();
                     session.SendAsync(MessageBuilder.MsgSend_ExchangeDecision()).ConfigureAwait(false);
                 }
                 break;
@@ -1539,14 +1543,16 @@ public partial class GameService
                         }
                     }
 
-                    session.Client.Character.TraderId = 0;
+                    session.Client.Character.TradedUserId = 0;
+                    session.Client.Character.TradeRequestedUserId = 0;
                 }
                 break;
 
 
             case (byte)TradeSubPacket.TRADE_CANCEL:
                 {
-                    session.Client.Character.TraderId = 0;
+                    session.Client.Character.TradedUserId = 0;
+                    session.Client.Character.TradeRequestedUserId = 0;
                 }
                 break;
         }

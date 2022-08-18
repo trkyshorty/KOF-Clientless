@@ -7,6 +7,7 @@ using System.Reflection;
 using KOF.Database.Models;
 using KOF.Core.Enums;
 using KOF.Database;
+using System.Numerics;
 
 namespace KOF.UI.Forms;
 
@@ -60,6 +61,10 @@ public partial class InventoryController : Form
                 case (byte)SupplyFlagType.FLAG_INN_STORE:
                         row.DefaultCellStyle.BackColor = Color.Blue;
                     break;
+
+                case (byte)SupplyFlagType.FLAG_TRADE_TO_MASTER:
+                    row.DefaultCellStyle.BackColor = Color.Salmon;
+                    break;
             }
         }
     }
@@ -74,6 +79,36 @@ public partial class InventoryController : Form
 
             NoahTextLabel.Text = $"Noah : {Character.Gold.ToString("N0")}";
             WeightLabel.Text = $"Weight : {Character.Weight.ToString("F1")} / {Character.MaxWeight.ToString("F1")}";
+            
+            if (Character.TradedUserId != 0)
+            {
+                TradeAddItemButton.Enabled = true;
+                TradeFinishButton.Enabled = true;
+                SendTradeButton.Enabled = false;
+                AcceptTradeButton.Enabled = false;
+                CancelTradeButton.Enabled = true;
+            }
+            else
+            {
+                if(Character.TradeRequestedUserId != 0)
+                {
+                    SendTradeButton.Enabled = false;
+
+                    if(Character.TradeRequestedUserId != Character.Id)
+                        AcceptTradeButton.Enabled = true;
+                    
+                    CancelTradeButton.Enabled = true;
+                }
+                else
+                {
+                    SendTradeButton.Enabled = true;
+                    AcceptTradeButton.Enabled = false;
+                    CancelTradeButton.Enabled = false;
+                }  
+
+                TradeAddItemButton.Enabled = false;
+                TradeFinishButton.Enabled = false;
+            }        
         }
         catch (Exception ex)
         {
@@ -216,5 +251,72 @@ public partial class InventoryController : Form
 
             Character.Inventory[inventory.Pos].SupplyFlag = (byte)SupplyFlagType.FLAG_NONE;
         }
+    }
+
+    private void AutoTradeToMaster_Click(object sender, EventArgs e)
+    {
+        foreach (DataGridViewRow row in ItemListDataGridView.SelectedRows)
+        {
+            var inventory = (Inventory)row.DataBoundItem;
+
+            if (inventory.ItemID == 0)
+                continue;
+
+            var supplyFlag = SQLiteHandler.Table<SupplyFlag>().SingleOrDefault(x => x.ItemId == inventory.ItemID);
+
+            if (supplyFlag == null)
+            {
+                supplyFlag = new SupplyFlag()
+                {
+                    Flag = (int)SupplyFlagType.FLAG_TRADE_TO_MASTER,
+                    ItemId = (int)inventory.ItemID
+                };
+
+                supplyFlag.Id = SQLiteHandler.Insert(supplyFlag);
+            }
+            else
+            {
+                supplyFlag.Flag = (byte)SupplyFlagType.FLAG_TRADE_TO_MASTER;
+                SQLiteHandler.Update(supplyFlag);
+            }
+
+            Character.Inventory[inventory.Pos].SupplyFlag = (byte)SupplyFlagType.FLAG_TRADE_TO_MASTER;
+        }
+    }
+
+    private void TradeAddItemButton_Click(object sender, EventArgs e)
+    {
+        foreach (DataGridViewRow row in ItemListDataGridView.SelectedRows)
+        {
+            byte pos = (byte)row.Cells[0].Value;
+            uint itemId = (uint)row.Cells[1].Value;
+            ushort itemCount = (ushort)row.Cells[5].Value;
+
+            if (pos >= 14)
+                CharacterHandler.ExhangeAdd((byte)(pos - Config.SLOT_MAX), itemId, (uint)itemCount);
+        }
+    }
+
+    private void SendTradeButton_Click(object sender, EventArgs e)
+    {
+        var character = CharacterHandler.PlayerList.FirstOrDefault(x => x.Name == TradeCharacterName.Text);
+
+        if (character != null && Vector3.Distance(character.GetPosition(), Character.GetPosition()) <= 5.0f && Character.IsTrading == false)
+            CharacterHandler.ExhangeRequest(character.Id);
+    }
+
+    private void AcceptTradeButton_Click(object sender, EventArgs e)
+    {
+        CharacterHandler.ExhangeAgree();
+    }
+
+    private void TradeFinishButton_Click(object sender, EventArgs e)
+    {
+        CharacterHandler.ExhangeDecision();
+    }
+
+    private void CancelTradeButton_Click(object sender, EventArgs e)
+    {
+        CharacterHandler.ExhangeCancel();
     }
 }
