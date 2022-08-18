@@ -31,17 +31,19 @@ public class Inventory
     [Browsable(false)]
     public byte Flag { get; set; }
 
+    [Browsable(false)]
     public short RentalTime { get; set; }
 
     [Browsable(false)]
     public uint Serial { get; set; }
 
+    [Browsable(false)]
     public uint ExpirationTime { get; set; }
 
     public bool IsEmpty() => ItemID == 0;
 
 
-    [Browsable(true)]
+    [Browsable(false)]
     public byte SupplyFlag { get; set; }
 
 
