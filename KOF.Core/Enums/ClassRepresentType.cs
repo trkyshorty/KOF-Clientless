@@ -1,0 +1,19 @@
+﻿namespace KOF.Core.Enums;
+
+public enum ClassRepresentType : int
+{
+    CLASS_REPRESENT_UNKNOWN = -1,
+
+    /* OpenKO Enums */
+    /*
+    CLASS_REPRESENT_WARRIOR = 0,
+    CLASS_REPRESENT_ROGUE = 1,
+    CLASS_REPRESENT_WIZARD = 2,
+    CLASS_REPRESENT_PRIEST = 3,
+    */
+
+    CLASS_REPRESENT_WARRIOR = 1,
+    CLASS_REPRESENT_ROGUE = 2,
+    CLASS_REPRESENT_WIZARD = 3,
+    CLASS_REPRESENT_PRIEST = 4,
+}

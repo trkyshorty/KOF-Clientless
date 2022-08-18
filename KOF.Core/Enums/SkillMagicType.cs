@@ -1,0 +1,11 @@
+﻿namespace KOF.Core.Enums;
+
+internal enum SkillMagicType : byte
+{
+    SKILL_MAGIC_TYPE_CASTING = 1,
+    SKILL_MAGIC_TYPE_FLYING = 2,
+    SKILL_MAGIC_TYPE_EFFECTING = 3,
+    SKILL_MAGIC_TYPE_FAIL = 4,
+    SKILL_MAGIC_TYPE_BUFF = 5,
+    SKILL_MAGIC_TYPE_CANCEL = 6
+}

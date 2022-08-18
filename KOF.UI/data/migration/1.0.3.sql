@@ -1,0 +1,14 @@
+PRAGMA foreign_keys = false;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 11;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 12;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 13;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 14;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 15;
+UPDATE "Zone" SET "Opd" = 'eslantzone.opd' WHERE rowid = 16;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 11;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 12;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 13;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 14;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 15;
+UPDATE "Zone" SET "Gtd" = 'eslantzone.gtd' WHERE rowid = 16;
+PRAGMA foreign_keys = true;
