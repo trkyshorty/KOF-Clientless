@@ -73,6 +73,8 @@ public partial class InventoryController : Form
     {
         try
         {
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+
             InitializeInventoryRowColor();
 
             ItemListDataGridView.Refresh();
@@ -121,11 +123,13 @@ public partial class InventoryController : Form
         foreach (DataGridViewRow row in ItemListDataGridView.SelectedRows)
         {
             byte pos = (byte)row.Cells[0].Value;
-
-            if(pos < 14)
-                CharacterHandler.RemoveItem(1, pos, (uint)row.Cells[1].Value);
+            
+            if (pos < 14)
+                CharacterHandler.RemoveItem(1, pos, (uint)row.Cells[1].Value);               
             else
                 CharacterHandler.RemoveItem(2, (byte)(pos - 14), (uint)row.Cells[1].Value);
+
+            Character.Inventory[pos].Reset();
         }
     }
 

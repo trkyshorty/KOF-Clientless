@@ -40,7 +40,6 @@ partial class RoutePlanner
             this.label1 = new System.Windows.Forms.Label();
             this.Map = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.GateActionButton = new System.Windows.Forms.Button();
             this.InnHostessAreaButton = new System.Windows.Forms.Button();
             this.TownActionButton = new System.Windows.Forms.Button();
             this.SupplyAreaActionButton = new System.Windows.Forms.Button();
@@ -148,7 +147,6 @@ partial class RoutePlanner
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.GateActionButton);
             this.groupBox1.Controls.Add(this.InnHostessAreaButton);
             this.groupBox1.Controls.Add(this.TownActionButton);
             this.groupBox1.Controls.Add(this.SupplyAreaActionButton);
@@ -158,16 +156,6 @@ partial class RoutePlanner
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Action List";
-            // 
-            // GateActionButton
-            // 
-            this.GateActionButton.Enabled = false;
-            this.GateActionButton.Location = new System.Drawing.Point(6, 109);
-            this.GateActionButton.Name = "GateActionButton";
-            this.GateActionButton.Size = new System.Drawing.Size(154, 23);
-            this.GateActionButton.TabIndex = 3;
-            this.GateActionButton.Text = "Gate";
-            this.GateActionButton.UseVisualStyleBackColor = true;
             // 
             // InnHostessAreaButton
             // 
@@ -245,6 +233,5 @@ partial class RoutePlanner
     private Button SaveRouteButton;
     private ComboBox SelectedRouteComboBox;
     private Label label1;
-    private Button GateActionButton;
     private Button ResetRouteButton;
 }

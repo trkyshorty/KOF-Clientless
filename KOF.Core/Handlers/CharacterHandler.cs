@@ -1073,21 +1073,10 @@ public class CharacterHandler : IDisposable
             if (targetPosition == -1)
                 return;
 
-            var currentPositionData = MySelf.Inventory[currentPosition];
-            //var targetPositionData = ItemArray[targetPosition];
-
             MySelf.Inventory[targetPosition].Reset();
 
-            MySelf.Inventory[targetPosition].ItemID = currentPositionData.ItemID;
-            MySelf.Inventory[targetPosition].Count = currentPositionData.Count;
-            MySelf.Inventory[targetPosition].Table = TableHandler.GetItemById((int)itemId);
-
-            var supplyFlag = SQLiteHandler.Table<SupplyFlag>().SingleOrDefault(x => x.ItemId == currentPositionData.ItemID);
-
-            if (supplyFlag != null)
-                MySelf.Inventory[targetPosition].SupplyFlag = (byte)supplyFlag.Flag;
-
-            currentPositionData.Reset();
+            MySelf.Inventory[currentPosition].CopyTo(MySelf.Inventory[targetPosition]);
+            MySelf.Inventory[currentPosition].Reset();
 
             Client.Session.SendAsync(MessageBuilder.MsgSend_InventoryItemMoveProcess(1, 1, itemId, (byte)(currentPosition - 14), (byte)targetPosition)).ConfigureAwait(false);
             Client.Session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
@@ -1202,20 +1191,35 @@ public class CharacterHandler : IDisposable
 
         if (slot == -1) return;
 
-        var itemSellInfo = TableHandler.GetItemSellByGroupId(itemSellingGroup);
+        var shopItemList = TableHandler.GetItemSellList().FindAll(x => x.SellingGroup == itemSellingGroup);
 
-        if (itemSellInfo == null) return;
+        if (shopItemList == null) return;
 
-        var shopPosition = itemSellInfo.ItemList.FindIndex(x => x == ItemId);
+        Dictionary<int, List<int>> shopItemListDict = new();
 
-        Client.Session.SendAsync(MessageBuilder.MsgSend_ItemTradeBuy(
-            npcId,
-            (uint)itemSellingGroup,
-            (uint)ItemId,
-            (byte)(slot - 14),
-            (short)fixedItemCount,
-            (byte)shopPosition
-            )).ConfigureAwait(false);
+        byte shopPage = 0;
+
+        shopItemList.ForEach(x =>
+        {
+            shopItemListDict.Add(shopPage++, x.ItemList);
+        });
+
+        foreach (KeyValuePair<int, List<int>> shopItem in shopItemListDict)
+        {
+            if (!shopItem.Value.Any(x => x == ItemId)) continue;
+
+            var shopItemPosition = shopItem.Value.FindIndex(x => x == ItemId);
+
+            Client.Session.SendAsync(MessageBuilder.MsgSend_ItemTradeBuy(
+                npcId,
+                (uint)itemSellingGroup,
+                (uint)ItemId,
+                (byte)(slot - 14),
+                (short)fixedItemCount,
+                (byte)shopItem.Key,
+                (byte)shopItemPosition
+                )).ConfigureAwait(false);
+        }
     }
 
     public void ItemSell(short npcId, int npcGroup, int ItemId, short itemCount)
@@ -1903,6 +1907,7 @@ public class CharacterHandler : IDisposable
 
     public void NpcEvent(short npcId)
     {
+        MySelf.NpcEventId = npcId;
         Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(npcId)).ConfigureAwait(false);
     }
 

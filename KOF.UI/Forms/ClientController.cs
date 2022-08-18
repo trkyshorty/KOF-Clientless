@@ -49,6 +49,10 @@ public partial class ClientController : Form
         BindingFlags.Instance | BindingFlags.SetProperty, null,
         QuestNpcList, new object[] { true });
 
+        typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic |
+        BindingFlags.Instance | BindingFlags.SetProperty, null,
+        NpcShopDataList, new object[] { true });
+
         Visible = false;
     }
 
@@ -1271,6 +1275,33 @@ public partial class ClientController : Form
 
             GateListDataGrid.Refresh();
 
+            var npcShopList = CharacterHandler.NpcList
+            .FindAll(x => x.MonsterOrNpc == 2 && (x.FamilyType == 21 || x.FamilyType == 22 || x.FamilyType == 41));
+
+            if (NpcShopDataList.RowCount != npcShopList.Count())
+            {
+                NpcShopDataList.DataSource = null;
+                NpcShopDataList.DataSource = npcShopList;
+
+                CurrencyManager cm = (CurrencyManager)NpcShopDataList.BindingContext[npcShopList];
+
+                if (cm != null)
+                    cm.Refresh();
+            }
+
+            NpcShopDataList.Refresh();
+
+            if (Character.NpcEventGroup != 0)
+            {
+                ItemListButton.ForeColor = Color.LimeGreen;
+                ItemListButton.Enabled = true;
+            }
+            else
+            {
+                ItemListButton.ForeColor = Color.Black;
+                ItemListButton.Enabled = false;
+            }
+
             MapGroupBox.Text = $"Minimap ({Character.X}, {Character.Y})";
 
             if (GateListDataGrid.RowCount > 0)
@@ -1394,6 +1425,7 @@ public partial class ClientController : Form
     private void LoadNpcListButton_Click(object sender, EventArgs e)
     {
         if (Character == null) return;
+        
         QuestNpcList.DataSource = CharacterHandler.NpcList
             .FindAll(x => x.MonsterOrNpc == 2 && x.FamilyType != 11 && x.FamilyType != 15 && x.FamilyType != 74 && x.FamilyType != 24 && x.FamilyType != 174);
     }
@@ -1718,5 +1750,43 @@ public partial class ClientController : Form
         if (Controller == null) return;
 
         Controller.SetControl(TargetSearchRange.Name, TargetSearchRange.Value);
+    }
+
+    private void ItemListButton_Click(object sender, EventArgs e)
+    {
+        if(Character.NpcEventGroup != 0)
+        {
+            ShopWindow shopBuyItem = new ShopWindow(Client);
+            shopBuyItem.ShowDialog();
+        }
+    }
+
+    private void GoToNpcShopButton_Click(object sender, EventArgs e)
+    {
+        Character.NpcEventGroup = 0;
+
+        foreach (DataGridViewRow row in NpcShopDataList.SelectedRows)
+        {
+           var character = (Character)row.DataBoundItem;
+
+           if (character != null)
+           {
+               CharacterHandler.Route(new List<RouteData>()
+               {
+                   new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
+
+                   new RouteData() {
+                       Action = RouteActionType.NPCEVENT,
+                       X = character.X,
+                       Y = character.Y,
+                       Z = character.Z,
+                       NpcId = character.Id
+                   }
+
+               });
+           }
+        }
+
+       
     }
 }

@@ -117,7 +117,7 @@ partial class InventoryController
             this.groupBox2.Controls.Add(this.UseButton);
             this.groupBox2.Location = new System.Drawing.Point(645, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(166, 171);
+            this.groupBox2.Size = new System.Drawing.Size(166, 145);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Action";
@@ -135,7 +135,7 @@ partial class InventoryController
             // DeleteButton
             // 
             this.DeleteButton.ForeColor = System.Drawing.Color.Red;
-            this.DeleteButton.Location = new System.Drawing.Point(3, 136);
+            this.DeleteButton.Location = new System.Drawing.Point(4, 113);
             this.DeleteButton.Name = "DeleteButton";
             this.DeleteButton.Size = new System.Drawing.Size(157, 23);
             this.DeleteButton.TabIndex = 1;
@@ -230,7 +230,7 @@ partial class InventoryController
             this.groupBox4.Controls.Add(this.TradeAddItemButton);
             this.groupBox4.Controls.Add(this.SendTradeButton);
             this.groupBox4.Controls.Add(this.TradeCharacterName);
-            this.groupBox4.Location = new System.Drawing.Point(645, 177);
+            this.groupBox4.Location = new System.Drawing.Point(645, 163);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(166, 202);
             this.groupBox4.TabIndex = 4;

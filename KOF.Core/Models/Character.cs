@@ -338,6 +338,9 @@ public class Character
     public byte NationId { get; set; }
 
     [Browsable(false)]
+    public short NpcEventId { get; set; }
+
+    [Browsable(false)]
     public int NpcEventGroup { get; set; }
 
     [Browsable(false)]
