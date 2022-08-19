@@ -1821,10 +1821,6 @@ public partial class ClientController : Form
             if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
             if (!Controller.GetControl("AutoJoinMs", false)) return;
 
-            var monsterStone = Character.Inventory.FirstOrDefault(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase));
-
-            if (monsterStone == null) return;
-
             if (Character.IsInMonsterStone())
             {
                 var monsterStonePhase = Controller.GetControl("MonsterStonePhase", 0);
@@ -1836,14 +1832,14 @@ public partial class ClientController : Form
                     else
                         Character.SetMovePosition(new Vector3(45.0f, 52.0f, 0.0f));
                 }
-                
 
                 MSAutoEvent.Interval = 1000;
             }
             else
             {
-                //TODO: Auto select final boss id in target list  
+                var monsterStone = Character.Inventory.FirstOrDefault(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase));
 
+                if (monsterStone == null) return;
 
                 var selectedTarget = TableHandler.GetMonsterList().FindAll(x => x.Id == 9824 || x.Id == 8800 || x.Id == 8737 || x.Id == 8784);
 
@@ -1868,7 +1864,7 @@ public partial class ClientController : Form
                 }
 
                 Controller.SetControl("MonsterStonePhase", 0);
-                
+
                 CharacterHandler.Event((byte)EventOpCode.MONSTER_STONE, monsterStone.ItemID);
 
                 MSAutoEvent.Interval = 5000;
