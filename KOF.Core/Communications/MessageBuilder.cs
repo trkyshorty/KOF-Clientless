@@ -1120,6 +1120,16 @@ public class MessageBuilder
         return msg;
     }
 
+    public static Message MsgSend_Event(byte opcode, uint itemId)
+    {
+        var msg = new Message(MessageID.WIZ_EVENT);
+
+        msg.Write(opcode);
+        msg.Write(itemId);
+
+        return msg;
+    }
+
 
 
 }

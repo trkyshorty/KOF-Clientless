@@ -1,0 +1,18 @@
+﻿namespace KOF.Core.Enums;
+
+public enum EventOpCode : byte
+{
+    BIFROST_EVENT = 2,
+    TEMPLE_SCREEN = 3,
+    MONSTER_SQUARD = 5,
+    MONSTER_STONE = 6,
+    TEMPLE_EVENT = 7,
+    TEMPLE_EVENT_JOIN = 8,
+    TEMPLE_EVENT_DISBAND = 9,
+    TEMPLE_EVENT_FINISH = 10,
+    MONSTER_STONE_EXP = 11,
+    TEMPLE_EVENT_COUNTER = 16,
+    DRAKIS_EVENT = 22,
+    DRAKIS_EVENT_TIMER = 23,
+    ALTER_KILLED_MESSAGE = 0x31
+}

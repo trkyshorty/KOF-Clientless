@@ -9,7 +9,7 @@ namespace KOF.Core.Models
     public class Config
     {
         public const int USER_BAND = 0;
-        public const int NPC_BAND = 10000;
+        public const int NPC_BAND = 5000;
         public const int INVALID_BAND = 30000;
 
         public const uint ITEM_GOLD = 900_000_000;

@@ -615,6 +615,11 @@ public class Character
         return Moving;
     }
 
+    public bool IsInMonsterStone()
+    {
+        return Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE1 || Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE2 || Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE3;
+    }
+
     public void SetPosition(Vector3 position)
     {
         X = (float)Math.Round(position.X, 1);

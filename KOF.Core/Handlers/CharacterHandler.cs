@@ -711,14 +711,14 @@ public class CharacterHandler : IDisposable
         if (AttackQueueNextProcessTime >= Environment.TickCount)
             return;
 
-        var skill = AttackQueue.Peek();
+        var skill = AttackQueue.Dequeue();
 
         var target = GetTarget();
 
         if (target != null && !target.IsDead())
             await UseSkill(skill, target);
 
-        AttackQueue.Dequeue();
+        //AttackQueue.Dequeue();
 
         AttackQueueNextProcessTime = Environment.TickCount + (int)Controller.GetControl("AttackSpeed", 1000);
     }
@@ -731,7 +731,7 @@ public class CharacterHandler : IDisposable
         //if (SkillQueueProcessTime > Environment.TickCount)
         //    return Task.CompletedTask;
 
-        var skill = SkillQueue.Peek();
+        var skill = SkillQueue.Dequeue();
 
         var target = GetTarget(skill.GetTarget());
 
@@ -743,7 +743,7 @@ public class CharacterHandler : IDisposable
         else
             await UseSkill(skill, MySelf);
 
-        SkillQueue.Dequeue();
+        //SkillQueue.Dequeue();
 
         //SkillQueueProcessTime = Environment.TickCount + (skill.CastTime * 100);
 
@@ -785,16 +785,20 @@ public class CharacterHandler : IDisposable
                         }
 
                         if ((skill.Extension.ArrowCount == 0 && skill.RequiredFlyEffect != 0) || skill.Extension.ArrowCount == 1)
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f)));
+                        {
+                            //await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f)));
+                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition()));
+                        }
 
                         if (skill.Extension.ArrowCount > 1)
                         {
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), 1));
+                            //await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), 1));
+                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), 1));
 
                             for (ushort i = 1; i < skill.Extension.ArrowCount + 1; i++)
                             {
                                 await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, i));
-                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, target.Id, target.GetPosition(), i));
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), i));
                             }
                         }
                         else
@@ -1649,7 +1653,7 @@ public class CharacterHandler : IDisposable
         }
         else
         {
-            if ((Environment.TickCount - MySelf.MoveSendTime) <= 1500)
+            if ((Environment.TickCount - MySelf.MoveSendTime) <= 1750)
                 return Task.CompletedTask;
 
             var moveTowards = MoveTowards(startPosition, movePosition);
@@ -1909,6 +1913,11 @@ public class CharacterHandler : IDisposable
     {
         MySelf.NpcEventId = npcId;
         Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(npcId)).ConfigureAwait(false);
+    }
+
+    public void Event(byte opCode, uint itemId)
+    {
+        Client.Session.SendAsync(MessageBuilder.MsgSend_Event(opCode, itemId)).ConfigureAwait(false);
     }
 
     public void ProcessSelectMessage(byte opcode, int questId)

@@ -1069,7 +1069,10 @@ public partial class GameService
 
         session.Client.CharacterHandler.RunSelectedRoute();
 
-        return Task.CompletedTask;
+        if (session.Client.Character.IsInMonsterStone() && session.Client.CharacterHandler.Controller != null)
+            session.Client.CharacterHandler.Controller.SetControl("MonsterStonePhase", 0);
+
+       return Task.CompletedTask;
     }
 
     [MessageHandler(MessageID.WIZ_DURATION)]
@@ -1712,12 +1715,16 @@ public partial class GameService
         var opcode = msg.Read<byte>();
         var questId = msg.Read<int>();
 
-        for (int i = 0; i < 10; i++)
-            _ = msg.Read<int>(); //Menu Index
 
-        _ = msg.Read<byte>(); //Accept
+        if(opcode != 7) // TODO: 7 - Monster Stone
+        {
+            for (int i = 0; i < 10; i++)
+                _ = msg.Read<int>(); //Menu Index
 
-        session.Client.CharacterHandler.ProcessSelectMessage(opcode, questId);
+            _ = msg.Read<byte>(); //Accept
+
+            session.Client.CharacterHandler.ProcessSelectMessage(opcode, questId);
+        }
 
         return Task.CompletedTask;
     }
