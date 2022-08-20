@@ -110,7 +110,9 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_USER_INOUT)]
     public Task MsgRecv_PlayerInOut(Session session, Message msg)
     {
-        InOutType commandType = (InOutType)msg.Read<ushort>();
+        InOutType commandType = (InOutType)msg.Read<byte>();
+
+        _ = msg.Read<byte>(); //Only CNKO
 
         switch (commandType)
         {
@@ -1760,8 +1762,8 @@ public partial class GameService
         return Task.CompletedTask;
     }
 
-    [MessageHandler(MessageID.WIZ_ZONEABILITY)]
-    public Task MsgRecv_ZoneAbility(Session session, Message msg)
+    [MessageHandler(MessageID.WIZ_MAP_EVENT)]
+    public Task MsgRecv_MapEvent(Session session, Message msg)
     {
         byte opcode = msg.Read<byte>();
 
