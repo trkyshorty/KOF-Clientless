@@ -338,6 +338,9 @@ public class Character
     public byte NationId { get; set; }
 
     [Browsable(false)]
+    public short NpcEventId { get; set; }
+
+    [Browsable(false)]
     public int NpcEventGroup { get; set; }
 
     [Browsable(false)]
@@ -610,6 +613,11 @@ public class Character
     public bool IsMoving()
     {
         return Moving;
+    }
+
+    public bool IsInMonsterStone()
+    {
+        return Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE1 || Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE2 || Zone == (byte)ZoneInfo.ZONE_MONSTER_STONE3;
     }
 
     public void SetPosition(Vector3 position)

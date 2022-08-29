@@ -49,6 +49,10 @@ public partial class ClientController : Form
         BindingFlags.Instance | BindingFlags.SetProperty, null,
         QuestNpcList, new object[] { true });
 
+        typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic |
+        BindingFlags.Instance | BindingFlags.SetProperty, null,
+        NpcShopDataList, new object[] { true });
+
         Visible = false;
     }
 
@@ -973,7 +977,9 @@ public partial class ClientController : Form
                     if (target != null)
                     {
                         if (target.IsDead() || Vector3.Distance(Character.GetPosition(), target.GetPosition()) >= (float)targetSearchRange)
+                        {
                             CharacterHandler.SelectTarget(-1);
+                        }
                         else
                         {
                             if (!CharacterHandler.IsRouting() && !CharacterHandler.IsMovingToLoot() && Controller.GetControl("MoveToTarget", true) && target.GetPosition() != Character.GetPosition())
@@ -1271,6 +1277,33 @@ public partial class ClientController : Form
 
             GateListDataGrid.Refresh();
 
+            var npcShopList = CharacterHandler.NpcList
+            .FindAll(x => x.MonsterOrNpc == 2 && (x.FamilyType == 21 || x.FamilyType == 22 || x.FamilyType == 41));
+
+            if (NpcShopDataList.RowCount != npcShopList.Count())
+            {
+                NpcShopDataList.DataSource = null;
+                NpcShopDataList.DataSource = npcShopList;
+
+                CurrencyManager cm = (CurrencyManager)NpcShopDataList.BindingContext[npcShopList];
+
+                if (cm != null)
+                    cm.Refresh();
+            }
+
+            NpcShopDataList.Refresh();
+
+            if (Character.NpcEventGroup != 0)
+            {
+                ItemListButton.ForeColor = Color.LimeGreen;
+                ItemListButton.Enabled = true;
+            }
+            else
+            {
+                ItemListButton.ForeColor = Color.Black;
+                ItemListButton.Enabled = false;
+            }
+
             MapGroupBox.Text = $"Minimap ({Character.X}, {Character.Y})";
 
             if (GateListDataGrid.RowCount > 0)
@@ -1394,6 +1427,7 @@ public partial class ClientController : Form
     private void LoadNpcListButton_Click(object sender, EventArgs e)
     {
         if (Character == null) return;
+        
         QuestNpcList.DataSource = CharacterHandler.NpcList
             .FindAll(x => x.MonsterOrNpc == 2 && x.FamilyType != 11 && x.FamilyType != 15 && x.FamilyType != 74 && x.FamilyType != 24 && x.FamilyType != 174);
     }
@@ -1718,5 +1752,150 @@ public partial class ClientController : Form
         if (Controller == null) return;
 
         Controller.SetControl(TargetSearchRange.Name, TargetSearchRange.Value);
+    }
+
+    private void ItemListButton_Click(object sender, EventArgs e)
+    {
+        if(Character.NpcEventGroup != 0)
+        {
+            ShopWindow shopBuyItem = new ShopWindow(Client);
+            shopBuyItem.ShowDialog();
+        }
+    }
+
+    private void GoToNpcShopButton_Click(object sender, EventArgs e)
+    {
+        Character.NpcEventGroup = 0;
+
+        foreach (DataGridViewRow row in NpcShopDataList.SelectedRows)
+        {
+           var character = (Character)row.DataBoundItem;
+
+           if (character != null)
+           {
+               CharacterHandler.Route(new List<RouteData>()
+               {
+                   new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
+
+                   new RouteData() {
+                       Action = RouteActionType.NPCEVENT,
+                       X = character.X,
+                       Y = character.Y,
+                       Z = character.Z,
+                       NpcId = character.Id
+                   }
+               });
+           }
+        }
+    }
+
+    private void ConvertMsToExp_CheckedChanged(object sender, EventArgs e)
+    {
+        if (Controller == null) return;
+
+        if (ConvertMsToExp.Checked)
+            AutoJoinMs.Enabled = false;
+        else
+            AutoJoinMs.Enabled = true;
+
+        Controller.SetControl(ConvertMsToExp.Name, ConvertMsToExp.Checked);
+    }
+
+    private void AutoJoinMs_CheckedChanged(object sender, EventArgs e)
+    {
+        if (Controller == null) return;
+
+        if (AutoJoinMs.Checked)
+            ConvertMsToExp.Enabled = false;
+        else
+            ConvertMsToExp.Enabled = true;
+
+        Controller.SetControl(AutoJoinMs.Name, AutoJoinMs.Checked);
+    }
+
+    private void MSAutoEvent_Tick(object sender, EventArgs e)
+    {
+        try
+        {
+            if (Controller == null) return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
+            if (!Controller.GetControl("AutoJoinMs", false)) return;
+
+            if (Character.IsInMonsterStone())
+            {
+                var monsterStonePhase = Controller.GetControl("MonsterStonePhase", 0);
+
+                if(monsterStonePhase == 0)
+                {
+                    if (Character.GetPosition() == Character.GetMovePosition())
+                        Controller.SetControl("MonsterStonePhase", 1);
+                    else
+                        Character.SetMovePosition(new Vector3(45.0f, 52.0f, 0.0f));
+                }
+
+                MSAutoEvent.Interval = 1000;
+            }
+            else
+            {
+                var monsterStone = Character.Inventory.FirstOrDefault(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase));
+
+                if (monsterStone == null) return;
+
+                var selectedTarget = TableHandler.GetMonsterList().FindAll(x => x.Id == 9824 || x.Id == 8800 || x.Id == 8737 || x.Id == 8784);
+
+                if (selectedTarget != null)
+                {
+                    TargetCheckedListBox.DataSource = null;
+
+                    Character.SelectedTargetList.Clear();
+                    
+                    selectedTarget.ForEach(x =>
+                    {
+                        Character.SelectedTargetList.Add(x);
+                    });
+
+                    Controller.SetControl("SelectedTargetList", JsonSerializer.Serialize(Character.SelectedTargetList.Select(e => e.Id)));
+                    
+                    TargetCheckedListBox.DataSource = Character.SelectedTargetList;
+                    TargetCheckedListBox.DisplayMember = "Name";
+
+                    for (int i = 0; i <= TargetCheckedListBox.Items.Count - 1; i++)
+                        TargetCheckedListBox.SetItemCheckState(i, CheckState.Checked);
+                }
+
+                Controller.SetControl("MonsterStonePhase", 0);
+
+                CharacterHandler.Event((byte)EventOpCode.MONSTER_STONE, monsterStone.ItemID);
+
+                MSAutoEvent.Interval = 5000;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.StackTrace);
+        }
+    }
+
+    private void MSConvertExperience_Tick(object sender, EventArgs e)
+    {
+        try
+        {
+            if (Controller == null) return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
+            if (!Controller.GetControl("ConvertMsToExp", false)) return;
+
+            var monsterStone = Character.Inventory.Where(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+            if (monsterStone == null) return;
+
+            monsterStone.ForEach(x =>
+            {
+                CharacterHandler.Event((byte)EventOpCode.MONSTER_STONE_EXP, x.ItemID);
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.StackTrace);
+        }
     }
 }

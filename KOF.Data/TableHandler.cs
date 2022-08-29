@@ -406,7 +406,7 @@ public static class TableHandler
 
             List<int> itemList = new();
 
-            for (int i = 0; i < 23; i++)
+            for (int i = 0; i < 24; i++)
                 itemList.Add(Convert.ToInt32(x[i + 2]));
 
             return new ItemSell(Convert.ToInt32(x[1]), itemList);

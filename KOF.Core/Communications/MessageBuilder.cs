@@ -938,7 +938,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ItemTradeBuy(short npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count, byte shopItemPosition)
+    public static Message MsgSend_ItemTradeBuy(short npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count, byte shopPage, byte shopItemPosition)
     {
         var msg = new Message(MessageID.WIZ_ITEM_TRADE);
 
@@ -951,7 +951,7 @@ public class MessageBuilder
         msg.Write(itemId);
         msg.Write(inventoryItemPosition);
         msg.Write(count);
-        msg.Write<byte>(0);
+        msg.Write(shopPage);
         msg.Write(shopItemPosition);
         
         return msg;
@@ -1116,6 +1116,16 @@ public class MessageBuilder
 
         if (accept)
             msg.Write<byte>(255);
+
+        return msg;
+    }
+
+    public static Message MsgSend_Event(byte opcode, uint itemId)
+    {
+        var msg = new Message(MessageID.WIZ_EVENT);
+
+        msg.Write(opcode);
+        msg.Write(itemId);
 
         return msg;
     }

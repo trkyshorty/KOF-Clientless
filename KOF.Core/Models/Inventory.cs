@@ -15,6 +15,7 @@ public class Inventory
         target.Serial = Serial;
         target.Table = Table;
         target.ExpirationTime = ExpirationTime;
+        target.SupplyFlag = SupplyFlag;
     }
 
     public byte Pos { get; set; }

@@ -110,7 +110,9 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_USER_INOUT)]
     public Task MsgRecv_PlayerInOut(Session session, Message msg)
     {
-        InOutType commandType = (InOutType)msg.Read<ushort>();
+        InOutType commandType = (InOutType)msg.Read<byte>();
+
+        _ = msg.Read<byte>(); //Only CNKO
 
         switch (commandType)
         {
@@ -1069,7 +1071,10 @@ public partial class GameService
 
         session.Client.CharacterHandler.RunSelectedRoute();
 
-        return Task.CompletedTask;
+        if (session.Client.Character.IsInMonsterStone() && session.Client.CharacterHandler.Controller != null)
+            session.Client.CharacterHandler.Controller.SetControl("MonsterStonePhase", 0);
+
+       return Task.CompletedTask;
     }
 
     [MessageHandler(MessageID.WIZ_DURATION)]
@@ -1712,12 +1717,16 @@ public partial class GameService
         var opcode = msg.Read<byte>();
         var questId = msg.Read<int>();
 
-        for (int i = 0; i < 10; i++)
-            _ = msg.Read<int>(); //Menu Index
 
-        _ = msg.Read<byte>(); //Accept
+        if(opcode != 7) // TODO: 7 - Monster Stone
+        {
+            for (int i = 0; i < 10; i++)
+                _ = msg.Read<int>(); //Menu Index
 
-        session.Client.CharacterHandler.ProcessSelectMessage(opcode, questId);
+            _ = msg.Read<byte>(); //Accept
+
+            session.Client.CharacterHandler.ProcessSelectMessage(opcode, questId);
+        }
 
         return Task.CompletedTask;
     }
@@ -1753,8 +1762,8 @@ public partial class GameService
         return Task.CompletedTask;
     }
 
-    [MessageHandler(MessageID.WIZ_ZONEABILITY)]
-    public Task MsgRecv_ZoneAbility(Session session, Message msg)
+    [MessageHandler(MessageID.WIZ_MAP_EVENT)]
+    public Task MsgRecv_MapEvent(Session session, Message msg)
     {
         byte opcode = msg.Read<byte>();
 

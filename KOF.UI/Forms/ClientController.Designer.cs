@@ -36,6 +36,9 @@ partial class ClientController
             this.RoutePlannerButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.MainPage = new System.Windows.Forms.TabPage();
+            this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.ConvertMsToExp = new System.Windows.Forms.CheckBox();
+            this.AutoJoinMs = new System.Windows.Forms.CheckBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.GodModeCheckBox = new System.Windows.Forms.CheckBox();
             this.HyperNoahCheckBox = new System.Windows.Forms.CheckBox();
@@ -95,6 +98,10 @@ partial class ClientController
             this.PartyAcceptButton = new System.Windows.Forms.Button();
             this.PartyListDataGrid = new System.Windows.Forms.DataGridView();
             this.ActionPage = new System.Windows.Forms.TabPage();
+            this.groupBox18 = new System.Windows.Forms.GroupBox();
+            this.ItemListButton = new System.Windows.Forms.Button();
+            this.GoToNpcShopButton = new System.Windows.Forms.Button();
+            this.NpcShopDataList = new System.Windows.Forms.DataGridView();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.NpcListTab = new System.Windows.Forms.TabPage();
@@ -164,10 +171,13 @@ partial class ClientController
             this.UITimer = new System.Windows.Forms.Timer(this.components);
             this.MasterCharacterTimer = new System.Windows.Forms.Timer(this.components);
             this.QuestTimer = new System.Windows.Forms.Timer(this.components);
+            this.MSConvertExperience = new System.Windows.Forms.Timer(this.components);
+            this.MSAutoEvent = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.MiniMap)).BeginInit();
             this.MapGroupBox.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.MainPage.SuspendLayout();
+            this.groupBox19.SuspendLayout();
             this.groupBox15.SuspendLayout();
             this.groupBox13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MasterGiveNoahAmount)).BeginInit();
@@ -195,6 +205,8 @@ partial class ClientController
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PartyListDataGrid)).BeginInit();
             this.ActionPage.SuspendLayout();
+            this.groupBox18.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NpcShopDataList)).BeginInit();
             this.groupBox14.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.NpcListTab.SuspendLayout();
@@ -277,6 +289,7 @@ partial class ClientController
             // 
             // MainPage
             // 
+            this.MainPage.Controls.Add(this.groupBox19);
             this.MainPage.Controls.Add(this.groupBox15);
             this.MainPage.Controls.Add(this.groupBox13);
             this.MainPage.Controls.Add(this.groupBox7);
@@ -289,6 +302,39 @@ partial class ClientController
             this.MainPage.TabIndex = 0;
             this.MainPage.Text = "Main";
             this.MainPage.UseVisualStyleBackColor = true;
+            // 
+            // groupBox19
+            // 
+            this.groupBox19.Controls.Add(this.ConvertMsToExp);
+            this.groupBox19.Controls.Add(this.AutoJoinMs);
+            this.groupBox19.Location = new System.Drawing.Point(6, 368);
+            this.groupBox19.Name = "groupBox19";
+            this.groupBox19.Size = new System.Drawing.Size(441, 71);
+            this.groupBox19.TabIndex = 15;
+            this.groupBox19.TabStop = false;
+            this.groupBox19.Text = "Monster Stone";
+            // 
+            // ConvertMsToExp
+            // 
+            this.ConvertMsToExp.AutoSize = true;
+            this.ConvertMsToExp.Location = new System.Drawing.Point(6, 47);
+            this.ConvertMsToExp.Name = "ConvertMsToExp";
+            this.ConvertMsToExp.Size = new System.Drawing.Size(248, 19);
+            this.ConvertMsToExp.TabIndex = 1;
+            this.ConvertMsToExp.Text = "Auto convert monster stone to experience";
+            this.ConvertMsToExp.UseVisualStyleBackColor = true;
+            this.ConvertMsToExp.CheckedChanged += new System.EventHandler(this.ConvertMsToExp_CheckedChanged);
+            // 
+            // AutoJoinMs
+            // 
+            this.AutoJoinMs.AutoSize = true;
+            this.AutoJoinMs.Location = new System.Drawing.Point(6, 22);
+            this.AutoJoinMs.Name = "AutoJoinMs";
+            this.AutoJoinMs.Size = new System.Drawing.Size(75, 19);
+            this.AutoJoinMs.TabIndex = 0;
+            this.AutoJoinMs.Text = "Auto join";
+            this.AutoJoinMs.UseVisualStyleBackColor = true;
+            this.AutoJoinMs.CheckedChanged += new System.EventHandler(this.AutoJoinMs_CheckedChanged);
             // 
             // groupBox15
             // 
@@ -413,7 +459,7 @@ partial class ClientController
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.SupplyItemDataGrid);
-            this.groupBox7.Location = new System.Drawing.Point(6, 369);
+            this.groupBox7.Location = new System.Drawing.Point(6, 445);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(442, 212);
             this.groupBox7.TabIndex = 12;
@@ -1024,6 +1070,7 @@ partial class ClientController
             // 
             // ActionPage
             // 
+            this.ActionPage.Controls.Add(this.groupBox18);
             this.ActionPage.Controls.Add(this.groupBox14);
             this.ActionPage.Controls.Add(this.groupBox12);
             this.ActionPage.Location = new System.Drawing.Point(4, 24);
@@ -1033,12 +1080,60 @@ partial class ClientController
             this.ActionPage.Text = "Action";
             this.ActionPage.UseVisualStyleBackColor = true;
             // 
+            // groupBox18
+            // 
+            this.groupBox18.Controls.Add(this.ItemListButton);
+            this.groupBox18.Controls.Add(this.GoToNpcShopButton);
+            this.groupBox18.Controls.Add(this.NpcShopDataList);
+            this.groupBox18.Location = new System.Drawing.Point(5, 547);
+            this.groupBox18.Name = "groupBox18";
+            this.groupBox18.Size = new System.Drawing.Size(438, 223);
+            this.groupBox18.TabIndex = 14;
+            this.groupBox18.TabStop = false;
+            this.groupBox18.Text = "Shop";
+            // 
+            // ItemListButton
+            // 
+            this.ItemListButton.Location = new System.Drawing.Point(137, 186);
+            this.ItemListButton.Name = "ItemListButton";
+            this.ItemListButton.Size = new System.Drawing.Size(127, 23);
+            this.ItemListButton.TabIndex = 4;
+            this.ItemListButton.Text = "Item list";
+            this.ItemListButton.UseVisualStyleBackColor = true;
+            this.ItemListButton.Click += new System.EventHandler(this.ItemListButton_Click);
+            // 
+            // GoToNpcShopButton
+            // 
+            this.GoToNpcShopButton.Location = new System.Drawing.Point(13, 186);
+            this.GoToNpcShopButton.Name = "GoToNpcShopButton";
+            this.GoToNpcShopButton.Size = new System.Drawing.Size(118, 23);
+            this.GoToNpcShopButton.TabIndex = 3;
+            this.GoToNpcShopButton.Text = "Go to npc";
+            this.GoToNpcShopButton.UseVisualStyleBackColor = true;
+            this.GoToNpcShopButton.Click += new System.EventHandler(this.GoToNpcShopButton_Click);
+            // 
+            // NpcShopDataList
+            // 
+            this.NpcShopDataList.AllowUserToAddRows = false;
+            this.NpcShopDataList.AllowUserToDeleteRows = false;
+            this.NpcShopDataList.AllowUserToResizeRows = false;
+            this.NpcShopDataList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.NpcShopDataList.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.NpcShopDataList.BackgroundColor = System.Drawing.Color.White;
+            this.NpcShopDataList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.NpcShopDataList.Location = new System.Drawing.Point(13, 19);
+            this.NpcShopDataList.Name = "NpcShopDataList";
+            this.NpcShopDataList.ReadOnly = true;
+            this.NpcShopDataList.RowTemplate.Height = 25;
+            this.NpcShopDataList.Size = new System.Drawing.Size(411, 161);
+            this.NpcShopDataList.TabIndex = 1;
+            // 
             // groupBox14
             // 
             this.groupBox14.Controls.Add(this.tabControl2);
             this.groupBox14.Location = new System.Drawing.Point(5, 12);
             this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(438, 313);
+            this.groupBox14.Size = new System.Drawing.Size(438, 283);
             this.groupBox14.TabIndex = 13;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "Quest Management";
@@ -1053,7 +1148,7 @@ partial class ClientController
             this.tabControl2.Location = new System.Drawing.Point(6, 19);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(428, 286);
+            this.tabControl2.Size = new System.Drawing.Size(428, 259);
             this.tabControl2.TabIndex = 14;
             // 
             // NpcListTab
@@ -1064,14 +1159,14 @@ partial class ClientController
             this.NpcListTab.Location = new System.Drawing.Point(4, 24);
             this.NpcListTab.Name = "NpcListTab";
             this.NpcListTab.Padding = new System.Windows.Forms.Padding(3);
-            this.NpcListTab.Size = new System.Drawing.Size(420, 258);
+            this.NpcListTab.Size = new System.Drawing.Size(420, 231);
             this.NpcListTab.TabIndex = 0;
             this.NpcListTab.Text = "NPC";
             this.NpcListTab.UseVisualStyleBackColor = true;
             // 
             // GoToNpcButton
             // 
-            this.GoToNpcButton.Location = new System.Drawing.Point(6, 229);
+            this.GoToNpcButton.Location = new System.Drawing.Point(3, 203);
             this.GoToNpcButton.Name = "GoToNpcButton";
             this.GoToNpcButton.Size = new System.Drawing.Size(118, 23);
             this.GoToNpcButton.TabIndex = 2;
@@ -1092,7 +1187,7 @@ partial class ClientController
             this.QuestNpcList.Name = "QuestNpcList";
             this.QuestNpcList.ReadOnly = true;
             this.QuestNpcList.RowTemplate.Height = 25;
-            this.QuestNpcList.Size = new System.Drawing.Size(411, 186);
+            this.QuestNpcList.Size = new System.Drawing.Size(411, 161);
             this.QuestNpcList.TabIndex = 0;
             // 
             // LoadNpcListButton
@@ -1112,14 +1207,14 @@ partial class ClientController
             this.QuestListTab.Location = new System.Drawing.Point(4, 24);
             this.QuestListTab.Name = "QuestListTab";
             this.QuestListTab.Padding = new System.Windows.Forms.Padding(3);
-            this.QuestListTab.Size = new System.Drawing.Size(420, 258);
+            this.QuestListTab.Size = new System.Drawing.Size(420, 231);
             this.QuestListTab.TabIndex = 1;
             this.QuestListTab.Text = "Quests (0)";
             this.QuestListTab.UseVisualStyleBackColor = true;
             // 
             // TakeQuestButton
             // 
-            this.TakeQuestButton.Location = new System.Drawing.Point(6, 220);
+            this.TakeQuestButton.Location = new System.Drawing.Point(6, 202);
             this.TakeQuestButton.Name = "TakeQuestButton";
             this.TakeQuestButton.Size = new System.Drawing.Size(118, 23);
             this.TakeQuestButton.TabIndex = 4;
@@ -1140,7 +1235,7 @@ partial class ClientController
             this.QuestListViewDataGrid.Location = new System.Drawing.Point(6, 7);
             this.QuestListViewDataGrid.Name = "QuestListViewDataGrid";
             this.QuestListViewDataGrid.RowTemplate.Height = 25;
-            this.QuestListViewDataGrid.Size = new System.Drawing.Size(415, 207);
+            this.QuestListViewDataGrid.Size = new System.Drawing.Size(411, 189);
             this.QuestListViewDataGrid.TabIndex = 1;
             // 
             // ActiveQuestListTab
@@ -1149,14 +1244,14 @@ partial class ClientController
             this.ActiveQuestListTab.Controls.Add(this.RunningQuestListDataGrid);
             this.ActiveQuestListTab.Location = new System.Drawing.Point(4, 24);
             this.ActiveQuestListTab.Name = "ActiveQuestListTab";
-            this.ActiveQuestListTab.Size = new System.Drawing.Size(420, 258);
+            this.ActiveQuestListTab.Size = new System.Drawing.Size(420, 231);
             this.ActiveQuestListTab.TabIndex = 2;
             this.ActiveQuestListTab.Text = "Running (0)";
             this.ActiveQuestListTab.UseVisualStyleBackColor = true;
             // 
             // RemoveRunningQuestButton
             // 
-            this.RemoveRunningQuestButton.Location = new System.Drawing.Point(6, 220);
+            this.RemoveRunningQuestButton.Location = new System.Drawing.Point(6, 205);
             this.RemoveRunningQuestButton.Name = "RemoveRunningQuestButton";
             this.RemoveRunningQuestButton.Size = new System.Drawing.Size(118, 23);
             this.RemoveRunningQuestButton.TabIndex = 5;
@@ -1177,7 +1272,7 @@ partial class ClientController
             this.RunningQuestListDataGrid.Location = new System.Drawing.Point(6, 7);
             this.RunningQuestListDataGrid.Name = "RunningQuestListDataGrid";
             this.RunningQuestListDataGrid.RowTemplate.Height = 25;
-            this.RunningQuestListDataGrid.Size = new System.Drawing.Size(415, 207);
+            this.RunningQuestListDataGrid.Size = new System.Drawing.Size(411, 192);
             this.RunningQuestListDataGrid.TabIndex = 2;
             // 
             // CompletedTabPage
@@ -1187,14 +1282,14 @@ partial class ClientController
             this.CompletedTabPage.Controls.Add(this.CompletedQuestListDataGrid);
             this.CompletedTabPage.Location = new System.Drawing.Point(4, 24);
             this.CompletedTabPage.Name = "CompletedTabPage";
-            this.CompletedTabPage.Size = new System.Drawing.Size(420, 258);
+            this.CompletedTabPage.Size = new System.Drawing.Size(420, 231);
             this.CompletedTabPage.TabIndex = 4;
             this.CompletedTabPage.Text = "Completed (0)";
             this.CompletedTabPage.UseVisualStyleBackColor = true;
             // 
             // GiveQuestButton
             // 
-            this.GiveQuestButton.Location = new System.Drawing.Point(6, 220);
+            this.GiveQuestButton.Location = new System.Drawing.Point(6, 205);
             this.GiveQuestButton.Name = "GiveQuestButton";
             this.GiveQuestButton.Size = new System.Drawing.Size(118, 23);
             this.GiveQuestButton.TabIndex = 7;
@@ -1204,7 +1299,7 @@ partial class ClientController
             // 
             // RemoveCompletedQuestButton
             // 
-            this.RemoveCompletedQuestButton.Location = new System.Drawing.Point(303, 220);
+            this.RemoveCompletedQuestButton.Location = new System.Drawing.Point(299, 205);
             this.RemoveCompletedQuestButton.Name = "RemoveCompletedQuestButton";
             this.RemoveCompletedQuestButton.Size = new System.Drawing.Size(118, 23);
             this.RemoveCompletedQuestButton.TabIndex = 6;
@@ -1225,7 +1320,7 @@ partial class ClientController
             this.CompletedQuestListDataGrid.Location = new System.Drawing.Point(6, 7);
             this.CompletedQuestListDataGrid.Name = "CompletedQuestListDataGrid";
             this.CompletedQuestListDataGrid.RowTemplate.Height = 25;
-            this.CompletedQuestListDataGrid.Size = new System.Drawing.Size(415, 207);
+            this.CompletedQuestListDataGrid.Size = new System.Drawing.Size(411, 192);
             this.CompletedQuestListDataGrid.TabIndex = 3;
             // 
             // FinishedQuestListTab
@@ -1233,7 +1328,7 @@ partial class ClientController
             this.FinishedQuestListTab.Controls.Add(this.FinishedQuestListDataGrid);
             this.FinishedQuestListTab.Location = new System.Drawing.Point(4, 24);
             this.FinishedQuestListTab.Name = "FinishedQuestListTab";
-            this.FinishedQuestListTab.Size = new System.Drawing.Size(420, 258);
+            this.FinishedQuestListTab.Size = new System.Drawing.Size(420, 231);
             this.FinishedQuestListTab.TabIndex = 3;
             this.FinishedQuestListTab.Text = "Finished (0)";
             this.FinishedQuestListTab.UseVisualStyleBackColor = true;
@@ -1251,7 +1346,7 @@ partial class ClientController
             this.FinishedQuestListDataGrid.Location = new System.Drawing.Point(3, 3);
             this.FinishedQuestListDataGrid.Name = "FinishedQuestListDataGrid";
             this.FinishedQuestListDataGrid.RowTemplate.Height = 25;
-            this.FinishedQuestListDataGrid.Size = new System.Drawing.Size(415, 207);
+            this.FinishedQuestListDataGrid.Size = new System.Drawing.Size(411, 225);
             this.FinishedQuestListDataGrid.TabIndex = 3;
             // 
             // groupBox12
@@ -1259,16 +1354,16 @@ partial class ClientController
             this.groupBox12.Controls.Add(this.GoToNearestGateButton);
             this.groupBox12.Controls.Add(this.GateTeleportButton);
             this.groupBox12.Controls.Add(this.GateListDataGrid);
-            this.groupBox12.Location = new System.Drawing.Point(5, 331);
+            this.groupBox12.Location = new System.Drawing.Point(5, 310);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(438, 241);
+            this.groupBox12.Size = new System.Drawing.Size(438, 222);
             this.groupBox12.TabIndex = 1;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Gate Management";
             // 
             // GoToNearestGateButton
             // 
-            this.GoToNearestGateButton.Location = new System.Drawing.Point(13, 212);
+            this.GoToNearestGateButton.Location = new System.Drawing.Point(13, 189);
             this.GoToNearestGateButton.Name = "GoToNearestGateButton";
             this.GoToNearestGateButton.Size = new System.Drawing.Size(127, 23);
             this.GoToNearestGateButton.TabIndex = 4;
@@ -1278,7 +1373,7 @@ partial class ClientController
             // 
             // GateTeleportButton
             // 
-            this.GateTeleportButton.Location = new System.Drawing.Point(146, 212);
+            this.GateTeleportButton.Location = new System.Drawing.Point(146, 189);
             this.GateTeleportButton.Name = "GateTeleportButton";
             this.GateTeleportButton.Size = new System.Drawing.Size(127, 23);
             this.GateTeleportButton.TabIndex = 3;
@@ -1299,7 +1394,7 @@ partial class ClientController
             this.GateListDataGrid.Name = "GateListDataGrid";
             this.GateListDataGrid.ReadOnly = true;
             this.GateListDataGrid.RowTemplate.Height = 25;
-            this.GateListDataGrid.Size = new System.Drawing.Size(415, 184);
+            this.GateListDataGrid.Size = new System.Drawing.Size(411, 161);
             this.GateListDataGrid.TabIndex = 1;
             // 
             // ToolPage
@@ -1514,7 +1609,7 @@ partial class ClientController
             this.ExperienceProgressBar.Location = new System.Drawing.Point(6, 817);
             this.ExperienceProgressBar.Name = "ExperienceProgressBar";
             this.ExperienceProgressBar.ProgressColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.ExperienceProgressBar.Size = new System.Drawing.Size(726, 16);
+            this.ExperienceProgressBar.Size = new System.Drawing.Size(722, 16);
             this.ExperienceProgressBar.TabIndex = 2;
             this.ExperienceProgressBar.TextColor = System.Drawing.Color.Black;
             this.ExperienceProgressBar.TextFont = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -1772,11 +1867,23 @@ partial class ClientController
             this.QuestTimer.Enabled = true;
             this.QuestTimer.Tick += new System.EventHandler(this.QuestTimer_Tick);
             // 
+            // MSConvertExperience
+            // 
+            this.MSConvertExperience.Enabled = true;
+            this.MSConvertExperience.Interval = 60000;
+            this.MSConvertExperience.Tick += new System.EventHandler(this.MSConvertExperience_Tick);
+            // 
+            // MSAutoEvent
+            // 
+            this.MSAutoEvent.Enabled = true;
+            this.MSAutoEvent.Interval = 1000;
+            this.MSAutoEvent.Tick += new System.EventHandler(this.MSAutoEvent_Tick);
+            // 
             // ClientController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(732, 836);
+            this.ClientSize = new System.Drawing.Size(733, 836);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox11);
             this.Controls.Add(this.groupBox1);
@@ -1798,6 +1905,8 @@ partial class ClientController
             this.MapGroupBox.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.MainPage.ResumeLayout(false);
+            this.groupBox19.ResumeLayout(false);
+            this.groupBox19.PerformLayout();
             this.groupBox15.ResumeLayout(false);
             this.groupBox15.PerformLayout();
             this.groupBox13.ResumeLayout(false);
@@ -1831,6 +1940,8 @@ partial class ClientController
             this.groupBox8.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PartyListDataGrid)).EndInit();
             this.ActionPage.ResumeLayout(false);
+            this.groupBox18.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.NpcShopDataList)).EndInit();
             this.groupBox14.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.NpcListTab.ResumeLayout(false);
@@ -1998,4 +2109,13 @@ partial class ClientController
     private CheckBox DisableSkillCasting;
     private NumericUpDown TargetSearchRange;
     private Label label9;
+    private GroupBox groupBox18;
+    private Button ItemListButton;
+    private Button GoToNpcShopButton;
+    private DataGridView NpcShopDataList;
+    private GroupBox groupBox19;
+    private CheckBox ConvertMsToExp;
+    private CheckBox AutoJoinMs;
+    private System.Windows.Forms.Timer MSConvertExperience;
+    private System.Windows.Forms.Timer MSAutoEvent;
 }

@@ -495,7 +495,7 @@ public class CharacterHandler : IDisposable
         character.KnightsRank = msg.Read<byte>();
         character.PersonalRank = msg.Read<byte>();
 
-        var loop = character.LunarWarDressUp ? 9 : 15;
+        var loop = MySelf.LunarWarDressUp ? 9 : 15;
 
         for (byte idx = 0; idx < loop; idx++)
         {
@@ -634,7 +634,7 @@ public class CharacterHandler : IDisposable
         var rand = new Random();
 
         var skill = MySelf.SelectedSkillList
-            .FindAll(x =>
+            .FirstOrDefault(x =>
             {
                 if (x == null)
                     return false;
@@ -649,24 +649,13 @@ public class CharacterHandler : IDisposable
                     return false;
 
                 return true;
-            })
-            .Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
-            .Take(1)
-            .FirstOrDefault();
+            });
+            //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
+            //.Take(1)
+            //.FirstOrDefault();
 
         if (skill == null)
             return;
-
-        if (skill.Type1 == 1 || skill.Type1 == 3)
-        {
-            float distance = Vector3.Distance(MySelf.GetPosition(), target.GetPosition());
-
-            if (distance <= 2.0f && Environment.TickCount - BasicAttackLastTime > 1100)
-            {
-                Client.Session.SendAsync(MessageBuilder.MsgSend_Attack(MySelf.TargetId, 1.11f, 1.0f)).ConfigureAwait(false);
-                BasicAttackLastTime = Environment.TickCount;
-            }
-        }
 
         AttackQueue.Enqueue(skill);
     }
@@ -675,8 +664,8 @@ public class CharacterHandler : IDisposable
     {
         var rand = new Random();
 
-        var selectedSkill = MySelf.SelectedSkillList
-            .FindAll(x =>
+        var skill = MySelf.SelectedSkillList
+            .FirstOrDefault(x =>
             {
                 if (x == null)
                     return false;
@@ -694,13 +683,13 @@ public class CharacterHandler : IDisposable
                     return false;
 
                 return true;
-            })
-            .Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
-            .Take(1)
-            .FirstOrDefault();
+            });
+            //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
+            //.Take(1)
+            //.FirstOrDefault();
 
-        if (selectedSkill != null)
-            SkillQueue.Enqueue(selectedSkill);
+        if (skill != null)
+            SkillQueue.Enqueue(skill);
     }
 
     private async Task ProcessAttackQueue()
@@ -711,14 +700,25 @@ public class CharacterHandler : IDisposable
         if (AttackQueueNextProcessTime >= Environment.TickCount)
             return;
 
-        var skill = AttackQueue.Peek();
+        var skill = AttackQueue.Dequeue();
 
         var target = GetTarget();
 
         if (target != null && !target.IsDead())
-            await UseSkill(skill, target);
+        {
+            if (skill.Type1 == 1 || skill.Type1 == 3)
+            {
+                float distance = Vector3.Distance(MySelf.GetPosition(), target.GetPosition());
 
-        AttackQueue.Dequeue();
+                if (distance <= 2.0f && Environment.TickCount - BasicAttackLastTime > 1100)
+                {
+                    await Client.Session.SendAsync(MessageBuilder.MsgSend_Attack(MySelf.TargetId, 1.11f, 1.0f));
+                    BasicAttackLastTime = Environment.TickCount;
+                }
+            }
+
+            await UseSkill(skill, target);
+        }
 
         AttackQueueNextProcessTime = Environment.TickCount + (int)Controller.GetControl("AttackSpeed", 1000);
     }
@@ -731,7 +731,7 @@ public class CharacterHandler : IDisposable
         //if (SkillQueueProcessTime > Environment.TickCount)
         //    return Task.CompletedTask;
 
-        var skill = SkillQueue.Peek();
+        var skill = SkillQueue.Dequeue();
 
         var target = GetTarget(skill.GetTarget());
 
@@ -743,7 +743,7 @@ public class CharacterHandler : IDisposable
         else
             await UseSkill(skill, MySelf);
 
-        SkillQueue.Dequeue();
+        //SkillQueue.Dequeue();
 
         //SkillQueueProcessTime = Environment.TickCount + (skill.CastTime * 100);
 
@@ -757,6 +757,8 @@ public class CharacterHandler : IDisposable
     private async Task UseSkill(Skill skill, Character target)
     {
         if (target == null || target.IsDead()) return;
+
+        skill.UpdateSkillUseTime(Environment.TickCount);
 
         switch (skill.TargetType)
         {
@@ -785,7 +787,9 @@ public class CharacterHandler : IDisposable
                         }
 
                         if ((skill.Extension.ArrowCount == 0 && skill.RequiredFlyEffect != 0) || skill.Extension.ArrowCount == 1)
+                        {
                             await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f)));
+                        }
 
                         if (skill.Extension.ArrowCount > 1)
                         {
@@ -794,11 +798,13 @@ public class CharacterHandler : IDisposable
                             for (ushort i = 1; i < skill.Extension.ArrowCount + 1; i++)
                             {
                                 await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, i));
-                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, target.Id, target.GetPosition(), i));
+                                //await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), i));
                             }
                         }
                         else
+                        {
                             await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id));
+                        }
                     });
                 }
                 break;
@@ -829,7 +835,7 @@ public class CharacterHandler : IDisposable
                 break;
         }
 
-        skill.UpdateSkillUseTime(Environment.TickCount);
+        //skill.UpdateSkillUseTime(Environment.TickCount);
 
     }
 
@@ -1073,21 +1079,10 @@ public class CharacterHandler : IDisposable
             if (targetPosition == -1)
                 return;
 
-            var currentPositionData = MySelf.Inventory[currentPosition];
-            //var targetPositionData = ItemArray[targetPosition];
-
             MySelf.Inventory[targetPosition].Reset();
 
-            MySelf.Inventory[targetPosition].ItemID = currentPositionData.ItemID;
-            MySelf.Inventory[targetPosition].Count = currentPositionData.Count;
-            MySelf.Inventory[targetPosition].Table = TableHandler.GetItemById((int)itemId);
-
-            var supplyFlag = SQLiteHandler.Table<SupplyFlag>().SingleOrDefault(x => x.ItemId == currentPositionData.ItemID);
-
-            if (supplyFlag != null)
-                MySelf.Inventory[targetPosition].SupplyFlag = (byte)supplyFlag.Flag;
-
-            currentPositionData.Reset();
+            MySelf.Inventory[currentPosition].CopyTo(MySelf.Inventory[targetPosition]);
+            MySelf.Inventory[currentPosition].Reset();
 
             Client.Session.SendAsync(MessageBuilder.MsgSend_InventoryItemMoveProcess(1, 1, itemId, (byte)(currentPosition - 14), (byte)targetPosition)).ConfigureAwait(false);
             Client.Session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
@@ -1202,20 +1197,35 @@ public class CharacterHandler : IDisposable
 
         if (slot == -1) return;
 
-        var itemSellInfo = TableHandler.GetItemSellByGroupId(itemSellingGroup);
+        var shopItemList = TableHandler.GetItemSellList().FindAll(x => x.SellingGroup == itemSellingGroup);
 
-        if (itemSellInfo == null) return;
+        if (shopItemList == null) return;
 
-        var shopPosition = itemSellInfo.ItemList.FindIndex(x => x == ItemId);
+        Dictionary<int, List<int>> shopItemListDict = new();
 
-        Client.Session.SendAsync(MessageBuilder.MsgSend_ItemTradeBuy(
-            npcId,
-            (uint)itemSellingGroup,
-            (uint)ItemId,
-            (byte)(slot - 14),
-            (short)fixedItemCount,
-            (byte)shopPosition
-            )).ConfigureAwait(false);
+        byte shopPage = 0;
+
+        shopItemList.ForEach(x =>
+        {
+            shopItemListDict.Add(shopPage++, x.ItemList);
+        });
+
+        foreach (KeyValuePair<int, List<int>> shopItem in shopItemListDict)
+        {
+            if (!shopItem.Value.Any(x => x == ItemId)) continue;
+
+            var shopItemPosition = shopItem.Value.FindIndex(x => x == ItemId);
+
+            Client.Session.SendAsync(MessageBuilder.MsgSend_ItemTradeBuy(
+                npcId,
+                (uint)itemSellingGroup,
+                (uint)ItemId,
+                (byte)(slot - 14),
+                (short)fixedItemCount,
+                (byte)shopItem.Key,
+                (byte)shopItemPosition
+                )).ConfigureAwait(false);
+        }
     }
 
     public void ItemSell(short npcId, int npcGroup, int ItemId, short itemCount)
@@ -1626,7 +1636,7 @@ public class CharacterHandler : IDisposable
         if (movePosition.Equals(Vector3.Zero))
             return Task.CompletedTask;
 
-        if((Environment.TickCount - MySelf.MovePunishTime) <= 1500)
+        if((Environment.TickCount - MySelf.MovePunishTime) <= 1000)
             return Task.CompletedTask;
 
         if (Controller.GetControl("SpeedhackCheckbox", false))
@@ -1634,18 +1644,18 @@ public class CharacterHandler : IDisposable
             if ((Environment.TickCount - MySelf.MoveSendTime) <= 300)
                 return Task.CompletedTask;
 
-            var moveTowards = MoveTowards(startPosition, movePosition, 6.0f);
+            var moveTowards = MoveTowards(startPosition, movePosition);
 
             if (startPosition == moveTowards)
                 MySelf.SetMovePosition(Vector3.Zero);
             else
-                SendMove(startPosition, moveTowards, 45, 0);
+                SendMove(startPosition, moveTowards, MySelf.Speed, 0);
 
             MySelf.SetPosition(moveTowards);
         }
         else
         {
-            if ((Environment.TickCount - MySelf.MoveSendTime) <= 1500)
+            if ((Environment.TickCount - MySelf.MoveSendTime) <= 1750)
                 return Task.CompletedTask;
 
             var moveTowards = MoveTowards(startPosition, movePosition);
@@ -1903,7 +1913,13 @@ public class CharacterHandler : IDisposable
 
     public void NpcEvent(short npcId)
     {
+        MySelf.NpcEventId = npcId;
         Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(npcId)).ConfigureAwait(false);
+    }
+
+    public void Event(byte opCode, uint itemId)
+    {
+        Client.Session.SendAsync(MessageBuilder.MsgSend_Event(opCode, itemId)).ConfigureAwait(false);
     }
 
     public void ProcessSelectMessage(byte opcode, int questId)

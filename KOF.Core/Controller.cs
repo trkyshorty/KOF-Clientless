@@ -60,7 +60,7 @@ namespace KOF.Core
 
         public string GetControl(string name, string defaultValue = "")
         {
-            var control = ControlList.Where(x => x.Name == name)?.FirstOrDefault();
+            var control = ControlList.FirstOrDefault(x => x.Name == name);
 
             if (control == null)
             {
