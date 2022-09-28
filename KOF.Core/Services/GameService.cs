@@ -1769,14 +1769,9 @@ public partial class GameService
 
         switch (opcode)
         {
-            case 9: //Lunar War Dress Up
+            case 9:
                 {
-                    byte enable = msg.Read<byte>();
-
-                    if(enable == 1)
-                        session.Client.Character.LunarWarDressUp = true;
-                    else
-                        session.Client.Character.LunarWarDressUp = false;
+                    session.Client.Character.LunarWarDressUp = msg.Read<bool>();
                 }
                 break;
         }
