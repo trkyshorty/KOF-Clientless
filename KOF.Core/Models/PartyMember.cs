@@ -49,6 +49,7 @@ public class PartyMember
 
     public static PartyMember FromMessage(Message msg) => new()
     {
+        VoiceState = msg.Read<short>(),
         MemberId = msg.Read<short>(),
         Index = msg.Read<byte>(),
         Name = msg.Read(true, "gb2312"),
@@ -61,7 +62,12 @@ public class PartyMember
         NationId = msg.Read<byte>(),
         LeaderRank = msg.Read<byte>()
 
+
+
     };
+
+    [Browsable(false)]
+    public short VoiceState { get; set; }
 
     public override string ToString() => Name!;
 }
