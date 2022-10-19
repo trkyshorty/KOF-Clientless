@@ -806,6 +806,8 @@ public class CharacterHandler : IDisposable
                             await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id));
                         }
                     });
+
+                    
                 }
                 break;
 
