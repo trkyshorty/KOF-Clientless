@@ -28,7 +28,7 @@ public class Skill
     public SkillExtension Extension { get; set; } = default!;
     public long SkillUseTime { get; protected set; }
     public long SkillNextUseTime { get; protected set; }
-    public short TargetId { get; protected set; }
+    public int TargetId { get; protected set; }
 
     public Skill(int id, string name, int selfAni1,int selfEffect1, int selfPart1, int selfEffect2, int selfPart2, int requiredFlyEffect, int targetType, int point, int classBaseId, int mana, int reCastTime, int useItem, int castTime, int cooldown, int type1, int type2, int maxRange, int baseId)
     {
@@ -73,12 +73,12 @@ public class Skill
         SkillUseTime = skillUseTime;
     }
 
-    public short GetTarget()
+    public int GetTarget()
     {
         return TargetId;
     }
 
-    public void SetTarget(short targetId)
+    public void SetTarget(int targetId)
     {
         TargetId = targetId;
     }

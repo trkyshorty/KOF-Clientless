@@ -10,7 +10,7 @@ namespace KOF.Core.Models;
 public class Character
 {
     [Browsable(false)]
-    public short Id { get; set; }
+    public int Id { get; set; }
 
     public string Name { get; set; } = "";
 
@@ -282,7 +282,7 @@ public class Character
     public long MovePunishTime { get; set; }
 
     [Browsable(false)]
-    public short TargetId { get; set; }
+    public int TargetId { get; set; }
 
     [Browsable(false)]
     public long TargetHpUpdateTime { get; set; }
@@ -321,10 +321,10 @@ public class Character
     public byte State { get; set; } = (byte)StateAction.BASIC;
 
     [Browsable(false)]
-    public short TradeRequestedUserId { get; set; }
+    public int TradeRequestedUserId { get; set; }
 
     [Browsable(false)]
-    public short TradedUserId { get; set; }
+    public int TradedUserId { get; set; }
 
     [Browsable(false)]
     public bool IsTrading { get { return TradedUserId != 0 || TradeRequestedUserId != 0; } }
@@ -338,7 +338,7 @@ public class Character
     public byte NationId { get; set; }
 
     [Browsable(false)]
-    public short NpcEventId { get; set; }
+    public int NpcEventId { get; set; }
 
     [Browsable(false)]
     public int NpcEventGroup { get; set; }
@@ -684,7 +684,7 @@ public class Character
         return new((float)Math.Round(WillX, 1), (float)Math.Round(WillY, 1), (float)Math.Round(WillZ, 1));
     }
 
-    public short GetTargetId()
+    public int GetTargetId()
     {
         return TargetId;
     }
