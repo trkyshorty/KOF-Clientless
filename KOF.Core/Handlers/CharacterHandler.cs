@@ -172,7 +172,7 @@ public class CharacterHandler : IDisposable
     {
         Client = client;
 
-        MySelf.Id = msg.Read<short>();
+        MySelf.Id = msg.Read<int>();
         MySelf.Name = msg.Read(false, "gb2312");
 
         MySelf.X = (msg.Read<ushort>() / 10.0f);
@@ -383,9 +383,11 @@ public class CharacterHandler : IDisposable
         var character = new Character();
 
         if (isGroup)
+        {
             _ = msg.Read<byte>();
+        }
 
-        character.Id = msg.Read<short>();
+        character.Id = msg.Read<int>();
 
         character.Name = msg.Read(false, "gb2312");
         character.NationId = msg.Read<byte>();
@@ -515,7 +517,7 @@ public class CharacterHandler : IDisposable
 
         character.SetPosition(character.GetPosition());
 
-        byte[] tmp = new byte[14]; //TODO : eksikleri tamamla
+        byte[] tmp = new byte[16]; //TODO : eksikleri tamamla
         msg.Read(tmp.AsSpan());
 
         return character;
@@ -525,7 +527,7 @@ public class CharacterHandler : IDisposable
     {
         var character = new Character();
 
-        character.Id = msg.Read<short>();
+        character.Id = msg.Read<int>();
         character.ProtoId = msg.Read<ushort>();
         character.MonsterOrNpc = msg.Read<byte>();
         character.PictureId = msg.Read<ushort>();
@@ -593,7 +595,7 @@ public class CharacterHandler : IDisposable
         }
     }
 
-    public void SelectTarget(short targetId)
+    public void SelectTarget(int targetId)
     {
         if (MySelf.TargetId == targetId)
             return;
@@ -604,7 +606,7 @@ public class CharacterHandler : IDisposable
             UpdateTargetHp(MySelf.TargetId, 1);
     }
 
-    public Character GetTarget(short targetId = -1)
+    public Character GetTarget(int targetId = -1)
     {
         if (targetId == -1)
             targetId = MySelf.GetTargetId();
@@ -615,7 +617,7 @@ public class CharacterHandler : IDisposable
             return GetPlayerList().FirstOrDefault(x => x.Id == targetId)!;
     }
 
-    public void UpdateTargetHp(short targetId, byte init = 0)
+    public void UpdateTargetHp(int targetId, byte init = 0)
     {
         Client.Session.SendAsync(MessageBuilder.MsgSend_TargetHealthRequest(targetId, init)).ConfigureAwait(false);
         MySelf.TargetHpUpdateTime = Stopwatch.GetTimestamp();
@@ -841,21 +843,21 @@ public class CharacterHandler : IDisposable
 
     }
 
-    public void SkillCastingProcess(int skillId, short sourceId, short targetId)
+    public void SkillCastingProcess(int skillId, int sourceId, int targetId)
     {
         var skill = MySelf.SkillList.FirstOrDefault(x => x.Id == skillId)!;
 
         if (skill == null) return;
     }
 
-    public void SkillFlyingProcess(int skillId, short sourceId, short targetId)
+    public void SkillFlyingProcess(int skillId, int sourceId, int targetId)
     {
         var skill = MySelf.SkillList.FirstOrDefault(x => x.Id == skillId)!;
 
         if (skill == null) return;
     }
 
-    public void SkillEffectingProcess(int skillId, short sourceId, short targetId)
+    public void SkillEffectingProcess(int skillId, int sourceId, int targetId)
     {
         var skill = MySelf.SkillList.FirstOrDefault(x => x.Id == skillId)!;
 
@@ -925,7 +927,7 @@ public class CharacterHandler : IDisposable
             MySelf.Speed = 45;
     }
 
-    public void SkillFailedProcess(int skillId, short sourceId, short targetId)
+    public void SkillFailedProcess(int skillId, int sourceId, int targetId)
     {
         if (MySelf.Id == sourceId)
         {
@@ -1134,19 +1136,19 @@ public class CharacterHandler : IDisposable
         Client.Session.SendAsync(MessageBuilder.MsgSend_PartyDestroy()).ConfigureAwait(false);
     }
 
-    public void PartyRemove(short memberId)
+    public void PartyRemove(int memberId)
     {
         Client.Session.SendAsync(MessageBuilder.MsgSend_PartyRemove(memberId)).ConfigureAwait(false);
     }
-    public void PartyPromoteLeader(short memberId)
+    public void PartyPromoteLeader(int memberId)
     {
         if (!MySelf.Party.IsInParty()) return;
         if (MySelf.Party.Leader.Name != MySelf.Name) return;
-
+        
         Client.Session.SendAsync(MessageBuilder.MsgSend_PartyPromoteLeader(memberId)).ConfigureAwait(false);
     }
 
-    public void ItemBundleDrop(short npcId, uint bundleId, byte itemCount)
+    public void ItemBundleDrop(int npcId, uint bundleId, byte itemCount)
     {
         if (Controller != null)
         {
@@ -1176,7 +1178,7 @@ public class CharacterHandler : IDisposable
         Client.Session.SendAsync(MessageBuilder.MsgSend_RequestItemBundleGet((int)bundleId, (int)itemId, index)).ConfigureAwait(false);
     }
 
-    public void ItemBuy(short npcId, int itemSellingGroup, int ItemId, short itemCount)
+    public void ItemBuy(int npcId, int itemSellingGroup, int ItemId, short itemCount)
     {
         var itemExist = MySelf.Inventory.FirstOrDefault(x => x.ItemID == ItemId);
 
@@ -1230,7 +1232,7 @@ public class CharacterHandler : IDisposable
         }
     }
 
-    public void ItemSell(short npcId, int npcGroup, int ItemId, short itemCount)
+    public void ItemSell(int npcId, int npcGroup, int ItemId, short itemCount)
     {
         var item = MySelf.Inventory.FirstOrDefault(x => x.ItemID == ItemId)!;
 
@@ -1245,7 +1247,7 @@ public class CharacterHandler : IDisposable
             )).ConfigureAwait(false);
     }
 
-    public void ItemRepair(byte direction, short npcId, Inventory item)
+    public void ItemRepair(byte direction, int npcId, Inventory item)
     {
         Client.Session.SendAsync(MessageBuilder.MsgSend_ItemRepairRequest(
             direction,
@@ -1813,13 +1815,13 @@ public class CharacterHandler : IDisposable
         Client.Session.SendAsync(MessageBuilder.MsgSend_ObjectEvent(eventId, objectId)).ConfigureAwait(false);
     }
 
-    public void ExhangeRequest(short targetId)
+    public void ExhangeRequest(int targetId)
     {
         MySelf.TradeRequestedUserId = MySelf.Id;
         Client.Session.SendAsync(MessageBuilder.MsgSend_ExhangeRequest(targetId)).ConfigureAwait(false);
     }
 
-    public void ExhangeRequestProcess(short targetId)
+    public void ExhangeRequestProcess(int targetId)
     {
         if (Controller == null)
             return;
@@ -1913,7 +1915,7 @@ public class CharacterHandler : IDisposable
         Client.Session.SendAsync(MessageBuilder.MsgSend_SelectMenu(menuIndex, luaName, accept)).ConfigureAwait(false);
     }
 
-    public void NpcEvent(short npcId)
+    public void NpcEvent(int npcId)
     {
         MySelf.NpcEventId = npcId;
         Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(npcId)).ConfigureAwait(false);

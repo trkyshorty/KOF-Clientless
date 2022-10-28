@@ -13,7 +13,7 @@ public class RouteData
 {
     public RouteActionType Action { get; set; }
 
-    public short TargetId { get; set; }
+    public int TargetId { get; set; }
 
     public float X { get; set; }
 
@@ -25,7 +25,7 @@ public class RouteData
 
     public short ObjectId { get; set; }
 
-    public short NpcId { get; set; }
+    public int NpcId { get; set; }
 
     public bool NpcEventSend { get; set; }
 

@@ -277,7 +277,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_NpcEvent(short npcId)
+    public static Message MsgSend_NpcEvent(int npcId)
     {
         var msg = new Message(MessageID.WIZ_NPC_EVENT);
 
@@ -381,7 +381,7 @@ public class MessageBuilder
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write<uint>(2);
+        msg.Write(-3);
 
         return msg;
     }
@@ -427,7 +427,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_PartyRemove(short socketId)
+    public static Message MsgSend_PartyRemove(int socketId)
     {
         var msg = new Message(MessageID.WIZ_PARTY);
 
@@ -438,7 +438,7 @@ public class MessageBuilder
     }
 
 
-    public static Message MsgSend_PartyPromoteLeader(short socketId)
+    public static Message MsgSend_PartyPromoteLeader(int socketId)
     {
         var msg = new Message(MessageID.WIZ_PARTY);
 
@@ -457,7 +457,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_TargetHealthRequest(short targetId, byte byUpdateImmediately)
+    public static Message MsgSend_TargetHealthRequest(int targetId, byte byUpdateImmediately)
     {
         var msg = new Message(MessageID.WIZ_TARGET_HP);
 
@@ -467,7 +467,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_UserRequest(ushort count, short[] playerIds)
+    public static Message MsgSend_UserRequest(ushort count, int[] playerIds)
     {
         var msg = new Message(MessageID.WIZ_REQ_USERIN);
 
@@ -479,7 +479,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_NpcRequest(ushort count, short[] npcIds)
+    public static Message MsgSend_NpcRequest(ushort count, int[] npcIds)
     {
         var msg = new Message(MessageID.WIZ_REQ_NPCIN);
 
@@ -491,7 +491,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_StartSkillCastingAtTargetPacket(Skill skill, short socketId, short targetId)
+    public static Message MsgSend_StartSkillCastingAtTargetPacket(Skill skill, int socketId, int targetId)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -500,46 +500,46 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
-        msg.Write<short>(0);
+        msg.Write(0);
 
-        msg.Write<short>((short)skill.CastTime);
+        msg.Write((short)skill.CastTime);
 
         return msg;
     }
 
-    public static Message MsgSend_StartSkillCastingAtPosPacket(Skill skill, short socketId, Vector3 targetPosition)
+    public static Message MsgSend_StartSkillCastingAtPosPacket(Skill skill, int socketId, Vector3 targetPosition)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_CASTING);
         msg.Write(skill.Id);
         msg.Write(socketId);
-        msg.Write<short>(-1);
+        msg.Write(-1);
 
-        msg.Write((short)targetPosition.X);
-        msg.Write((short)targetPosition.Z);
-        msg.Write((short)targetPosition.Y);
+        msg.Write((int)targetPosition.X);
+        msg.Write((int)targetPosition.Z);
+        msg.Write((int)targetPosition.Y);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
-        msg.Write<short>(0);
+        msg.Write(0);
 
-        msg.Write<short>((short)skill.CastTime);
+        msg.Write((short)skill.CastTime);
 
         return msg;
     }
 
-    public static Message MsgSend_StartFlyingAtTarget(Skill skill, short socketId, short targetId, Vector3 targetPosition, ushort arrowIndex = 0)
+    public static Message MsgSend_StartFlyingAtTarget(Skill skill, int socketId, int targetId, Vector3 targetPosition, ushort arrowIndex = 0)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -548,19 +548,19 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write((short)targetPosition.X);
-        msg.Write((short)targetPosition.Z);
-        msg.Write((short)targetPosition.Y);
+        msg.Write((int)targetPosition.X);
+        msg.Write((int)targetPosition.Z);
+        msg.Write((int)targetPosition.Y);
 
         msg.Write(arrowIndex);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
 
         return msg;
     }
 
-    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, short socketId, short targetId, ushort arrowIndex = 0)
+    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, int socketId, int targetId, ushort arrowIndex = 0)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -571,49 +571,48 @@ public class MessageBuilder
 
         if(skill.CastTime == 0)
         {
-            msg.Write<short>(1);
-            msg.Write<short>(1);
-            msg.Write<short>(0);
+            msg.Write(1);
+            msg.Write(1);
+            msg.Write(0);
         }
         else
         {
-            msg.Write<short>(0);
-            msg.Write<short>(0);
-            msg.Write<short>(0);
+            msg.Write(0);
+            msg.Write(0);
+            msg.Write(0);
         }
 
         msg.Write(arrowIndex);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
 
         return msg;
     }
 
-    public static Message MsgSend_StartSkillMagicAtPosPacket(Skill skill, short socketId, Vector3 targetPosition)
+    public static Message MsgSend_StartSkillMagicAtPosPacket(Skill skill, int socketId, Vector3 targetPosition)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_EFFECTING);
         msg.Write(skill.Id);
         msg.Write(socketId);
-        msg.Write<short>(-1);
+        msg.Write(-1);
 
-        msg.Write((short)targetPosition.X);
-        msg.Write((short)targetPosition.Z);
-        msg.Write((short)targetPosition.Y);
+        msg.Write((int)targetPosition.X);
+        msg.Write((int)targetPosition.Z);
+        msg.Write((int)targetPosition.Y);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
         return msg;
     }
 
-    public static Message MsgSend_StartMagicAtTarget(Skill skill, short socketId, short targetId, Vector3 targetPosition, ushort arrowIndex = 0)
+    public static Message MsgSend_StartMagicAtTarget(Skill skill, int socketId, int targetId, Vector3 targetPosition, ushort arrowIndex = 0)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -622,24 +621,22 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write((short)targetPosition.X);
-        msg.Write((short)targetPosition.Z);
-        msg.Write((short)targetPosition.Y);
+        msg.Write((int)targetPosition.X);
+        msg.Write((int)targetPosition.Z);
+        msg.Write((int)targetPosition.Y);
 
         msg.Write<short>(-101);
 
         msg.Write(arrowIndex);
 
-        msg.Write<short>(0);
-
-        msg.Write<short>(0);
-
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
         return msg;
     }
-
-    public static Message MsgSend_CancelSkillPacket(uint skillId, short socketId)
+    
+    public static Message MsgSend_CancelSkillPacket(uint skillId, int socketId)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -648,24 +645,23 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(socketId);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
-        msg.Write<short>(0);
-        msg.Write<short>(0);
-        msg.Write<short>(0);
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
 
         return msg;
     }
-
-    public static Message MsgSend_CancelSkillPacket(Skill skill, short socketId)
+    
+    public static Message MsgSend_CancelSkillPacket(Skill skill, int socketId)
     {
-
         return MsgSend_CancelSkillPacket((uint)skill.Id, socketId);
     }
 
-    public static Message MsgSend_Attack(short targetId, float interval = 1f, float distance = 2f)
+    public static Message MsgSend_Attack(int targetId, float interval = 1f, float distance = 2f)
     {
         var msg = new Message(MessageID.WIZ_ATTACK);
 
@@ -682,7 +678,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ObjectEvent(short eventId, short npcId)
+    public static Message MsgSend_ObjectEvent(short eventId, int npcId)
     {
         var msg = new Message(MessageID.WIZ_OBJECT_EVENT);
 
@@ -766,7 +762,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ItemRepairRequest(byte direction, byte itemPosition, short npcId, uint itemId)
+    public static Message MsgSend_ItemRepairRequest(byte direction, byte itemPosition, int npcId, uint itemId)
     {
         /*
          -----------------
@@ -787,7 +783,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseGetIn(ushort npcId, uint itemId, byte page, byte currentPosition, byte targetSource, uint quantity)
+    public static Message MsgSend_WarehouseGetIn(int npcId, uint itemId, byte page, byte currentPosition, byte targetSource, uint quantity)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -802,7 +798,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseGetOut(ushort npcId, uint itemId, byte page, byte currentPosition, byte targetSource, uint quantity)
+    public static Message MsgSend_WarehouseGetOut(int npcId, uint itemId, byte page, byte currentPosition, byte targetSource, uint quantity)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -817,7 +813,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseToWarehouse(ushort npcId, uint itemId, byte page, byte currentPosition, byte targetSource)
+    public static Message MsgSend_WarehouseToWarehouse(int npcId, uint itemId, byte page, byte currentPosition, byte targetSource)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -831,7 +827,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseInventoryToInventory(ushort npcId, uint itemId, byte page, byte currentPosition, byte targetSource)
+    public static Message MsgSend_WarehouseInventoryToInventory(int npcId, uint itemId, byte page, byte currentPosition, byte targetSource)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -845,7 +841,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseGetInGold(ushort npcId, uint quantity)
+    public static Message MsgSend_WarehouseGetInGold(int npcId, uint quantity)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -860,7 +856,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_WarehouseGetOutGold(ushort npcId, uint quantity)
+    public static Message MsgSend_WarehouseGetOutGold(int npcId, uint quantity)
     {
         var msg = new Message(MessageID.WIZ_WAREHOUSE);
 
@@ -875,7 +871,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ExhangeRequest(short playerId, byte near = 1)
+    public static Message MsgSend_ExhangeRequest(int playerId, byte near = 1)
     {
         var msg = new Message(MessageID.WIZ_EXCHANGE);
 
@@ -938,7 +934,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ItemTradeBuy(short npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count, byte shopPage, byte shopItemPosition)
+    public static Message MsgSend_ItemTradeBuy(int npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count, byte shopPage, byte shopItemPosition)
     {
         var msg = new Message(MessageID.WIZ_ITEM_TRADE);
 
@@ -957,7 +953,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_ItemTradeSell(short npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count)
+    public static Message MsgSend_ItemTradeSell(int npcId, uint sellingGroup, uint itemId, byte inventoryItemPosition, short count)
     {
         var msg = new Message(MessageID.WIZ_ITEM_TRADE);
 
@@ -1056,7 +1052,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_QuestInit(short socketId)
+    public static Message MsgSend_QuestInit(int socketId)
     {
         var msg = new Message(MessageID.WIZ_QUEST);
 

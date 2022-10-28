@@ -6,7 +6,7 @@ namespace KOF.Core.Models;
 public class PartyMember
 {
     [Browsable(false)]
-    public short MemberId { get; set; }
+    public int MemberId { get; set; }
     [Browsable(false)]
     public byte Index { get; set; }
     public string Name { get; set; } = "";
@@ -49,8 +49,8 @@ public class PartyMember
 
     public static PartyMember FromMessage(Message msg) => new()
     {
-        VoiceState = msg.Read<short>(),
-        MemberId = msg.Read<short>(),
+        Unknown1 = msg.Read<short>(),
+        MemberId = msg.Read<int>(),
         Index = msg.Read<byte>(),
         Name = msg.Read(true, "gb2312"),
         MaxHealth = msg.Read<ushort>(),
@@ -67,7 +67,7 @@ public class PartyMember
     };
 
     [Browsable(false)]
-    public short VoiceState { get; set; }
+    public short Unknown1 { get; set; }
 
     public override string ToString() => Name!;
 }

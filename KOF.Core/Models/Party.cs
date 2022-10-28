@@ -57,7 +57,7 @@ public class Party
     /// </summary>
     /// <param name="memberId">The member identifier.</param>
     /// <returns></returns>
-    public PartyMember GetMemberById(short memberId)
+    public PartyMember GetMemberById(int memberId)
     {
         return Members.FirstOrDefault(m => m.MemberId == memberId)!;
     }
