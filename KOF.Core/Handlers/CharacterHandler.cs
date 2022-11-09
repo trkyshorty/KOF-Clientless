@@ -2100,7 +2100,7 @@ public class CharacterHandler : IDisposable
         {
             var item = MySelf.Inventory[i];
 
-            if (item.ItemID == 0)
+            if (item != null && item.ItemID == 0)
                 count++;
         }
 

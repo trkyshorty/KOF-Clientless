@@ -99,7 +99,7 @@ public partial class LoginService
             case 0:
             case 1:
             case 2:
-                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "2c516309"));
+                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "48e63421"));
 
             case 17: // not signed in -> last login check.
                 return session.DisconnectAsync();

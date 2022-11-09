@@ -283,7 +283,7 @@ public class MessageBuilder
 
         msg.Write<byte>(1);
         msg.Write(npcId);
-        msg.Write(-1);
+        msg.Write(-1); //Quest ID
 
         return msg;
     }
@@ -381,7 +381,7 @@ public class MessageBuilder
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write(-3);
+        msg.Write(3);
 
         return msg;
     }
