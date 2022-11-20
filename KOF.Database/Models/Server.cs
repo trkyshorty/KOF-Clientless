@@ -23,4 +23,7 @@ public class Server
 
     [Column("AgentPort")]
     public ushort AgentPort { get; set; } = 15001;
+
+    [Column("Platform")]
+    public long Platform { get; set; }
 }

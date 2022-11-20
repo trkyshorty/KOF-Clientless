@@ -602,7 +602,7 @@ public class CharacterHandler : IDisposable
 
         MySelf.TargetId = targetId;
 
-        if(MySelf.TargetId != -1)
+        if (MySelf.TargetId != -1)
             UpdateTargetHp(MySelf.TargetId, 1);
     }
 
@@ -652,9 +652,9 @@ public class CharacterHandler : IDisposable
 
                 return true;
             });
-            //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
-            //.Take(1)
-            //.FirstOrDefault();
+        //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
+        //.Take(1)
+        //.FirstOrDefault();
 
         if (skill == null)
             return;
@@ -686,9 +686,9 @@ public class CharacterHandler : IDisposable
 
                 return true;
             });
-            //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
-            //.Take(1)
-            //.FirstOrDefault();
+        //.Skip(rand.Next(0, MySelf.SelectedSkillList.Count()))
+        //.Take(1)
+        //.FirstOrDefault();
 
         if (skill != null)
             SkillQueue.Enqueue(skill);
@@ -739,7 +739,7 @@ public class CharacterHandler : IDisposable
 
         if (target != null)
         {
-            if(!target.IsDead())
+            if (!target.IsDead())
                 await UseSkill(skill, target);
         }
         else
@@ -784,7 +784,7 @@ public class CharacterHandler : IDisposable
 
                             await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillCastingAtTargetPacket(skill, MySelf.Id, target.Id));
 
-                            if(!Controller.GetControl("DisableSkillCasting", false))
+                            if (!Controller.GetControl("DisableSkillCasting", false))
                                 await Task.Delay(skill.CastTime * 100);
                         }
 
@@ -809,7 +809,7 @@ public class CharacterHandler : IDisposable
                         }
                     });
 
-                    
+
                 }
                 break;
 
@@ -934,7 +934,7 @@ public class CharacterHandler : IDisposable
             var skill = MySelf.SelectedSkillList.FirstOrDefault(x => x.Id == skillId)!;
 
             //if (skill != null)
-                //skill.UpdateSkillUseTime(0);
+            //skill.UpdateSkillUseTime(0);
         }
 
         Debug.WriteLine($"SkillFailedProcess: skillId({skillId}), sourceId({sourceId}), targetId({targetId})");
@@ -1144,7 +1144,7 @@ public class CharacterHandler : IDisposable
     {
         if (!MySelf.Party.IsInParty()) return;
         if (MySelf.Party.Leader.Name != MySelf.Name) return;
-        
+
         Client.Session.SendAsync(MessageBuilder.MsgSend_PartyPromoteLeader(memberId)).ConfigureAwait(false);
     }
 
@@ -1265,11 +1265,11 @@ public class CharacterHandler : IDisposable
 
         if (firstPosition == null) return;
 
-        if(firstPosition.Action != RouteActionType.TOWN)
+        if (firstPosition.Action != RouteActionType.TOWN)
         {
             var movePath = GenerateMovePath(MySelf.Zone, MySelf.GetPosition(), new Vector3(firstPosition.X, firstPosition.Y, firstPosition.Z));
 
-            if(movePath.Count() > 0)
+            if (movePath.Count() > 0)
             {
                 movePath.Reverse();
 
@@ -1304,7 +1304,7 @@ public class CharacterHandler : IDisposable
             case RouteActionType.MOVE:
                 {
                     if (MySelf.GetPosition() != movePosition)
-                        MySelf.SetMovePosition(movePosition);  
+                        MySelf.SetMovePosition(movePosition);
                     else
                         RouteQueue.Dequeue();
                 }
@@ -1404,7 +1404,7 @@ public class CharacterHandler : IDisposable
                                         {
                                             var supplyItemListPotion = JsonSerializer.Deserialize<List<Supply>>(Controller.GetControl("SupplyList", "[]"))!;
 
-                                            if(!subRoute.NpcEventSend)
+                                            if (!subRoute.NpcEventSend)
                                             {
                                                 NpcEvent(subRoute.TargetId);
                                                 subRoute.NpcEventSend = true;
@@ -1429,7 +1429,7 @@ public class CharacterHandler : IDisposable
 
                                                 supplyItemListPotion.ForEach(x =>
                                                 {
-                                                    if (!x.Enable || MySelf.NpcEventGroup != x.SellingGroup) 
+                                                    if (!x.Enable || MySelf.NpcEventGroup != x.SellingGroup)
                                                         return;
 
                                                     ItemBuy(subRoute.TargetId, MySelf.NpcEventGroup, x.ItemId, (short)x.Count);
@@ -1474,7 +1474,7 @@ public class CharacterHandler : IDisposable
 
                                                 supplyItemListSundries.ForEach(x =>
                                                 {
-                                                    if (!x.Enable || MySelf.NpcEventGroup != x.SellingGroup) 
+                                                    if (!x.Enable || MySelf.NpcEventGroup != x.SellingGroup)
                                                         return;
 
                                                     ItemBuy(subRoute.TargetId, MySelf.NpcEventGroup, x.ItemId, (short)x.Count);
@@ -1504,7 +1504,7 @@ public class CharacterHandler : IDisposable
                                                 }
 
                                                 MySelf.NpcEventGroup = 0;
-                                                
+
                                             }
 
                                             route.SubQueue.Dequeue();
@@ -1640,7 +1640,7 @@ public class CharacterHandler : IDisposable
         if (movePosition.Equals(Vector3.Zero))
             return Task.CompletedTask;
 
-        if((Environment.TickCount - MySelf.MovePunishTime) <= 1000)
+        if ((Environment.TickCount - MySelf.MovePunishTime) <= 1000)
             return Task.CompletedTask;
 
         if (Controller.GetControl("SpeedhackCheckbox", false))
@@ -1666,7 +1666,7 @@ public class CharacterHandler : IDisposable
 
             if (startPosition == moveTowards)
             {
-                if(MySelf.IsMoving())
+                if (MySelf.IsMoving())
                     SendMove(startPosition, startPosition, 0, 0);
 
                 MySelf.SetMovePosition(Vector3.Zero);
@@ -1709,8 +1709,8 @@ public class CharacterHandler : IDisposable
 
             if (followedClient != null)
             {
-                if (!followedClient.CharacterHandler.IsRouting() && 
-                    !followedClient.Character.IsTrading && 
+                if (!followedClient.CharacterHandler.IsRouting() &&
+                    !followedClient.Character.IsTrading &&
                     followedClient.Character.Zone == MySelf.Zone)
                 {
                     // Moving to followed client
@@ -1755,7 +1755,7 @@ public class CharacterHandler : IDisposable
         {
             var loot = LootList.FindAll(x => x != null && !x.Opened && (Environment.TickCount - x.DropTime) >= 5000).OrderBy(x => x.DropTime).FirstOrDefault()!;
 
-            if (loot == null) 
+            if (loot == null)
                 return Task.CompletedTask;
 
             MovingToLoot = true;
@@ -1779,13 +1779,13 @@ public class CharacterHandler : IDisposable
             MovingToLoot = false;
 
             var loot = LootList
-                .FindAll(x => x != null && !x.Opened && 
+                .FindAll(x => x != null && !x.Opened &&
                                 (Environment.TickCount - x.DropTime) >= 5000 &&
                                 Vector3.Distance(MySelf.GetPosition(), x.Position) <= 8.0f)
                 .OrderBy(x => x.DropTime)
                 .FirstOrDefault()!;
 
-            if (loot == null) 
+            if (loot == null)
                 return Task.CompletedTask;
 
             loot.Opened = true;
@@ -1863,7 +1863,7 @@ public class CharacterHandler : IDisposable
                     if (SQLiteHandler.Table<SupplyFlag>().Any(x => x.Flag == (int)SupplyFlagType.FLAG_TRADE_TO_MASTER && x.ItemId == item.ItemID))
                     {
                         ExhangeAdd((byte)(item.Pos - Config.SLOT_MAX), item.ItemID, item.Count);
-                    } 
+                    }
                 }
             }
 
@@ -1983,12 +1983,12 @@ public class CharacterHandler : IDisposable
                     var questHelper = TableHandler.GetQuestHelperList()
                         .FirstOrDefault(x => x.EventDataIndex == quest.Id && x.EventStatus == 3);
 
-                    if(questHelper != null)
+                    if (questHelper != null)
                         quest.BaseId = questHelper.BaseId;
 
                     quest.Status = 3;
                 }
-                   
+
             }
         });
 
@@ -2023,7 +2023,7 @@ public class CharacterHandler : IDisposable
 
         AStar.Position[] paths = pathfinder.FindPath(new AStar.Position(startX, startY), new AStar.Position(endX, endY));
 
-        if(paths.Length == 1)
+        if (paths.Length == 1)
             return movePath;
 
         int step = 10;
@@ -2086,7 +2086,7 @@ public class CharacterHandler : IDisposable
 
         return false;
     }
-    
+
     public bool IsInventoryFull()
     {
         return GetInventoryEmptySlotCount() == 0;
@@ -2100,7 +2100,7 @@ public class CharacterHandler : IDisposable
         {
             var item = MySelf.Inventory[i];
 
-            if (item.ItemID == 0)
+            if (item != null && item.ItemID == 0)
                 count++;
         }
 
@@ -2154,6 +2154,15 @@ public class CharacterHandler : IDisposable
         }
     }
 
+    public List<Client> GetFollowersAtSameZone()
+    {
+        return ClientHandler.ClientList.ToList()
+            .FindAll(x =>
+                x != null &&
+                x.CharacterHandler.GetGameState() == GameState.GAME_STATE_INGAME && 
+                MySelf.Name == x.CharacterHandler.Controller?.GetControl("Follow", "") &&
+                x.CharacterHandler.MySelf.Zone == MySelf.Zone);
+    }
 
 }
 

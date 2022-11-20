@@ -1172,10 +1172,7 @@ public partial class ClientController : Form
 
             if (distance > 100.0f)
             {
-                if (CharacterHandler.IsRouting())
-                    CharacterHandler.RouteQueue.Clear();
-
-                CharacterHandler.Route(new List<RouteData>()
+                var routeData = new List<RouteData>()
                 {
                     new RouteData() { Action = RouteActionType.TOWN, X = 0, Y = 0, Z = 0 },
 
@@ -1187,19 +1184,30 @@ public partial class ClientController : Form
                         EventId = (short)gateObject.GetEventId,
                         ObjectId = (short)gateObject.GetNpcId
                     }
+                };
 
+                // Self action
+                if (CharacterHandler.IsRouting())
+                    CharacterHandler.RouteQueue.Clear();
+
+                CharacterHandler.Route(routeData);
+
+                // Forward action to all followers
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(x =>
+                {
+                    if (x.CharacterHandler.IsRouting())
+                        x.CharacterHandler.RouteQueue.Clear();
+
+                    x.CharacterHandler.Route(routeData);
                 });
             }
             //else if (distance <= 10.0f)
             //    CharacterHandler.ObjectEvent((short)gateObject.GetEventId, (short)gateObject.GetNpcId);
             else
             {
-                if (CharacterHandler.IsRouting())
-                    CharacterHandler.RouteQueue.Clear();
-
-                CharacterHandler.ObjectEvent((short)gateObject.GetEventId, (short)gateObject.GetNpcId);
-
-                CharacterHandler.Route(new List<RouteData>()
+                var routeData = new List<RouteData>()
                 {
                     new RouteData() {
                         Action = RouteActionType.OBJECTEVENT,
@@ -1209,6 +1217,27 @@ public partial class ClientController : Form
                         EventId = (short)gateObject.GetEventId,
                         ObjectId = (short)gateObject.GetNpcId
                     }
+                };
+
+                // Self action
+                if (CharacterHandler.IsRouting())
+                    CharacterHandler.RouteQueue.Clear();
+
+                CharacterHandler.ObjectEvent((short)gateObject.GetEventId, (short)gateObject.GetNpcId);
+
+                CharacterHandler.Route(routeData);
+
+                // Forward action to all followers
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(x =>
+                {
+                    if (x.CharacterHandler.IsRouting())
+                        x.CharacterHandler.RouteQueue.Clear();
+
+                    x.CharacterHandler.ObjectEvent((short)gateObject.GetEventId, (short)gateObject.GetNpcId);
+
+                    x.CharacterHandler.Route(routeData);
                 });
             }
         }
@@ -1221,7 +1250,18 @@ public partial class ClientController : Form
             var warpInfo = (Data.Models.WarpInfo)row.DataBoundItem;
 
             if (warpInfo != null)
+            {
+                // Self action
                 CharacterHandler.WarpTeleport(warpInfo);
+
+                // Forward action to all followers
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(x =>
+                {
+                    x.CharacterHandler.WarpTeleport(warpInfo);
+                });
+            }
         }
     }
 
@@ -1456,7 +1496,16 @@ public partial class ClientController : Form
             }
         }*/
 
+        // Self action
         CharacterHandler.LoadQuestList();
+
+        // Forward action to all followers
+        var followers = CharacterHandler.GetFollowersAtSameZone();
+
+        followers.ForEach(x =>
+        {
+            x.CharacterHandler.LoadQuestList();
+        });
     }
 
     private void TakeQuestButton_Click(object sender, EventArgs e)
@@ -1472,12 +1521,22 @@ public partial class ClientController : Form
             var quest = (Quest)row.DataBoundItem;
             if (quest == null) continue;
 
-            var character = CharacterHandler.NpcList.FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
+            var npc = CharacterHandler.NpcList.FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
 
-            if (character == null) continue;
+            if (npc == null) continue;
 
+            // Self action
             if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
                 CharacterHandler.QuestTake((uint)quest.BaseId);
+
+            // Forward action to all followers
+            var followers = CharacterHandler.GetFollowersAtSameZone();
+
+            followers.ForEach(x =>
+            {
+                if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+                    x.CharacterHandler.QuestTake((uint)quest.BaseId);
+            });
         }
     }
 
@@ -1489,7 +1548,16 @@ public partial class ClientController : Form
 
             if (quest == null) continue;
 
+            // Self action
             CharacterHandler.QuestRemove((uint)quest.BaseId);
+
+            // Forward action to all followers
+            var followers = CharacterHandler.GetFollowersAtSameZone();
+
+            followers.ForEach(x =>
+            {
+                x.CharacterHandler.QuestRemove((uint)quest.BaseId);
+            });
         }
     }
 
@@ -1648,7 +1716,16 @@ public partial class ClientController : Form
 
             if (quest == null) continue;
 
+            // Self action
             CharacterHandler.QuestRemove((uint)quest.BaseId);
+
+            // Forward action to all followers
+            var followers = CharacterHandler.GetFollowersAtSameZone();
+
+            followers.ForEach((x) =>
+            {
+                x.CharacterHandler.QuestRemove((uint)quest.BaseId);
+            });
         }
     }
 
@@ -1660,13 +1737,14 @@ public partial class ClientController : Form
 
             if (quest == null) continue;
 
-            var character = CharacterHandler.GetNpcList().FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
+            var npc = CharacterHandler.GetNpcList().FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
 
-            if (character != null)
+            if (npc != null)
             {
+                // Self action
                 await Task.Run(async () =>
                 {
-                    CharacterHandler.NpcEvent(character.Id);
+                    CharacterHandler.NpcEvent(npc.Id);
                     await Task.Delay(250);
                     CharacterHandler.QuestGive((uint)quest.BaseId);
                     await Task.Delay(250);
@@ -1676,6 +1754,26 @@ public partial class ClientController : Form
 
                     if (questHelper != null)
                         CharacterHandler.QuestCompleted((uint)questHelper.EventDataIndex);
+                });
+
+                // Forward action to all followers
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(async (x) =>
+                {
+                    await Task.Run(async () =>
+                    {
+                        x.CharacterHandler.NpcEvent(npc.Id);
+                        await Task.Delay(250);
+                        x.CharacterHandler.QuestGive((uint)quest.BaseId);
+                        await Task.Delay(250);
+                        x.CharacterHandler.SelectMenu(0, quest.LuaName, false);
+                        var questHelper = TableHandler.GetQuestHelperList()
+                            .FirstOrDefault(y => y.EventDataIndex == quest.Id && y.EventStatus == 1);
+
+                        if (questHelper != null)
+                            x.CharacterHandler.QuestCompleted((uint)questHelper.EventDataIndex);
+                    });
                 });
             }
 
