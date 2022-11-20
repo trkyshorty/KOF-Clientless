@@ -13,6 +13,7 @@ using Microsoft.Win32.SafeHandles;
 using System.Text;
 using AutoUpdaterDotNET;
 using System.Net;
+using System.Windows.Forms;
 
 namespace KOF.UI.Forms;
 
@@ -58,7 +59,7 @@ public partial class Main : Form
         AccountDataGrid.Columns[1].Width = 109;
         AccountDataGrid.Columns[1].ReadOnly = true;
         AccountDataGrid.Columns[2].ReadOnly = true;
-        AccountDataGrid.Columns[2].Width = 75;
+        AccountDataGrid.Columns[2].Width = 109;
         AccountDataGrid.Columns[3].ReadOnly = true;
         AccountDataGrid.Columns[3].Width = 75;
         AccountDataGrid.Columns[4].ReadOnly = true;
@@ -684,5 +685,24 @@ public partial class Main : Form
         {
             e.Cancel = true;
         }
+    }
+
+    private void Main_Resize(object sender, EventArgs e)
+    {
+        //if the form is minimized  
+        //hide it from the task bar  
+        //and show the system tray icon (represented by the NotifyIcon control)  
+        if (this.WindowState == FormWindowState.Minimized)
+        {
+            Hide();
+            SystemTrayNotify.Visible = true;
+        }
+    }
+
+    private void SystemTrayNotify_MouseDoubleClick(object sender, MouseEventArgs e)
+    {
+        Show();
+        this.WindowState = FormWindowState.Normal;
+        SystemTrayNotify.Visible = false;
     }
 }

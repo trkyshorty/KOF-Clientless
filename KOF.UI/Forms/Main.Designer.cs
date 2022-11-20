@@ -59,6 +59,7 @@
             this.CloseClientButton = new System.Windows.Forms.Button();
             this.ClientListDataGrid = new System.Windows.Forms.DataGridView();
             this.GroupColorDialog = new System.Windows.Forms.ColorDialog();
+            this.SystemTrayNotify = new System.Windows.Forms.NotifyIcon(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -390,6 +391,13 @@
             this.ClientListDataGrid.VirtualMode = true;
             this.ClientListDataGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ClientListDataGrid_CellDoubleClick);
             // 
+            // SystemTrayNotify
+            // 
+            this.SystemTrayNotify.Icon = ((System.Drawing.Icon)(resources.GetObject("SystemTrayNotify.Icon")));
+            this.SystemTrayNotify.Text = "KOF continues to run in the background";
+            this.SystemTrayNotify.Visible = true;
+            this.SystemTrayNotify.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.SystemTrayNotify_MouseDoubleClick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -406,6 +414,7 @@
             this.Text = "KOF";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.MainModern_Load);
+            this.Resize += new System.EventHandler(this.Main_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -452,5 +461,6 @@
         private Button ClearFollowButton;
         private Button SetGroupColorButton;
         private ColorDialog GroupColorDialog;
+        private NotifyIcon SystemTrayNotify;
     }
 }

@@ -1,0 +1,13 @@
+﻿ALTER TABLE "Server" RENAME TO "_Server_old_20221120";
+CREATE TABLE "Server" ("Id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "Name" varchar, "GatewayIp" varchar, "GatewayPort" integer, "AgentIp" varchar, "AgentPort" integer, "Platform" integer DEFAULT 0);
+INSERT INTO "sqlite_sequence" (name, seq) VALUES ('Server', '3');
+INSERT INTO "Server" ("Id", "Name", "GatewayIp", "GatewayPort", "AgentIp", "AgentPort") SELECT "Id", "Name", "GatewayIp", "GatewayPort", "AgentIp", "AgentPort" FROM "main"."_Server_old_20221120";
+UPDATE "Server" SET "Name" = 'CNKO | Server 1' WHERE rowid = 1;
+UPDATE "Server" SET "Name" = 'CNKO | Server 2' WHERE rowid = 2;
+UPDATE "Server" SET "Name" = 'CNKO | Server 3' WHERE rowid = 3;
+UPDATE "Account" SET "Server" = 'CNKO | Server 1' WHERE "Server" = 'Server 1';
+UPDATE "Account" SET "Server" = 'CNKO | Server 2' WHERE "Server" = 'Server 2';
+UPDATE "Account" SET "Server" = 'CNKO | Server 3' WHERE "Server" = 'Server 3';
+UPDATE "Control" SET "Server" = 'CNKO | Server 1' WHERE "Server" = 'Server 1';
+UPDATE "Control" SET "Server" = 'CNKO | Server 2' WHERE "Server" = 'Server 2';
+UPDATE "Control" SET "Server" = 'CNKO | Server 3' WHERE "Server" = 'Server 3';
