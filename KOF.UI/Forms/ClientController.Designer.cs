@@ -134,6 +134,9 @@ partial class ClientController
             this.MoveCoordinateWithRoute = new System.Windows.Forms.Button();
             this.MoveCoordinateDirect = new System.Windows.Forms.Button();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.SendPacketStop = new System.Windows.Forms.Button();
+            this.SendPacketRepeatCount = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
             this.SendPacketDelay = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.SendPacket = new System.Windows.Forms.Button();
@@ -226,6 +229,7 @@ partial class ClientController
             ((System.ComponentModel.ISupportInitialize)(this.MoveCoordinateY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MoveCoordinateX)).BeginInit();
             this.groupBox17.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SendPacketRepeatCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SendPacketDelay)).BeginInit();
             this.StatusGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -1510,6 +1514,9 @@ partial class ClientController
             // 
             // groupBox17
             // 
+            this.groupBox17.Controls.Add(this.SendPacketStop);
+            this.groupBox17.Controls.Add(this.SendPacketRepeatCount);
+            this.groupBox17.Controls.Add(this.label10);
             this.groupBox17.Controls.Add(this.SendPacketDelay);
             this.groupBox17.Controls.Add(this.label8);
             this.groupBox17.Controls.Add(this.SendPacket);
@@ -1521,23 +1528,60 @@ partial class ClientController
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "Packet Sender";
             // 
+            // SendPacketStop
+            // 
+            this.SendPacketStop.Location = new System.Drawing.Point(96, 167);
+            this.SendPacketStop.Name = "SendPacketStop";
+            this.SendPacketStop.Size = new System.Drawing.Size(72, 23);
+            this.SendPacketStop.TabIndex = 15;
+            this.SendPacketStop.Text = "Stop";
+            this.SendPacketStop.UseVisualStyleBackColor = true;
+            this.SendPacketStop.Click += new System.EventHandler(this.SendPacketStop_Click);
+            // 
+            // SendPacketRepeatCount
+            // 
+            this.SendPacketRepeatCount.Location = new System.Drawing.Point(229, 167);
+            this.SendPacketRepeatCount.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.SendPacketRepeatCount.Name = "SendPacketRepeatCount";
+            this.SendPacketRepeatCount.Size = new System.Drawing.Size(68, 23);
+            this.SendPacketRepeatCount.TabIndex = 6;
+            this.SendPacketRepeatCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.SendPacketRepeatCount.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(174, 171);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(49, 15);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Repeat :";
+            // 
             // SendPacketDelay
             // 
-            this.SendPacketDelay.Location = new System.Drawing.Point(333, 167);
+            this.SendPacketDelay.Location = new System.Drawing.Point(361, 167);
             this.SendPacketDelay.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
             this.SendPacketDelay.Name = "SendPacketDelay";
-            this.SendPacketDelay.Size = new System.Drawing.Size(96, 23);
+            this.SendPacketDelay.Size = new System.Drawing.Size(68, 23);
             this.SendPacketDelay.TabIndex = 4;
             this.SendPacketDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(285, 171);
+            this.label8.Location = new System.Drawing.Point(313, 171);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(42, 15);
             this.label8.TabIndex = 3;
@@ -1547,7 +1591,7 @@ partial class ClientController
             // 
             this.SendPacket.Location = new System.Drawing.Point(3, 167);
             this.SendPacket.Name = "SendPacket";
-            this.SendPacket.Size = new System.Drawing.Size(162, 23);
+            this.SendPacket.Size = new System.Drawing.Size(87, 23);
             this.SendPacket.TabIndex = 1;
             this.SendPacket.Text = "Send Packet";
             this.SendPacket.UseVisualStyleBackColor = true;
@@ -1963,6 +2007,7 @@ partial class ClientController
             ((System.ComponentModel.ISupportInitialize)(this.MoveCoordinateX)).EndInit();
             this.groupBox17.ResumeLayout(false);
             this.groupBox17.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SendPacketRepeatCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SendPacketDelay)).EndInit();
             this.StatusGroupBox.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -2118,4 +2163,7 @@ partial class ClientController
     private CheckBox AutoJoinMs;
     private System.Windows.Forms.Timer MSConvertExperience;
     private System.Windows.Forms.Timer MSAutoEvent;
+    private NumericUpDown SendPacketRepeatCount;
+    private Label label10;
+    private Button SendPacketStop;
 }

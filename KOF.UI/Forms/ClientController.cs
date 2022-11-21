@@ -27,6 +27,9 @@ public partial class ClientController : Form
     private Controller Controller { get { return CharacterHandler.Controller; } }
     private BindingList<Supply> SupplyItemList { get; set; } = new();
 
+    private CancellationTokenSource sendPacketCancelationToken { get; set; }
+    CancellationToken sendPacketCancelationTokenCt { get; set; }
+
     public ClientController(Client client)
     {
         Client = client;
@@ -54,6 +57,10 @@ public partial class ClientController : Form
         NpcShopDataList, new object[] { true });
 
         Visible = false;
+
+        sendPacketCancelationToken = new CancellationTokenSource();
+        sendPacketCancelationTokenCt = sendPacketCancelationToken.Token;
+
     }
 
     private void ClientController_Load(object sender, EventArgs e)
@@ -1828,15 +1835,43 @@ public partial class ClientController : Form
 
     private async void SendPacket_Click(object sender, EventArgs e)
     {
-        for (int i = 0; i < PacketTextBox.Lines.Length; i++)
-        {
-            var packetText = PacketTextBox.Lines[i];
-            var packetArray = Convert.FromHexString(packetText);
-            var message = new KOF.Core.Communications.Message(packetArray.Length, packetArray);
+        var repatCount = SendPacketRepeatCount.Value;
+        var packetTextBoxArray = PacketTextBox.Lines.ToArray();
+        var sendPacketDelay = SendPacketDelay.Value;
 
-            await Client.Session.SendAsync(message);
-            await Task.Delay((int)SendPacketDelay.Value);
-        }
+        Task t = new Task(async () =>
+        {
+            for (int a = 0; a < (int)repatCount; a++)
+            {
+                for (int b = 0; b < packetTextBoxArray.Length; b++)
+                {
+                    try
+                    {
+                        if (sendPacketCancelationTokenCt.IsCancellationRequested)
+                        {
+                            sendPacketCancelationTokenCt.ThrowIfCancellationRequested();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        sendPacketCancelationToken = new CancellationTokenSource();
+                        sendPacketCancelationTokenCt = sendPacketCancelationToken.Token;
+                        return;
+                    }
+
+                    var packetText = packetTextBoxArray[b];
+                    var packetArray = Convert.FromHexString(packetText);
+                    var message = new KOF.Core.Communications.Message(packetArray.Length, packetArray);
+
+                    await Client.Session.SendAsync(message);
+                    await Task.Delay((int)sendPacketDelay);
+                }
+            }
+        }, sendPacketCancelationTokenCt);
+
+        if (!t.IsCanceled || !t.IsCanceled || !t.IsCompleted || !t.IsFaulted)
+            t.Start();
+
     }
 
     private void DisableSkillCasting_CheckedChanged(object sender, EventArgs e)
@@ -1995,5 +2030,10 @@ public partial class ClientController : Form
         {
             Debug.WriteLine(ex.StackTrace);
         }
+    }
+
+    private void SendPacketStop_Click(object sender, EventArgs e)
+    {
+        sendPacketCancelationToken.Cancel();
     }
 }
