@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = false;
-INSERT INTO "Server" VALUES (1, 'Server 1', '110.43.217.18', 15100, '110.43.217.7', 15001);
-INSERT INTO "Server" VALUES (2, 'Server 2', '110.43.217.18', 15100, '110.43.217.8', 15001);
-INSERT INTO "Server" VALUES (3, 'Server 3', '110.43.217.18', 15100, '110.43.217.12', 15001);
+INSERT INTO "Server" VALUES (1, 'Server 1', '110.43.217.18', 15100, '110.43.217.7', 15001, 0);
+INSERT INTO "Server" VALUES (2, 'Server 2', '110.43.217.18', 15100, '110.43.217.8', 15001, 0);
+INSERT INTO "Server" VALUES (3, 'Server 3', '110.43.217.18', 15100, '110.43.217.12', 15001, 0);
 UPDATE "sqlite_sequence" SET seq = 3 WHERE name = 'Server';
 INSERT INTO "Zone" VALUES (1, 'Luferson Castle 1', 'karus_2004.jpg', 'karus_2004_big.jpg', 'karus2004.smd', 'karus2004.opd', 'karus2004.gtd');
 INSERT INTO "Zone" VALUES (2, 'Elmorad Castle 1', 'elmo2004.jpg', 'elmo2004_big.jpg', 'elmo2004.smd', 'elmo2004.opd', 'elmo2004.gtd');
