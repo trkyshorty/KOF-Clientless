@@ -1481,12 +1481,14 @@ public partial class ClientController : Form
 
     private void GoToNpcButton_Click(object sender, EventArgs e)
     {
-        /*foreach (DataGridViewRow row in QuestNpcList.SelectedRows)
+        foreach (DataGridViewRow row in QuestNpcList.SelectedRows)
         {
             var character = (Character)row.DataBoundItem;
 
             if (character != null)
             {
+                CharacterHandler.QuestList.Clear();
+
                 CharacterHandler.Route(new List<RouteData>()
                 {
                     new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
@@ -1501,18 +1503,7 @@ public partial class ClientController : Form
 
                 });
             }
-        }*/
-
-        // Self action
-        CharacterHandler.LoadQuestList();
-
-        // Forward action to all followers
-        var followers = CharacterHandler.GetFollowersAtSameZone();
-
-        followers.ForEach(x =>
-        {
-            x.CharacterHandler.LoadQuestList();
-        });
+        }
     }
 
     private void TakeQuestButton_Click(object sender, EventArgs e)

@@ -1334,12 +1334,22 @@ public class CharacterHandler : IDisposable
                 {
                     NpcEvent(route.NpcId);
 
-                    /* var character = NpcList.FirstOrDefault(x => x.Id == route.NpcId)!;
+                     var character = NpcList.FirstOrDefault(x => x.Id == route.NpcId)!;
 
-                     if (character != null)
-                         Client.Session.Client.CharacterHandler.LoadNpcQuestList((short)character.ProtoId);*/
+                    if (character != null) {
+                        // Self action
+                        Client.Session.Client.CharacterHandler.LoadNpcQuestList((short)character.ProtoId);
 
-                    RouteQueue.Dequeue();
+                        // Forward action to all followers
+                        var followers = Client.Session.Client.CharacterHandler.GetFollowersAtSameZone();
+
+                        followers.ForEach(x =>
+                        {
+                            x.CharacterHandler.LoadNpcQuestList((short)character.ProtoId);
+                        });
+
+                        RouteQueue.Dequeue();
+                    }
                 }
                 break;
 
@@ -1527,9 +1537,47 @@ public class CharacterHandler : IDisposable
     {
         var questHelper = TableHandler.GetQuestHelperList()
             .FindAll(x => (x.Class == 5 || x.Class == Character.GetRepresentClass(MySelf.Class)) &&
-                x.EventStatus == 1 &&
+                x.EventStatus == 4 &&
                 (x.Nation == MySelf.NationId || x.Nation == 3) &&
                 x.Zone == Character.GetRepresentZone(MySelf.Zone) &&
+                x.QuestType == 1);
+
+        if (questHelper == null) return;
+
+        QuestList.Clear();
+
+        questHelper.ForEach(x =>
+        {
+            var questGuide = TableHandler.GetQuestGuideList().FirstOrDefault(y => y.Id == x.GuideIndex);
+
+            if (questGuide == null) return;
+
+            if (MySelf.Level < questGuide.MinLevel) return;
+            if (MySelf.ActiveQuestList.Any(y => y.Id == x.EventDataIndex && (y.Status == 2 || y.Status == 1))) return;
+
+            QuestList.Add(new Quest()
+            {
+                Id = x.EventDataIndex,
+                BaseId = x.BaseId,
+                LuaName = x.LuaName,
+                Title = questGuide.Title,
+                Description = questGuide.Description,
+                MinLevel = questGuide.MinLevel,
+                Status = x.EventStatus,
+                NpcProtoId = x.NpcProtoId,
+            });
+        });
+
+    }
+
+    public void LoadNpcQuestList(int npcId)
+    {
+        var questHelper = TableHandler.GetQuestHelperList()
+            .FindAll(x => (x.Class == 5 || x.Class == Character.GetRepresentClass(MySelf.Class)) &&
+                x.EventStatus == 4 &&
+                (x.Nation == MySelf.NationId || x.Nation == 3) &&
+                x.Zone == Character.GetRepresentZone(MySelf.Zone) &&
+                x.NpcProtoId == npcId &&
                 x.QuestType == 1);
 
         if (questHelper == null) return;
