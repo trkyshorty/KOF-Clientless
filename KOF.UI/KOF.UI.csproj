@@ -11,8 +11,8 @@
     <PackageIcon>icon.png</PackageIcon>
     <SignAssembly>False</SignAssembly>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <AssemblyVersion>1.1.0.6</AssemblyVersion>
-    <FileVersion>1.1.0.6</FileVersion>
+    <AssemblyVersion>1.1.0.7</AssemblyVersion>
+    <FileVersion>1.1.0.7</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
