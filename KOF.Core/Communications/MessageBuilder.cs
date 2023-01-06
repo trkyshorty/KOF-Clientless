@@ -381,7 +381,7 @@ public class MessageBuilder
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write(3);
+        msg.Write(2);
 
         return msg;
     }
