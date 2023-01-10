@@ -158,8 +158,6 @@ partial class ClientController
             this.BotButton = new System.Windows.Forms.Button();
             this.PressOkButton = new System.Windows.Forms.Button();
             this.TownButton = new System.Windows.Forms.Button();
-            this.AttackTimer = new System.Windows.Forms.Timer(this.components);
-            this.TargetAndActionTimer = new System.Windows.Forms.Timer(this.components);
             this.SelfSkillTimer = new System.Windows.Forms.Timer(this.components);
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.FollowOnlyNearby = new System.Windows.Forms.CheckBox();
@@ -1791,18 +1789,6 @@ partial class ClientController
             this.TownButton.UseVisualStyleBackColor = true;
             this.TownButton.Click += new System.EventHandler(this.TownButton_Click);
             // 
-            // AttackTimer
-            // 
-            this.AttackTimer.Enabled = true;
-            this.AttackTimer.Interval = 1;
-            this.AttackTimer.Tick += new System.EventHandler(this.AttackTimer_Tick);
-            // 
-            // TargetAndActionTimer
-            // 
-            this.TargetAndActionTimer.Enabled = true;
-            this.TargetAndActionTimer.Interval = 1;
-            this.TargetAndActionTimer.Tick += new System.EventHandler(this.TargetAndActionTimer_Tick);
-            // 
             // SelfSkillTimer
             // 
             this.SelfSkillTimer.Enabled = true;
@@ -2052,8 +2038,6 @@ partial class ClientController
     private Button TargetListClearButton;
     private Button SearchTargetButton;
     private CheckedListBox TargetCheckedListBox;
-    private System.Windows.Forms.Timer AttackTimer;
-    private System.Windows.Forms.Timer TargetAndActionTimer;
     private System.Windows.Forms.Timer SelfSkillTimer;
     private NumericUpDown AttackRange;
     private Label label1;

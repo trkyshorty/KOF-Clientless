@@ -323,4 +323,10 @@ public partial class InventoryController : Form
     {
         CharacterHandler.ExhangeCancel();
     }
+
+    private void EquipOreads_Click(object sender, EventArgs e)
+    {
+        foreach (DataGridViewRow row in ItemListDataGridView.SelectedRows)
+            CharacterHandler.EquipOreads((uint)row.Cells[1].Value, (byte)row.Cells[0].Value);
+    }
 }

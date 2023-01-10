@@ -263,7 +263,7 @@ public class Client
 
     private void CreateNewSessionInstance()
     {
-        StartTime = Environment.TickCount;
+        StartTime = Stopwatch.GetTimestamp();
 
         if (Session != null)
         {

@@ -52,6 +52,7 @@ partial class InventoryController
             this.TradeAddItemButton = new System.Windows.Forms.Button();
             this.SendTradeButton = new System.Windows.Forms.Button();
             this.TradeCharacterName = new System.Windows.Forms.TextBox();
+            this.EquipOreads = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ItemListDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -112,12 +113,13 @@ partial class InventoryController
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.EquipOreads);
             this.groupBox2.Controls.Add(this.EquipButton);
             this.groupBox2.Controls.Add(this.DeleteButton);
             this.groupBox2.Controls.Add(this.UseButton);
             this.groupBox2.Location = new System.Drawing.Point(645, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(166, 145);
+            this.groupBox2.Size = new System.Drawing.Size(166, 157);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Action";
@@ -135,7 +137,7 @@ partial class InventoryController
             // DeleteButton
             // 
             this.DeleteButton.ForeColor = System.Drawing.Color.Red;
-            this.DeleteButton.Location = new System.Drawing.Point(4, 113);
+            this.DeleteButton.Location = new System.Drawing.Point(4, 128);
             this.DeleteButton.Name = "DeleteButton";
             this.DeleteButton.Size = new System.Drawing.Size(157, 23);
             this.DeleteButton.TabIndex = 1;
@@ -295,6 +297,17 @@ partial class InventoryController
             this.TradeCharacterName.Size = new System.Drawing.Size(157, 23);
             this.TradeCharacterName.TabIndex = 0;
             // 
+            // EquipOreads
+            // 
+            this.EquipOreads.ForeColor = System.Drawing.Color.ForestGreen;
+            this.EquipOreads.Location = new System.Drawing.Point(4, 86);
+            this.EquipOreads.Name = "EquipOreads";
+            this.EquipOreads.Size = new System.Drawing.Size(157, 23);
+            this.EquipOreads.TabIndex = 5;
+            this.EquipOreads.Text = "Equip Oreads";
+            this.EquipOreads.UseVisualStyleBackColor = true;
+            this.EquipOreads.Click += new System.EventHandler(this.EquipOreads_Click);
+            // 
             // InventoryController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -346,4 +359,5 @@ partial class InventoryController
     private Button TradeAddItemButton;
     private Button AcceptTradeButton;
     private Button CancelTradeButton;
+    private Button EquipOreads;
 }

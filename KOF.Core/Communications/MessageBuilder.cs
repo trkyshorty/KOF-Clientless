@@ -557,10 +557,12 @@ public class MessageBuilder
         msg.Write(0);
         msg.Write(0);
 
+        msg.Write((short)0);
+
         return msg;
     }
 
-    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, int socketId, int targetId, ushort arrowIndex = 0)
+    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, int socketId, int targetId, Vector3 targetPosition, ushort arrowIndex = 0)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -577,9 +579,9 @@ public class MessageBuilder
         }
         else
         {
-            msg.Write(0);
-            msg.Write(0);
-            msg.Write(0);
+            msg.Write(targetPosition.X);
+            msg.Write(targetPosition.Z);
+            msg.Write(targetPosition.Y);
         }
 
         msg.Write(arrowIndex);
@@ -625,7 +627,7 @@ public class MessageBuilder
         msg.Write((int)targetPosition.Z);
         msg.Write((int)targetPosition.Y);
 
-        msg.Write<short>(-101);
+        msg.Write(-101);
 
         msg.Write(arrowIndex);
 

@@ -435,6 +435,11 @@ public partial class GameService
                     deadCharacter.Status = 3;
                     deadCharacter.MoveType = 0;
                     deadCharacter.State = (byte)StateAction.DEATH;
+
+                    var bundle = session.Client.CharacterHandler.LootList.FirstOrDefault(x => x.NpcId == targetId);
+
+                    if (bundle != null)
+                        bundle.DropTime = Environment.TickCount;
                 }
             }
             else
@@ -623,6 +628,11 @@ public partial class GameService
                             character.Status = 3;
                             character.MoveType = 0;
                             character.State = (byte)StateAction.DEATH;
+
+                            var bundle = session.Client.CharacterHandler.LootList.FirstOrDefault(x => x.NpcId == targetId);
+
+                            if (bundle != null)
+                                bundle.DropTime = Environment.TickCount;
                         }
                     }
                     else

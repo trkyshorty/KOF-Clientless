@@ -137,9 +137,7 @@ public class Session : IDisposable
         {
             if (!_socket.Connected) return;
             // File.AppendAllText($"{Account.Login}.txt", $"{DateTime.Now:HH:mm:ss} SEND:[{Protocol.Sequence}] {Convert.ToHexString(msg.AsDataSpan()).ToLower()}\n");
- 
             await _socket.SendAsync(Protocol.Encode(this, msg), SocketFlags.None).ConfigureAwait(false);
-            
         }
         catch (SocketException)
         {
@@ -194,10 +192,8 @@ public class Session : IDisposable
                 .ConfigureAwait(false);
 
             if (receivedChunk == 0)
-            {
-                await DisconnectAsync().ConfigureAwait(false);
-                throw new RemoteDisconnectedException();
-            }
+                continue;
+            
             received += receivedChunk;
         }
     }

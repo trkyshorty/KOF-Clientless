@@ -119,7 +119,7 @@ internal class ClientMessageProtocol : MessageProtocol
             //    break;
 
             default:
-                Debug.WriteLine($"{DateTime.Now:HH:mm:ss} SEND:[{Sequence}] {Convert.ToHexString(msg.AsDataSpan()).ToLower()}");
+                Debug.WriteLine($"{DateTime.Now:HH:mm:ss} SEND:[{Sequence}] {session.Account.Login} : {Convert.ToHexString(msg.AsDataSpan()).ToLower()}");
                 break;
         }
 
