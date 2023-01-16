@@ -103,7 +103,7 @@ public partial class ClientController : Form
         AttackSkillCheckedListBox.DataSource = Character.SkillList
             .Where(x =>
             {
-                return x.Id.ToString().Substring(0, 3) == Character.Class.ToString() &&
+                return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level
                         && (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery])
                         && (x.TargetType == (int)SkillMagicTargetType.TARGET_ENEMY_ONLY || x.TargetType == (int)SkillMagicTargetType.TARGET_AREA_ENEMY);
@@ -115,7 +115,7 @@ public partial class ClientController : Form
         SelfSkillCheckedListBox.DataSource = Character.SkillList
             .Where(x =>
             {
-                return x.Id.ToString().Substring(0, 3) == Character.Class.ToString() &&
+                return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level &&
                         (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery]) &&
                         (x.TargetType == (int)SkillMagicTargetType.TARGET_SELF || x.TargetType == (int)SkillMagicTargetType.TARGET_PARTY_ALL || x.TargetType == (int)SkillMagicTargetType.TARGET_FRIEND_WITHME);
@@ -1387,6 +1387,29 @@ public partial class ClientController : Form
                     }
 
                 });
+
+
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(x =>
+                {
+                    x.CharacterHandler.QuestList.Clear();
+
+                    x.CharacterHandler.Route(new List<RouteData>()
+                    {
+                        new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
+
+                        new RouteData() {
+                            Action = RouteActionType.NPCEVENT,
+                            X = character.X,
+                            Y = character.Y,
+                            Z = character.Z,
+                            NpcId = character.Id
+                        }
+
+                    });
+                });
+
             }
         }
     }
@@ -1409,7 +1432,7 @@ public partial class ClientController : Form
             if (npc == null) continue;
 
             // Self action
-            if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+           // if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
                 CharacterHandler.QuestTake((uint)quest.BaseId);
 
             // Forward action to all followers
@@ -1417,7 +1440,7 @@ public partial class ClientController : Form
 
             followers.ForEach(x =>
             {
-                if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+                //if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
                     x.CharacterHandler.QuestTake((uint)quest.BaseId);
             });
         }

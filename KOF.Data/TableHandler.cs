@@ -279,6 +279,26 @@ public static class TableHandler
         var drakiBlessing = new Skill(494099, "Draki Blessing", -1, 2401, -1, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 10, 4, 0, 0, 511560);
         drakiBlessing.Extension = new SkillExtension(4, 494099, 1, 0, 3600);
         SkillTable.Add(drakiBlessing);
+
+
+        List<int> classBaseList = new List<int>();
+        
+        classBaseList.Add(1020);
+        classBaseList.Add(1070);
+        classBaseList.Add(1080);
+        classBaseList.Add(2020);
+        classBaseList.Add(2070);
+        classBaseList.Add(2080);
+
+        classBaseList.ForEach(x =>
+        {
+            var superArcher = new Skill(999897, "Super Archer", 26, 500, 12, 0, 0, 532, 7, 55, x, 190, 13, 391010000, 13, 10, 2, 0, 0, 102003);
+            superArcher.Extension = new SkillExtension(2, 999897, 8);
+            SkillTable.Add(superArcher);
+        });
+
+       
+
     }
 
     public static List<Skill> GetSkillList()

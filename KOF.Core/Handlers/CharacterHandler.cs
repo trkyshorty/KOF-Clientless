@@ -169,7 +169,7 @@ public class CharacterHandler : IDisposable
     {
         return MySelf.GameState;
     }
-
+    
     public void ParseMySelf(Client client, Message msg)
     {
         Client = client;
@@ -367,13 +367,13 @@ public class CharacterHandler : IDisposable
 
         MySelf.GenieStatus = msg.Read<byte>();
 
-        _ = msg.Read<uint>();
+       /* _ = msg.Read<uint>();
         _ = msg.Read<uint>();
         _ = msg.Read<long>();
         _ = msg.Read<long>();
         _ = msg.Read<ushort>(); // cover title
         _ = msg.Read<ushort>(); // skill title
-        _ = msg.Read<byte>(); // ??
+        _ = msg.Read<byte>(); // ??*/
 
         MySelf.MoveType = 3;
         MySelf.GameState = GameState.GAME_STATE_INGAME;
@@ -878,8 +878,6 @@ public class CharacterHandler : IDisposable
     {
         if (target == null || target.IsDead()) return;
 
-        skill.UpdateSkillUseTime(Environment.TickCount);
-
         switch (skill.TargetType)
         {
             case (int)SkillMagicTargetType.TARGET_SELF:
@@ -895,67 +893,70 @@ public class CharacterHandler : IDisposable
                 {
                     await Task.Run(async () =>
                     {
-                        if (skill.CastTime != 0)
+                        // Super Archer
+                        if(skill.Id == 999897)
                         {
-                            if (MySelf.IsMoving())
-                                SendMove(MySelf.GetPosition(), MySelf.GetPosition(), 0, 0);
+                            var arrowShower = MySelf.SkillList.First(
+                                x => x.Name == "arrow shower" && 
+                                x.ClassBaseId >= 100 && 
+                                x.ClassBaseId.ToString().Substring(0, 3) == MySelf.Class.ToString());
 
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillCastingAtTargetPacket(skill, MySelf.Id, target.Id));
-                        }
+                            if (arrowShower != null)
+                                await UseSkill(arrowShower, target);
 
-                        if ((skill.Extension.ArrowCount == 0 && skill.RequiredFlyEffect != 0) || skill.Extension.ArrowCount == 1)
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, target.GetPosition()));
+                            await Task.Delay(300);
 
-                        if (skill.Extension.ArrowCount > 1)
+                            var multipleShot = MySelf.SkillList.First(
+                                x => x.Name == "multiple shot" && 
+                                x.ClassBaseId >= 100 && 
+                                x.ClassBaseId.ToString().Substring(0, 3) == MySelf.Class.ToString());
+
+                            if (multipleShot != null)
+                                await UseSkill(multipleShot, target);
+                        } 
+                        else
                         {
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), 1));
-
-                            for (ushort i = 1; i < skill.Extension.ArrowCount + 1; i++)
+                            if (skill.CastTime != 0)
                             {
-                                if(i == 1)
-                                {
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, MySelf.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                }
+                                if (MySelf.IsMoving())
+                                    SendMove(MySelf.GetPosition(), MySelf.GetPosition(), 0, 0);
+
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillCastingAtTargetPacket(skill, MySelf.Id, target.Id));
+
+                                if(skill.Extension.Number != 2)
+                                    await Task.Delay(skill.CastTime * 100);
+                            }
+
+                            if ((skill.Extension.ArrowCount == 0 && skill.RequiredFlyEffect != 0) || skill.Extension.ArrowCount == 1)
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, target.GetPosition()));
+
+                            if (skill.Extension.ArrowCount > 1)
+                            {
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), 1));
 
                                 float distance = Vector3.Distance(MySelf.GetPosition(), target.GetPosition());
 
-                                if (distance >= 16.0f)
-                                    continue;
+                                int arrowCount = 1;
 
-                                if (distance <= 5.0f && i == 2)
+                                if(distance <= 1.0f)
+                                    arrowCount = 5;
+                                else if (distance <= 2.0f)
+                                    arrowCount = 4;
+                                else if (distance <= 3.0f)
+                                    arrowCount = 3;
+                                else if (distance < 16.0f)
+                                    arrowCount = 2;
+
+                                for (ushort i = 0; i < arrowCount; i++)
                                 {
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, MySelf.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
+                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, MySelf.GetPosition(), (ushort)(i + 1)));
+                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), (ushort)(i + 1)));
                                 }
-
-                                if (distance <= 4.0f && i == 3)
-                                {
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, MySelf.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                }
-
-                                if (distance <= 3.0f && i == 4)
-                                {
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, MySelf.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                }
-
-                                if (distance <= 2.0f && i == 5)
-                                {
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                    await Client.Session.SendAsync(MessageBuilder.MsgSend_StartMagicAtTarget(skill, MySelf.Id, MySelf.Id, new Vector3(0.0f, 0.0f, 0.0f), i));
-                                }
-
-
-
                             }
+                            else
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, target.GetPosition()));
                         }
-                        else
-                            await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillMagicAtTargetPacket(skill, MySelf.Id, target.Id, MySelf.GetPosition()));
                     });
-
-
                 }
                 break;
 
@@ -971,6 +972,9 @@ public class CharacterHandler : IDisposable
                                 SendMove(MySelf.GetPosition(), MySelf.GetPosition(), 0, 0);
 
                             await Client.Session.SendAsync(MessageBuilder.MsgSend_StartSkillCastingAtPosPacket(skill, MySelf.Id, MySelf.GetPosition()));
+
+                            if (skill.Extension.Number != 2)
+                                await Task.Delay(skill.CastTime * 100);
                         }
 
                         if (skill.RequiredFlyEffect != 0 || skill.Extension.ArrowCount == 1)
@@ -982,8 +986,7 @@ public class CharacterHandler : IDisposable
                 break;
         }
 
-        //skill.UpdateSkillUseTime(Environment.TickCount);
-
+        skill.UpdateSkillUseTime(Environment.TickCount);
     }
 
     public void SkillCastingProcess(int skillId, int sourceId, int targetId)
