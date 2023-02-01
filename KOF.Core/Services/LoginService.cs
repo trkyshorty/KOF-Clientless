@@ -189,6 +189,7 @@ public partial class LoginService
                         G = msg.Read<byte>(),
                         B = msg.Read<byte>(),
                         Zone = msg.Read<byte>(),
+                        Unknown1 = msg.Read<byte>(),
                         VisibleEquipment = VisibleEquipment(msg)
                     };
 

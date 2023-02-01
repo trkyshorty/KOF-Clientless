@@ -162,6 +162,7 @@ public class MessageBuilder
         msg.Write(characterName, "gb2312", true);
         msg.Write<byte>(1);
         msg.Write(zone);
+        msg.Write<byte>(0);
         msg.Write<ushort>(1);
 
         return msg;
