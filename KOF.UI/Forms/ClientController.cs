@@ -1732,7 +1732,7 @@ public partial class ClientController : Form
         });
     }
 
-    private async void SendPacket_Click(object sender, EventArgs e)
+    private void SendPacket_Click(object sender, EventArgs e)
     {
         var repatCount = SendPacketRepeatCount.Value;
         var packetTextBoxArray = PacketTextBox.Lines.ToArray();

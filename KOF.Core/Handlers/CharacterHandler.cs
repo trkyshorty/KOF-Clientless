@@ -501,6 +501,8 @@ public class CharacterHandler : IDisposable
 
         var loop = MySelf.LunarWarDressUp ? 9 : 15;
 
+        _ = msg.Read<byte>();
+
         for (byte idx = 0; idx < loop; idx++)
         {
             Inventory pItem = new()
