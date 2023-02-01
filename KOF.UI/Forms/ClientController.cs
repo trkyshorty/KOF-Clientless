@@ -791,10 +791,13 @@ public partial class ClientController : Form
                     var skill = Character.SkillList.FirstOrDefault(x => x.Id.ToString().Substring(0, 3) == Character.Class.ToString() && x.BaseId == 107705); //Minor Healing
 
                     if (skill != null &&
-                        !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
                         Character.Mp >= skill.Mana)
                     {
-                        CharacterHandler.SkillQueue.Enqueue(skill);
+                        if (!skill.IsQueued())
+                        {
+                            skill.SetQueued(true);
+                            CharacterHandler.SkillQueue.Enqueue(skill, 0);
+                        }
                     }
                 }
 
@@ -805,19 +808,25 @@ public partial class ClientController : Form
                 var skill = Character.SkillList.FirstOrDefault(x => x.Id == 500344);
 
                 if (skill != null &&
-                    !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
                     Environment.TickCount - skill.GetSkillUseTime() > (skill.CoolDown))
                 {
                     double hpGodModePercent = Math.Ceiling((Character.Hp * 100) / (float)Character.MaxHp);
                     double mpGodModePercent = Math.Ceiling((Character.Mp * 100) / (float)Character.MaxMp);
 
                     if ((decimal)hpGodModePercent <= Controller.GetControl("HpPotionPercentageValue", HpPotionPercentageValue.Value) ||
-                        (decimal)mpGodModePercent <= Controller.GetControl("MpPotionPercentageValue", MpPotionPercentageValue.Value) ||
-                        !CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
+                        (decimal)mpGodModePercent <= Controller.GetControl("MpPotionPercentageValue", MpPotionPercentageValue.Value))
                     {
-                        CharacterHandler.CancelSkill(skill);
-                        CharacterHandler.SkillQueue.Enqueue(skill);
-                    }
+                        if(CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
+                            CharacterHandler.CancelSkill(skill);
+                        else
+                        {
+                            if(!skill.IsQueued())
+                            {
+                                skill.SetQueued(true);
+                                CharacterHandler.SkillQueue.Enqueue(skill, 0);
+                            }
+                        }
+                    } 
                 }
             }
 
@@ -825,11 +834,15 @@ public partial class ClientController : Form
             {
                 var skill = Character.SkillList.FirstOrDefault(x => x.Id == 500094);
 
-                if (skill != null && !CharacterHandler.SkillQueue.Any(x => x != null && x.Id == skill.Id))
+                if (skill != null)
                 {
                     if (!CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
                     {
-                        CharacterHandler.SkillQueue.Enqueue(skill);
+                        if (!skill.IsQueued())
+                        {
+                            skill.SetQueued(true);
+                            CharacterHandler.SkillQueue.Enqueue(skill, 1);
+                        }
                     }
                 }
             }
@@ -896,7 +909,7 @@ public partial class ClientController : Form
 
     private void SelfSkillTimer_Tick(object sender, EventArgs e)
     {
-        try
+        /*try
         {
             if (Controller == null) return;
             if (!Controller.GetControl("SelfSkill", true)) return;
@@ -908,7 +921,7 @@ public partial class ClientController : Form
         catch (Exception ex)
         {
             Debug.WriteLine(ex.StackTrace);
-        }
+        }*/
     }
 
     private void AutoPartyTimer_Tick(object sender, EventArgs e)
@@ -971,7 +984,7 @@ public partial class ClientController : Form
 
     private void PartyTimer_Tick(object sender, EventArgs e)
     {
-        try
+        /*try
         {
             if (Controller == null) return;
             if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
@@ -996,12 +1009,16 @@ public partial class ClientController : Form
                             var skill = Character.SkillList.FirstOrDefault(x => x.Id.ToString().Substring(0, 3) == Character.Class.ToString() && x.BaseId == 107010); //Swift
 
                             if (skill != null &&
-                                !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
                                     Character.Mp >= skill.Mana)
                             {
-                                skill.SetTarget(character.Id);
-                                CharacterHandler.SkillQueue.Enqueue(skill);
-                                character.Speed = 67;
+                                if (!skill.IsQueued())
+                                {
+                                    skill.SetQueued(true);
+                                    skill.SetTarget(character.Id);
+                                    CharacterHandler.SkillQueue.Enqueue(skill, 1);
+                                    character.Speed = 67;
+
+                                }
                             }
                         }
                     }
@@ -1011,7 +1028,7 @@ public partial class ClientController : Form
         catch (Exception ex)
         {
             Debug.WriteLine(ex.StackTrace);
-        }
+        }*/
     }
 
     private void ChangeCampTo1Button_Click(object sender, EventArgs e)
@@ -1732,7 +1749,7 @@ public partial class ClientController : Form
         });
     }
 
-    private async void SendPacket_Click(object sender, EventArgs e)
+    private void SendPacket_Click(object sender, EventArgs e)
     {
         var repatCount = SendPacketRepeatCount.Value;
         var packetTextBoxArray = PacketTextBox.Lines.ToArray();

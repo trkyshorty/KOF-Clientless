@@ -29,6 +29,7 @@ public class Skill
     public long SkillUseTime { get; protected set; }
     public long SkillNextUseTime { get; protected set; }
     public int TargetId { get; protected set; }
+    public bool Queued { get; protected set; } = false;
 
     public Skill(int id, string name, int selfAni1,int selfEffect1, int selfPart1, int selfEffect2, int selfPart2, int requiredFlyEffect, int targetType, int point, int classBaseId, int mana, int reCastTime, int useItem, int castTime, int cooldown, int type1, int type2, int maxRange, int baseId)
     {
@@ -81,6 +82,16 @@ public class Skill
     public void SetTarget(int targetId)
     {
         TargetId = targetId;
+    }
+
+    public bool IsQueued()
+    {
+        return Queued;
+    }
+
+    public void SetQueued(bool b)
+    {
+        Queued = b;
     }
 
 }

@@ -190,6 +190,7 @@ namespace KOF.Data
             2, 8, 24, 14, 32, 27, 3, 9,
             19, 13, 30, 6, 22, 11, 4, 25
         };
+
         private static int UnknownInteger { get; set; }
         private static byte UnknownByte { get; set; }
         private static bool Save(DataTable data, string path)

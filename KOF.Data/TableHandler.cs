@@ -30,19 +30,19 @@ public static class TableHandler
     {
         return Task.Run(() =>
         {
-            LoadItemTable();
+            //LoadItemTable();
             LoadSkillTable();
-            LoadMonsterTable();
-            LoadNpcTable();
-            LoadPositionTable();
-            LoadItemSellTable();
-            LoadWarpInfoTable();
-            LoadQuestHelperTable();
-            LoadQuestGuideTable();
-            LoadQuestMonsterExchangeTable();
-            LoadQuestNpcDescTable();
-            LoadQuestItemDescTable();
-            LoadItemExchangeTable();
+            //LoadMonsterTable();
+            //LoadNpcTable();
+            //LoadPositionTable();
+            //LoadItemSellTable();
+            //LoadWarpInfoTable();
+            //LoadQuestHelperTable();
+            //LoadQuestGuideTable();
+            //LoadQuestMonsterExchangeTable();
+            //LoadQuestNpcDescTable();
+            //LoadQuestItemDescTable();
+            //LoadItemExchangeTable();
         });
     }
 
@@ -280,7 +280,6 @@ public static class TableHandler
         drakiBlessing.Extension = new SkillExtension(4, 494099, 1, 0, 3600);
         SkillTable.Add(drakiBlessing);
 
-
         List<int> classBaseList = new List<int>();
         
         classBaseList.Add(1020);
@@ -292,7 +291,7 @@ public static class TableHandler
 
         classBaseList.ForEach(x =>
         {
-            var superArcher = new Skill(999897, "Super Archer", 26, 500, 12, 0, 0, 532, 7, 55, x, 190, 13, 391010000, 13, 10, 2, 0, 0, 102003);
+            var superArcher = new Skill(999897, "Super Archer", 26, 500, 12, 0, 0, 532, 7, 0, x, 190, 13, 391010000, 13, 10, 2, 0, 0, 102003);
             superArcher.Extension = new SkillExtension(2, 999897, 8);
             SkillTable.Add(superArcher);
         });

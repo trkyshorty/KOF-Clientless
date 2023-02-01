@@ -24,7 +24,10 @@ public class HandshakeService
             protocol.Cryptography = MessageProtocolCryptography.None;
 
         protocol.State = MessageProtocolState.Completed;
+
         return Task.CompletedTask;
+
+        //return session.SendAsync(MessageBuilder.MsgSend_AccountLoginRequest(session.Account.Login, session.Account.Password));
     }
 
     [MessageHandler(MessageID.WIZ_VERSION_CHECK)]
@@ -40,7 +43,8 @@ public class HandshakeService
         protocol.Cryptography = MessageProtocolCryptography.AES;
 
         protocol.State = MessageProtocolState.Completed;
-        return Task.CompletedTask;
+
+        return session.SendAsync(MessageBuilder.MsgSend_AccountLogin(session.Account.Login, session.Account.Password));
     }
 }
 

@@ -16,13 +16,13 @@ namespace KOF.Core
         private Account? Account { get; set; }
         private List<Control> ControlList { get; set; } = new List<Control>();
 
-        public Controller(Account? account = null)
+        public Controller(Client client)
         {
-            Account = account;
+            Account = client.Account;
 
-            if (account != null)
+            if (Account != null)
             {
-                ControlList = SQLiteHandler.Table<Control>().Where(x => x.Form == account.Character).ToList();
+                ControlList = SQLiteHandler.Table<Control>().Where(x => x.Form == client.Name).ToList();
 
                 var supplyList = JsonSerializer.Deserialize<List<Supply>>(GetControl("SupplyList", "[]"))!;
 

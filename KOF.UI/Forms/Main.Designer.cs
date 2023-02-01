@@ -38,6 +38,9 @@
             this.PasswordTextBox = new System.Windows.Forms.TextBox();
             this.AccountIdTextBox = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.SetClientPathButton = new System.Windows.Forms.Button();
+            this.StartClientButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.ResetCharacterButton = new System.Windows.Forms.Button();
             this.DeleteAccountButton = new System.Windows.Forms.Button();
@@ -62,6 +65,7 @@
             this.SystemTrayNotify = new System.Windows.Forms.NotifyIcon(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AccountDataGrid)).BeginInit();
             this.Launcher.SuspendLayout();
@@ -146,6 +150,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.groupBox4);
             this.groupBox2.Controls.Add(this.groupBox1);
             this.groupBox2.Controls.Add(this.AccountDataGrid);
@@ -155,6 +160,37 @@
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Account";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.SetClientPathButton);
+            this.groupBox7.Controls.Add(this.StartClientButton);
+            this.groupBox7.Location = new System.Drawing.Point(740, 216);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(121, 131);
+            this.groupBox7.TabIndex = 5;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Client";
+            // 
+            // SetClientPathButton
+            // 
+            this.SetClientPathButton.Location = new System.Drawing.Point(6, 102);
+            this.SetClientPathButton.Name = "SetClientPathButton";
+            this.SetClientPathButton.Size = new System.Drawing.Size(112, 23);
+            this.SetClientPathButton.TabIndex = 1;
+            this.SetClientPathButton.Text = "Set Client Path";
+            this.SetClientPathButton.UseVisualStyleBackColor = true;
+            // 
+            // StartClientButton
+            // 
+            this.StartClientButton.ForeColor = System.Drawing.Color.Green;
+            this.StartClientButton.Location = new System.Drawing.Point(6, 22);
+            this.StartClientButton.Name = "StartClientButton";
+            this.StartClientButton.Size = new System.Drawing.Size(112, 23);
+            this.StartClientButton.TabIndex = 0;
+            this.StartClientButton.Text = "Start Client";
+            this.StartClientButton.UseVisualStyleBackColor = true;
+            this.StartClientButton.Click += new System.EventHandler(this.StartClientButton_Click);
             // 
             // groupBox4
             // 
@@ -418,6 +454,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.AccountDataGrid)).EndInit();
             this.Launcher.ResumeLayout(false);
@@ -462,5 +499,8 @@
         private Button SetGroupColorButton;
         private ColorDialog GroupColorDialog;
         private NotifyIcon SystemTrayNotify;
+        private GroupBox groupBox7;
+        private Button SetClientPathButton;
+        private Button StartClientButton;
     }
 }

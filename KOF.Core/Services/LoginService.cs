@@ -4,23 +4,14 @@ using KOF.Core.Enums;
 using KOF.Core.Extensions;
 using KOF.Core.Communications;
 using System.Numerics;
-using System.Text.Json;
 using System.Diagnostics;
 using KOF.Database;
+using System.Text.Json;
 
 namespace KOF.Core.Services;
 
 public partial class LoginService
 {
-    [MessageHandler(MessageID.LS_CRYPTION)]
-    public Task MsgRecv_Cryption(Session session, Message msg)
-    {
-        if (!session.Ready)
-            return Task.CompletedTask;
-
-        return session.SendAsync(MessageBuilder.MsgSend_AccountLoginRequest(session.Account.Login, session.Account.Password));
-    }
-
     [MessageHandler(MessageID.LS_LOGIN_REQ)]
     public Task MsgRecv_LoginREQ(Session session, Message msg)
     {
@@ -79,15 +70,6 @@ public partial class LoginService
         return Task.CompletedTask;
     }
 
-    [MessageHandler(MessageID.WIZ_VERSION_CHECK)]
-    public Task MsgRecv_VersionCheck(Session session, Message msg)
-    {
-        if (!session.Ready)
-            return Task.CompletedTask;
-
-        return session.SendAsync(MessageBuilder.MsgSend_AccountLogin(session.Account.Login, session.Account.Password));
-    }
-
     [MessageHandler(MessageID.WIZ_LOGIN)]
     public Task MsgRecv_Login(Session session, Message msg)
     {
@@ -99,7 +81,7 @@ public partial class LoginService
             case 0:
             case 1:
             case 2:
-                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "b32c6240"));
+                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "f7c65b0e"));
 
             case 17: // not signed in -> last login check.
                 return session.DisconnectAsync();
@@ -119,7 +101,7 @@ public partial class LoginService
         if (commandType == 6 && reason != -1)
             return session.SendAsync(MessageBuilder.MsgSend_LoadingLogin());
 
-        return session.DisconnectAsync();
+        return Task.CompletedTask;
     }
 
     [MessageHandler(MessageID.WIZ_LOADING_LOGIN)]
@@ -247,39 +229,6 @@ public partial class LoginService
         }
 
         return Task.CompletedTask;
-    }
-
-    [MessageHandler(MessageID.WIZ_SEL_CHAR)]
-    public Task MsgRecv_SelectedCharacter(Session session, Message msg)
-    {
-        var commandType = msg.Read<bool>();
-
-        if (commandType)
-        {
-            session.Client.Character.Zone = msg.Read<byte>();
-
-            session.Client.Character.X = msg.Read<ushort>() / 10.0f;
-            session.Client.Character.Y = msg.Read<ushort>() / 10.0f;
-            session.Client.Character.Z = msg.Read<ushort>() / 10.0f;
-
-            _ = msg.Read<byte>(); //VictoryNation
-
-            session.Client.Character.SetPosition(session.Client.Character.GetPosition());
-
-            session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
-            session.SendAsync(MessageBuilder.MsgSend_BufferSize()).ConfigureAwait(false);
-            //session.SendAsync(MessageBuilder.MsgSend_Rental()).ConfigureAwait(false);
-
-            session.SendAsync(MessageBuilder.MsgSend_SpeedCheck(session.Client.StartTime, true)).ConfigureAwait(false);
-
-            session.Client.Character.Zone = (byte)Character.GetRepresentZone(session.Client.Character.Zone);
-
-            ClientHandler.LoadZone(session.Client.Character.Zone);
-
-            return session.SendAsync(MessageBuilder.MsgSend_ServerIndex());
-        }
-        else
-            return session.DisconnectAsync();
     }
 
     [MessageHandler(MessageID.WIZ_SERVER_INDEX)]

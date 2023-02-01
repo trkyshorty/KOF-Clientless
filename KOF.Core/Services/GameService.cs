@@ -9,6 +9,7 @@ using KOF.Core.Handlers;
 using KOF.Database.Models;
 using KOF.Data;
 using KOF.Database;
+using System.Text.Json;
 
 namespace KOF.Core.Services;
 
@@ -17,6 +18,9 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_COMPRESS_PACKET)]
     public Task MsgRecv_Compress(Session session, Message msg)
     {
+        if (session.Client.ClientProcess != null)
+            return Task.CompletedTask;
+
         ushort compressLength = (ushort)msg.Read<uint>(); // out len.
         ushort uncompressLength = (ushort)msg.Read<uint>(); // in len.
         _ = msg.Read<uint>(); // crc32
@@ -37,35 +41,74 @@ public partial class GameService
         return Task.CompletedTask;
     }
 
+    [MessageHandler(MessageID.WIZ_SEL_CHAR)]
+    public Task MsgRecv_SelectedCharacter(Session session, Message msg)
+    {
+        var commandType = msg.Read<bool>();
+
+        if (commandType)
+        {
+            session.Client.Character.Zone = msg.Read<byte>();
+
+            session.Client.Character.X = msg.Read<ushort>() / 10.0f;
+            session.Client.Character.Y = msg.Read<ushort>() / 10.0f;
+            session.Client.Character.Z = msg.Read<ushort>() / 10.0f;
+
+            _ = msg.Read<byte>(); //VictoryNation
+
+            session.Client.Character.SetPosition(session.Client.Character.GetPosition());
+
+            session.Client.Character.Zone = (byte)Character.GetRepresentZone(session.Client.Character.Zone);
+
+            ClientHandler.LoadZone(session.Client.Character.Zone);
+
+            if (session.Client.ClientProcess == null)
+            {
+                //session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
+                //session.SendAsync(MessageBuilder.MsgSend_BufferSize()).ConfigureAwait(false);
+                //session.SendAsync(MessageBuilder.MsgSend_Rental()).ConfigureAwait(false);
+                session.SendAsync(MessageBuilder.MsgSend_SpeedCheck(session.Client.StartTime, true)).ConfigureAwait(false);
+                return session.SendAsync(MessageBuilder.MsgSend_ServerIndex());
+            }
+
+            return Task.CompletedTask;
+        }
+        else
+            return session.DisconnectAsync();
+    }
+
     [MessageHandler(MessageID.WIZ_MYINFO)]
     public Task MsgRecv_MyInfo(Session session, Message msg)
     {
         session.Client.CharacterHandler.ParseMySelf(session.Client, msg);
 
-        session.SendAsync(MessageBuilder.MsgSend_KnightsProcess((byte)KnightsType.KNIGHTS_TOP10)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_FriendProcess((byte)FriendType.FRIEND_REQUEST)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_Helmet(0x00)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_KnightsProcess((byte)KnightsType.KNIGHTS_ALLY_LIST)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_SkillDataProcess((byte)SkillBarType.SKILL_DATA_LOAD)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_GenieProcess((byte)GenieType.GENIE_UPDATE_REQUEST)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_PROCESS)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_LETTER)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_GameStart((byte)session.Client.Character.GameState, session.Account.Character)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_QuestInit(session.Client.Character.Id)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_SurroundingUserProcess((byte)SurroundingUserType.USER_INFO, session.Account.Character)).ConfigureAwait(false);
-        session.SendAsync(MessageBuilder.MsgSend_Rotate(session.Client.Character.Rotation, session.Account.Character)).ConfigureAwait(false);
+        if(session.Client.ClientProcess == null)
+        {
+            session.SendAsync(MessageBuilder.MsgSend_KnightsProcess((byte)KnightsType.KNIGHTS_TOP10)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_FriendProcess((byte)FriendType.FRIEND_REQUEST)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_Helmet(0x00)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_KnightsProcess((byte)KnightsType.KNIGHTS_ALLY_LIST)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_SkillDataProcess((byte)SkillBarType.SKILL_DATA_LOAD)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_GenieProcess((byte)GenieType.GENIE_UPDATE_REQUEST)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_PROCESS)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_LETTER)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_GameStart((byte)session.Client.Character.GameState, session.Account.Character)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_QuestInit(session.Client.Character.Id)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_SurroundingUserProcess((byte)SurroundingUserType.USER_INFO, session.Account.Character)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_Rotate(session.Client.Character.Rotation, session.Account.Character)).ConfigureAwait(false);
 
-        var spawnPosition = session.Client.Character.GetPosition();
+            var spawnPosition = session.Client.Character.GetPosition();
 
-        session.Client.CharacterHandler.SendMove(spawnPosition, spawnPosition, 0, 0);
+            session.Client.CharacterHandler.SendMove(spawnPosition, spawnPosition, 0, 0).ConfigureAwait(false);
+        }
+
+        session.Client.Character.UntouchableTime = Environment.TickCount + 17000;
 
         session.Client.CharacterHandler.InitializeController();
         session.Client.CharacterHandler.InitializeSkillList();
         session.Client.CharacterHandler.InitializeSelectedTargetList();
-
         session.Client.CharacterHandler.InitializeCharacterProcess();
-
-        session.Client.CharacterHandler.MoveToSelectedRouteFinal();
+        //session.Client.CharacterHandler.MoveToSelectedRouteFinal();
 
         return Task.CompletedTask;
     }
@@ -188,7 +231,8 @@ public partial class GameService
             //lock (session.Client.CharacterHandler.PlayerList)
             //  session.Client.CharacterHandler.PlayerList.RemoveAll(x => !playerIds.Contains(x.Id));
 
-            return session.SendAsync(MessageBuilder.MsgSend_UserRequest((ushort)playerIdList.Count(), playerIdList.ToArray()));
+            if(session.Client.ClientProcess == null)
+                return session.SendAsync(MessageBuilder.MsgSend_UserRequest((ushort)playerIdList.Count(), playerIdList.ToArray()));
         }
         return Task.CompletedTask;
     }
@@ -198,9 +242,9 @@ public partial class GameService
     {
         int socketId = msg.Read<int>();
 
-        float will_x = msg.Read<ushort>() / 10.0f;
-        float will_y = msg.Read<ushort>() / 10.0f;
-        float will_z = msg.Read<ushort>() / 10.0f;
+        float x = msg.Read<ushort>() / 10.0f;
+        float y = msg.Read<ushort>() / 10.0f;
+        float z = msg.Read<ushort>() / 10.0f;
 
         short speed = msg.Read<short>();
         byte moveType = msg.Read<byte>();
@@ -213,7 +257,7 @@ public partial class GameService
                     {
                         session.Client.Character.Moving = false;
                         session.Client.Character.MovePunishTime = Environment.TickCount;
-                        session.Client.Character.SetPosition(new Vector3(will_x, will_y, will_z));
+                        session.Client.Character.SetPosition(new Vector3(x, y, z));
                         session.Client.CharacterHandler.InitializeMoveSpeed();
                     }
                     break;
@@ -239,15 +283,16 @@ public partial class GameService
                     break;
             }
 
-            session.Client.Character.SetWillPosition(new Vector3(will_x, will_y, will_z));
-
+           session.Client.Character.SetPosition(new Vector3(x, y, z));
         }
         else
         {
             if (!session.Client.CharacterHandler.PlayerList.Any(x => x.Id == socketId)) //Ghost Player?
             {
                 int[] playerIds = new int[1] { socketId };
-                return session.SendAsync(MessageBuilder.MsgSend_UserRequest(1, playerIds));
+
+                //if (session.Client.ClientProcess == null)
+                  //  return session.SendAsync(MessageBuilder.MsgSend_UserRequest(1, playerIds));
             }
             else
             {
@@ -255,7 +300,7 @@ public partial class GameService
 
                 if (character != null)
                 {
-                    character.SetPosition(new Vector3(will_x, will_y, will_z));
+                    character.SetPosition(new Vector3(x, y, z));
 
                     if (moveType == 1 || moveType == 2)
                         character.Speed = speed;
@@ -367,7 +412,10 @@ public partial class GameService
             //session.Client.CharacterHandler.NpcList.RemoveAll(x => !npcIdList.Contains(x.Id));
         }
 
-        return session.SendAsync(MessageBuilder.MsgSend_NpcRequest((ushort)npcIdList.Count(), npcIdList.ToArray()));
+        //if (session.Client.ClientProcess == null)
+            return session.SendAsync(MessageBuilder.MsgSend_NpcRequest((ushort)npcIdList.Count(), npcIdList.ToArray()));
+
+        return Task.CompletedTask;
     }
 
     [MessageHandler(MessageID.WIZ_NPC_MOVE)]
@@ -387,7 +435,9 @@ public partial class GameService
             if (!session.Client.CharacterHandler.NpcList.Any(x => x.Id == npcId)) //Ghost Monster?
             {
                 int[] npcIds = new int[1] { npcId };
-                return session.SendAsync(MessageBuilder.MsgSend_NpcRequest(1, npcIds));
+
+                //if (session.Client.ClientProcess == null)
+                  //  return session.SendAsync(MessageBuilder.MsgSend_NpcRequest(1, npcIds));
             }
             else
             {
@@ -1075,7 +1125,7 @@ public partial class GameService
         session.Client.Character.Speed = 45;
         session.Client.Character.State = 0;
 
-        session.Client.Character.UntouchableTime = Environment.TickCount + 15000;
+        session.Client.Character.UntouchableTime = Environment.TickCount + 17000;
 
         session.Client.Character.BuffList.Clear();
 

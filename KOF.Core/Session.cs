@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 using KOF.Database.Models;
 using KOF.Core.Communications;
 using KOF.Core.Exceptions;
+using KOF.Core.Win32;
+using System.Diagnostics;
+using System.Reflection.Metadata;
 
 namespace KOF.Core;
 
@@ -133,14 +136,43 @@ public class Session : IDisposable
 
     public async Task SendAsync(Message msg)
     {
-        try
+        if (Client.ClientProcess == null)
         {
-            if (!_socket.Connected) return;
-            await _socket.SendAsync(Protocol.Encode(this, msg), SocketFlags.None).ConfigureAwait(false);
+            try
+            {
+                if (!_socket.Connected) return;
+                await _socket.SendAsync(Protocol.Encode(this, msg), SocketFlags.None).ConfigureAwait(false);
+            }
+            catch (SocketException)
+            {
+                throw;
+            }
         }
-        catch (SocketException)
+        else
         {
-            throw;
+            if (Client.ClientProcess.HasExited) return;
+
+            IntPtr PacketPtr = Win32Api.VirtualAllocEx(Client.ClientProcess.Handle, IntPtr.Zero, 1, Win32Api.MEM_COMMIT, Win32Api.PAGE_EXECUTE_READWRITE);
+
+            var packet = msg.AsDataSpan().ToArray();
+
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss} SEND: {Convert.ToHexString(msg.AsDataSpan()).ToLower()}");
+
+            Win32Api.WriteProcessMemory(Client.ClientProcess.Handle, PacketPtr, packet, packet.Length, 0);
+
+            Client.ExecuteRemoteCode("608B0D"
+                + Win32Api.AlignDWORD(0xF7E32C)  //KO_PTR_PKT
+                + "68"
+                + Win32Api.AlignDWORD(packet.Length)
+                + "68"
+                + Win32Api.AlignDWORD(PacketPtr)
+                + "BF"
+                + Win32Api.AlignDWORD(0x5ED620) //KO_SND_FNC
+                + "FFD7C605"
+                + Win32Api.AlignDWORD(0xF7E32C + 0xC5) //KO_PTR_PKT
+                + "0061C3");
+
+            Win32Api.VirtualFreeEx(Client.ClientProcess.Handle, PacketPtr, 0, Win32Api.MEM_RELEASE);
         }
     }
 
@@ -205,11 +237,48 @@ public class Session : IDisposable
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        //TODO: Mailslot recv burada işlenicek
-        while (!cancellationToken.IsCancellationRequested && _socket.Connected)
+        if (Client.ClientProcess == null)
         {
-            var msg = await ReceiveAsync().ConfigureAwait(false);
-            await RespondAsync(msg).ConfigureAwait(false);
+            while (!cancellationToken.IsCancellationRequested && _socket.Connected)
+            {
+                var msg = await ReceiveAsync().ConfigureAwait(false);
+                await RespondAsync(msg).ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            while (!cancellationToken.IsCancellationRequested && !Client.ClientProcess.HasExited)
+            {
+                Int32 MailslotRecvMessageSize = 0; Int32 MailslotRecvMessageLeft = 0;
+
+                Win32Api.GetMailslotInfo(Client.MailslotRecvPtr, IntPtr.Zero, out MailslotRecvMessageSize, out MailslotRecvMessageLeft, IntPtr.Zero);
+
+                if (MailslotRecvMessageSize > 0)
+                {
+                    byte[] MessageBuffer = new byte[MailslotRecvMessageSize];
+
+                    do
+                    {
+                        Int32 MessageReadByte = 0;
+
+                        Win32Api.ReadFile(Client.MailslotRecvPtr, MessageBuffer, MailslotRecvMessageSize, out MessageReadByte, IntPtr.Zero);
+                        
+                        if (MessageReadByte > 0)
+                        {
+                            var msg = new Message(MessageBuffer.Length, MessageBuffer);
+                            await RespondAsync(msg).ConfigureAwait(false);
+                            //Debug.WriteLine($"{DateTime.Now:HH:mm:ss} RECV: {Convert.ToHexString(msg.AsDataSpan()).ToLower()}");
+                        }
+
+                        MailslotRecvMessageLeft -= 1;
+
+                        await Task.Delay(1);
+
+                    } while (MailslotRecvMessageLeft != 0);
+                }
+
+                await Task.Delay(1);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using KOF.Data;
 using KOF.Database;
 using KOF.Database.Models;
 using KOF.Zone;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -108,6 +109,30 @@ public static class ClientHandler
 
         lock (ClientList)
             ClientList.Remove(client);
+    }
+
+    public static Client Inject(Server server, Account account)
+    {
+        FileInfo fileInfo = new FileInfo("C:\\Users\\trkys\\OneDrive\\Masaüstü\\CNKO\\KnightOnLine.exe");
+        ProcessStartInfo startInfo = new ProcessStartInfo(fileInfo.Name);
+
+        startInfo.WorkingDirectory = fileInfo.DirectoryName;
+        startInfo.Arguments = Process.GetCurrentProcess().Id.ToString();
+        startInfo.UseShellExecute = true;
+
+        Process? clientProcess = Process.Start(startInfo);
+
+        if (clientProcess != null)
+        {
+            var client = new Client(clientProcess, account);
+
+            lock (ClientList)
+                ClientList.Add(client);
+
+            return client;
+        }
+
+        return default!;
     }
 
 }

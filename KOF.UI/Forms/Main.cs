@@ -705,4 +705,31 @@ public partial class Main : Form
         this.WindowState = FormWindowState.Normal;
         SystemTrayNotify.Visible = false;
     }
+
+    private void StartClientButton_Click(object sender, EventArgs e)
+    {
+        foreach (DataGridViewRow row in AccountDataGrid.SelectedRows)
+        {
+            var account = (Account)row.DataBoundItem;
+            var server = ClientHandler.ServerList.FirstOrDefault(x => x.Name == account.Server);
+
+            if (server == null) return;
+
+            if (!ClientHandler.Ready)
+            {
+                //MessageBox.Show("Application is loading, please wait.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //return;
+            }
+
+            if (ClientHandler.ClientList.Any(x => x != null && x.Account.Id == account.Id))
+                continue;
+
+            var client = ClientHandler.Inject(server, account);
+
+            var controller = new ClientController(client);
+            
+            ControllerList.Add(controller);
+        }
+        
+    }
 }
