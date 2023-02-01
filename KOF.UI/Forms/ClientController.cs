@@ -103,7 +103,7 @@ public partial class ClientController : Form
         AttackSkillCheckedListBox.DataSource = Character.SkillList
             .Where(x =>
             {
-                return x.Id.ToString().Substring(0, 3) == Character.Class.ToString() &&
+                return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level
                         && (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery])
                         && (x.TargetType == (int)SkillMagicTargetType.TARGET_ENEMY_ONLY || x.TargetType == (int)SkillMagicTargetType.TARGET_AREA_ENEMY);
@@ -115,7 +115,7 @@ public partial class ClientController : Form
         SelfSkillCheckedListBox.DataSource = Character.SkillList
             .Where(x =>
             {
-                return x.Id.ToString().Substring(0, 3) == Character.Class.ToString() &&
+                return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level &&
                         (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery]) &&
                         (x.TargetType == (int)SkillMagicTargetType.TARGET_SELF || x.TargetType == (int)SkillMagicTargetType.TARGET_PARTY_ALL || x.TargetType == (int)SkillMagicTargetType.TARGET_FRIEND_WITHME);
@@ -825,7 +825,7 @@ public partial class ClientController : Form
             {
                 var skill = Character.SkillList.FirstOrDefault(x => x.Id == 500094);
 
-                if (skill != null && !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id))
+                if (skill != null && !CharacterHandler.SkillQueue.Any(x => x != null && x.Id == skill.Id))
                 {
                     if (!CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
                     {
@@ -894,37 +894,6 @@ public partial class ClientController : Form
         }
     }
 
-    private void AttackTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (!Controller.GetControl("Attack", false)) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable() || CharacterHandler.IsRouting()) return;
-            if (Character.IsTrading) return;
-
-            var attackRange = Controller.GetControl("AttackRange", 45);
-
-            if (Character.GetTargetId() != -1)
-            {
-                var target = CharacterHandler.GetNpcList().FirstOrDefault(x => x?.Id == Character.GetTargetId());
-
-                if (target != null)
-                {
-                    if (target.IsDead() || Vector3.Distance(Character.GetPosition(), target.GetPosition()) >= (float)attackRange)
-                        return;
-
-                    CharacterHandler.Attack();
-                }              
-            }
-                
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.StackTrace);
-        }
-    }
-
     private void SelfSkillTimer_Tick(object sender, EventArgs e)
     {
         try
@@ -935,90 +904,6 @@ public partial class ClientController : Form
             if (Character.IsTrading) return;
 
             CharacterHandler.SelfProtection();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.StackTrace);
-        }
-    }
-
-    private void TargetAndActionTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (!Controller.GetControl("Attack", false)) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsRouting()) return;
-            if (Character.IsTrading) return;
-
-            //bool test = false;
-
-            //if (test)
-            //{
-            //    CharacterHandler.SelectTarget(20573); // KUKLA TEST
-            //    return;
-            //}
-
-            var selectedTargetIds = JsonSerializer.Deserialize<List<int>>(Controller.GetControl("SelectedTargetList", "[]"))!;
-
-            var followedClient = ClientHandler.ClientList.FirstOrDefault(x => x != null && x.CharacterHandler.GetGameState() == GameState.GAME_STATE_INGAME && x.Character.Name == Controller.GetControl("Follow", ""))!;
-
-            if (Controller.GetControl("FollowTargetSync", true)
-                && followedClient != null
-                && !followedClient.CharacterHandler.IsRouting()
-                && !followedClient.Character.IsTrading
-                && CharacterHandler.GetGameState() == GameState.GAME_STATE_INGAME)
-            {
-                if (followedClient.Character.GetTargetId() != Character.GetTargetId()
-                    && Vector3.Distance(followedClient.Character.GetPosition(), Character.GetPosition()) <= 150)
-                    CharacterHandler.SelectTarget(followedClient.Character.GetTargetId());
-            }
-            else
-            {
-                var targetSearchRange = Controller.GetControl("TargetSearchRange", 45);
-
-                if (Character.GetTargetId() != -1)
-                {
-                    var target = CharacterHandler.GetNpcList().FirstOrDefault(x => x?.Id == Character.GetTargetId());
-
-                    if (target != null)
-                    {
-                        if (target.IsDead() || Vector3.Distance(Character.GetPosition(), target.GetPosition()) >= (float)targetSearchRange)
-                        {
-                            CharacterHandler.SelectTarget(-1);
-                        }
-                        else
-                        {
-                            if (!CharacterHandler.IsRouting() && !CharacterHandler.IsMovingToLoot() && Controller.GetControl("MoveToTarget", true) && target.GetPosition() != Character.GetPosition())
-                                Character.SetMovePosition(target.GetPosition());
-                        }
-                    }
-                    else
-                        CharacterHandler.SelectTarget(-1);
-                }
-                else
-                {
-                    Character target = default!;
-
-                    if (selectedTargetIds.Count() > 0)
-                    {
-                        target = CharacterHandler.GetNpcList()
-                           .FindAll(x => !x.IsDead() && selectedTargetIds.Contains(x.ProtoId) && x.MonsterOrNpc == 1 && Vector3.Distance(x.GetPosition(), Character.GetPosition()) < (float)targetSearchRange)
-                           .OrderBy(x => Vector3.Distance(Character.GetPosition(), x.GetPosition()))
-                           ?.FirstOrDefault()!;
-                    }
-                    else
-                    {
-                        target = CharacterHandler.GetNpcList()
-                           .FindAll(x => !x.IsDead() && x.MonsterOrNpc == 1 && Vector3.Distance(x.GetPosition(), Character.GetPosition()) < (float)targetSearchRange)
-                           .OrderBy(x => Vector3.Distance(Character.GetPosition(), x.GetPosition()))
-                           ?.FirstOrDefault()!;
-                    }
-
-                    if (target != null)
-                        CharacterHandler.SelectTarget(target.Id);
-                }
-            }
         }
         catch (Exception ex)
         {
@@ -1502,6 +1387,29 @@ public partial class ClientController : Form
                     }
 
                 });
+
+
+                var followers = CharacterHandler.GetFollowersAtSameZone();
+
+                followers.ForEach(x =>
+                {
+                    x.CharacterHandler.QuestList.Clear();
+
+                    x.CharacterHandler.Route(new List<RouteData>()
+                    {
+                        new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
+
+                        new RouteData() {
+                            Action = RouteActionType.NPCEVENT,
+                            X = character.X,
+                            Y = character.Y,
+                            Z = character.Z,
+                            NpcId = character.Id
+                        }
+
+                    });
+                });
+
             }
         }
     }
@@ -1524,7 +1432,7 @@ public partial class ClientController : Form
             if (npc == null) continue;
 
             // Self action
-            if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+           // if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
                 CharacterHandler.QuestTake((uint)quest.BaseId);
 
             // Forward action to all followers
@@ -1532,7 +1440,7 @@ public partial class ClientController : Form
 
             followers.ForEach(x =>
             {
-                if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+                //if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
                     x.CharacterHandler.QuestTake((uint)quest.BaseId);
             });
         }
@@ -1824,7 +1732,7 @@ public partial class ClientController : Form
         });
     }
 
-    private async void SendPacket_Click(object sender, EventArgs e)
+    private void SendPacket_Click(object sender, EventArgs e)
     {
         var repatCount = SendPacketRepeatCount.Value;
         var packetTextBoxArray = PacketTextBox.Lines.ToArray();

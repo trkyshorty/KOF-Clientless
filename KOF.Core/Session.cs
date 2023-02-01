@@ -28,11 +28,11 @@ public class Session : IDisposable
         Account = account;
         Client = client;
 
-        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-        {
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        /*{
             NoDelay = false,
             Blocking = true
-        };
+        };*/
 
         Protocol = new ClientMessageProtocol();
     }
@@ -136,10 +136,7 @@ public class Session : IDisposable
         try
         {
             if (!_socket.Connected) return;
-            // File.AppendAllText($"{Account.Login}.txt", $"{DateTime.Now:HH:mm:ss} SEND:[{Protocol.Sequence}] {Convert.ToHexString(msg.AsDataSpan()).ToLower()}\n");
- 
             await _socket.SendAsync(Protocol.Encode(this, msg), SocketFlags.None).ConfigureAwait(false);
-            
         }
         catch (SocketException)
         {
@@ -159,32 +156,31 @@ public class Session : IDisposable
         // instead of calling the method recursively on itself.
         // because doing so is a bad idea, and performance killer. (Ask Google if you don't know why)
 
-        while (true)
-        {
-            var header = new byte[2];
-            await ReceiveExactAsync(header.AsMemory(), SocketFlags.None).ConfigureAwait(false);
+        var header = new byte[2];
+        await ReceiveExactAsync(header.AsMemory(), SocketFlags.None).ConfigureAwait(false);
 
-            var sizeBuffer = new byte[2];
-            await ReceiveExactAsync(sizeBuffer.AsMemory(), SocketFlags.None).ConfigureAwait(false);
+        var sizeBuffer = new byte[2];
+        await ReceiveExactAsync(sizeBuffer.AsMemory(), SocketFlags.None).ConfigureAwait(false);
 
-            var size = MemoryMarshal.Read<MessageSize>(sizeBuffer);
-            var remaining = size.Value;
+        var size = MemoryMarshal.Read<MessageSize>(sizeBuffer);
+        var remaining = size.Value;
 
-            var buffer = new byte[remaining];
-            await ReceiveExactAsync(buffer.AsMemory(), SocketFlags.None).ConfigureAwait(false);
+        var buffer = new byte[remaining];
+        await ReceiveExactAsync(buffer.AsMemory(), SocketFlags.None).ConfigureAwait(false);
 
-            var tail = new byte[2];
-            await ReceiveExactAsync(tail.AsMemory(), SocketFlags.None).ConfigureAwait(false);
+        var tail = new byte[2];
+        await ReceiveExactAsync(tail.AsMemory(), SocketFlags.None).ConfigureAwait(false);
 
-            var msg = Protocol.Decode(this, size, buffer.AsSpan());
-            return msg;
-        }
+        var msg = Protocol.Decode(this, size, buffer.AsSpan());
+
+        return msg;
     }
 
     private async Task ReceiveExactAsync(Memory<byte> buffer, SocketFlags flags)
     {
         var received = 0;
         var remaining = buffer.Length;
+        
         while (received < remaining)
         {
             if (!_socket.Connected)
@@ -194,10 +190,8 @@ public class Session : IDisposable
                 .ConfigureAwait(false);
 
             if (receivedChunk == 0)
-            {
-                await DisconnectAsync().ConfigureAwait(false);
-                throw new RemoteDisconnectedException();
-            }
+                continue;
+
             received += receivedChunk;
         }
     }
@@ -209,26 +203,10 @@ public class Session : IDisposable
                 await handler.Invoke(this, msg).ConfigureAwait(false);
     }
 
-    public async Task HandshakeAsync()
-    {
-        if (Ready)
-            return;
-
-        while (!Ready)
-        {
-            if (!_socket.Connected)
-                return;
-
-            var msg = await ReceiveAsync().ConfigureAwait(false);
-            await RespondAsync(msg).ConfigureAwait(false);
-        }
-    }
-
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        await HandshakeAsync().ConfigureAwait(false);
-
-        while (!cancellationToken.IsCancellationRequested && Connected)
+        //TODO: Mailslot recv burada işlenicek
+        while (!cancellationToken.IsCancellationRequested && _socket.Connected)
         {
             var msg = await ReceiveAsync().ConfigureAwait(false);
             await RespondAsync(msg).ConfigureAwait(false);

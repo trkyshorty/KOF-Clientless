@@ -99,7 +99,7 @@ public partial class LoginService
             case 0:
             case 1:
             case 2:
-                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "91e56f24"));
+                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "f7c65b0e"));
 
             case 17: // not signed in -> last login check.
                 return session.DisconnectAsync();
@@ -207,6 +207,7 @@ public partial class LoginService
                         G = msg.Read<byte>(),
                         B = msg.Read<byte>(),
                         Zone = msg.Read<byte>(),
+                        Unknown1 = msg.Read<byte>(),
                         VisibleEquipment = VisibleEquipment(msg)
                     };
 

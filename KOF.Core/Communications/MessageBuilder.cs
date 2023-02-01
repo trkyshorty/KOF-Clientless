@@ -162,6 +162,7 @@ public class MessageBuilder
         msg.Write(characterName, "gb2312", true);
         msg.Write<byte>(1);
         msg.Write(zone);
+        msg.Write<byte>(0);
         msg.Write<ushort>(1);
 
         return msg;
@@ -381,7 +382,7 @@ public class MessageBuilder
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write(3);
+        msg.Write(2);
 
         return msg;
     }
@@ -557,10 +558,12 @@ public class MessageBuilder
         msg.Write(0);
         msg.Write(0);
 
+        msg.Write((short)0);
+
         return msg;
     }
 
-    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, int socketId, int targetId, ushort arrowIndex = 0)
+    public static Message MsgSend_StartSkillMagicAtTargetPacket(Skill skill, int socketId, int targetId, Vector3 targetPosition, ushort arrowIndex = 0)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
 
@@ -577,9 +580,9 @@ public class MessageBuilder
         }
         else
         {
-            msg.Write(0);
-            msg.Write(0);
-            msg.Write(0);
+            msg.Write(targetPosition.X);
+            msg.Write(targetPosition.Z);
+            msg.Write(targetPosition.Y);
         }
 
         msg.Write(arrowIndex);
@@ -625,7 +628,7 @@ public class MessageBuilder
         msg.Write((int)targetPosition.Z);
         msg.Write((int)targetPosition.Y);
 
-        msg.Write<short>(-101);
+        msg.Write(-101);
 
         msg.Write(arrowIndex);
 

@@ -19,6 +19,7 @@ public class Lobby
     public byte G { get; set; }
     public byte B { get; set; }
     public byte Zone { get; set; }
+    public byte Unknown1 { get; set; }
     public Inventory[] VisibleEquipment { get; set; } = null!;
 
     public override string ToString()
