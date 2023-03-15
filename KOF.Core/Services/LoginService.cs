@@ -99,7 +99,7 @@ public partial class LoginService
             case 0:
             case 1:
             case 2:
-                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "f7c65b0e"));
+                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "83ac93d8"));
 
             case 17: // not signed in -> last login check.
                 return session.DisconnectAsync();
@@ -119,7 +119,9 @@ public partial class LoginService
         if (commandType == 6 && reason != -1)
             return session.SendAsync(MessageBuilder.MsgSend_LoadingLogin());
 
-        return session.DisconnectAsync();
+        //return session.DisconnectAsync();
+
+        return Task.CompletedTask;
     }
 
     [MessageHandler(MessageID.WIZ_LOADING_LOGIN)]

@@ -934,7 +934,7 @@ public class CharacterHandler : IDisposable
 
                             if (skill.Extension.ArrowCount > 1)
                             {
-                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, target.Id, MySelf.GetPosition(), 1));
+                                await Client.Session.SendAsync(MessageBuilder.MsgSend_StartFlyingAtTarget(skill, MySelf.Id, MySelf.Id, MySelf.GetPosition(), 1));
 
                                 float distance = Vector3.Distance(MySelf.GetPosition(), target.GetPosition());
 
