@@ -382,7 +382,7 @@ public class MessageBuilder
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write(2);
+        msg.Write(-3);
 
         return msg;
     }
@@ -525,9 +525,9 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(-1);
 
-        msg.Write((int)targetPosition.X);
-        msg.Write((int)targetPosition.Z);
-        msg.Write((int)targetPosition.Y);
+        msg.Write((int)targetPosition.X * 10.0f);
+        msg.Write((int)targetPosition.Z * 10.0f);
+        msg.Write((int)targetPosition.Y * 10.0f);
 
         msg.Write(0);
         msg.Write(0);
@@ -549,9 +549,9 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write((int)targetPosition.X);
-        msg.Write((int)targetPosition.Z);
-        msg.Write((int)targetPosition.Y);
+        msg.Write((int)targetPosition.X * 10.0f);
+        msg.Write((int)targetPosition.Z * 10.0f);
+        msg.Write((int)targetPosition.Y * 10.0f);
 
         msg.Write(arrowIndex);
 
@@ -580,9 +580,9 @@ public class MessageBuilder
         }
         else
         {
-            msg.Write(targetPosition.X);
-            msg.Write(targetPosition.Z);
-            msg.Write(targetPosition.Y);
+            msg.Write(targetPosition.X * 10.0f);
+            msg.Write(targetPosition.Z * 10.0f);
+            msg.Write(targetPosition.Y * 10.0f);
         }
 
         msg.Write(arrowIndex);
@@ -604,9 +604,9 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(-1);
 
-        msg.Write((int)targetPosition.X);
-        msg.Write((int)targetPosition.Z);
-        msg.Write((int)targetPosition.Y);
+        msg.Write((int)targetPosition.X * 10.0f);
+        msg.Write((int)targetPosition.Z * 10.0f);
+        msg.Write((int)targetPosition.Y * 10.0f);
 
         msg.Write(0);
         msg.Write(0);
@@ -624,9 +624,9 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write((int)targetPosition.X);
-        msg.Write((int)targetPosition.Z);
-        msg.Write((int)targetPosition.Y);
+        msg.Write((int)targetPosition.X * 10.0f);
+        msg.Write((int)targetPosition.Z * 10.0f);
+        msg.Write((int)targetPosition.Y * 10.0f);
 
         msg.Write(-101);
 
