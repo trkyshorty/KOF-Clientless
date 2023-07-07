@@ -55,15 +55,20 @@ public class MessageBuilder
         return new Message(MessageID.WIZ_VERSION_CHECK);
     }
 
-    public static Message MsgSend_AccountLogin(string account, string password)
+    public static Message MsgSend_AccountLogin(string account, string password, long platform)
     {
         var msg = new Message(MessageID.WIZ_LOGIN);
 
         msg.Write(account, true);
         msg.Write(password, true);
         msg.Write<byte>(0);
-        msg.Write<ushort>(0);
-        msg.Write<ushort>(1);
+
+        if(platform != 1)
+        {
+            msg.Write<ushort>(0);
+            msg.Write<ushort>(1);
+        }
+
 
         return msg;
     }
@@ -158,8 +163,8 @@ public class MessageBuilder
     {
         var msg = new Message(MessageID.WIZ_SEL_CHAR);
 
-        msg.Write(account, "gb2312", true);
-        msg.Write(characterName, "gb2312", true);
+        msg.Write(account, "Shift-JIS", true);
+        msg.Write(characterName, "Shift-JIS", true);
         msg.Write<byte>(1);
         msg.Write(zone);
         msg.Write<byte>(0);
@@ -218,7 +223,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_ROTATE);
 
         msg.Write((short)rotateAngle);
-        msg.Write(characterName, "gb2312", false);
+        msg.Write(characterName, "Shift-JIS", false);
 
         return msg;
     }
@@ -238,7 +243,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_GAMESTART);
 
         msg.Write<short>(commandType);
-        msg.Write(characterName, "gb2312", false);
+        msg.Write(characterName, "Shift-JIS", false);
 
         return msg;
     }
@@ -248,7 +253,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_SURROUNDING_USER);
 
         msg.Write<short>(commandType);
-        msg.Write(characterName, "gb2312", false);
+        msg.Write(characterName, "Shift-JIS", false);
 
         return msg;
     }
@@ -263,7 +268,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_CHAT);
 
         msg.Write(commandType);
-        msg.Write(message, "gb2312", true);
+        msg.Write(message, "Shift-JIS", true);
 
         return msg;
     }
@@ -273,7 +278,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_CHAT_TARGET);
 
         msg.Write<byte>(1);
-        msg.Write(playerName, "gb2312", true);
+        msg.Write(playerName, "Shift-JIS", true);
 
         return msg;
     }
@@ -350,9 +355,9 @@ public class MessageBuilder
         msg.Write(moveSpeed);
         msg.Write(moveFlag);
 
-        msg.Write((ushort)(start.X * 10.0f));
-        msg.Write((ushort)(start.Y * 10.0f));
-        msg.Write((ushort)(start.Z * 10.0f));
+        //msg.Write((ushort)(start.X * 10.0f));
+        //msg.Write((ushort)(start.Y * 10.0f));
+        //msg.Write((ushort)(start.Z * 10.0f));
 
         return msg;
     }
@@ -401,7 +406,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_PARTY);
 
         msg.Write<byte>(1);
-        msg.Write(targetName, "gb2312", true);
+        msg.Write(targetName, "Shift-JIS", true);
         msg.Write<byte>(0);
 
         return msg;
@@ -412,7 +417,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_PARTY);
 
         msg.Write<byte>(3);
-        msg.Write(targetName, "gb2312", true);
+        msg.Write(targetName, "Shift-JIS", true);
         msg.Write<byte>(0);
 
         return msg;
@@ -468,7 +473,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_UserRequest(ushort count, int[] playerIds)
+    public static Message MsgSend_UserRequest(ushort count, short[] playerIds)
     {
         var msg = new Message(MessageID.WIZ_REQ_USERIN);
 
@@ -480,7 +485,7 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_NpcRequest(ushort count, int[] npcIds)
+    public static Message MsgSend_NpcRequest(ushort count, short[] npcIds)
     {
         var msg = new Message(MessageID.WIZ_REQ_NPCIN);
 

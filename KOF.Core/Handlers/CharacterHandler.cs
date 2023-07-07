@@ -174,8 +174,8 @@ public class CharacterHandler : IDisposable
     {
         Client = client;
 
-        MySelf.Id = msg.Read<int>();
-        MySelf.Name = msg.Read(false, "gb2312");
+        MySelf.Id = msg.Read<short>();
+        MySelf.Name = msg.Read(false, "Shift-JIS");
 
         MySelf.X = (msg.Read<ushort>() / 10.0f);
         MySelf.Y = (msg.Read<ushort>() / 10.0f);
@@ -205,47 +205,14 @@ public class CharacterHandler : IDisposable
         {
             MySelf.Knights.Alliance = msg.Read<ushort>();
             MySelf.Knights.Flag = msg.Read<byte>();
-            MySelf.Knights.Name = msg.Read(false, "gb2312");
+            MySelf.Knights.Name = msg.Read(false, "Shift-JIS");
             MySelf.Knights.Grade = msg.Read<byte>();
             MySelf.Knights.Ranking = msg.Read<byte>();
             MySelf.Knights.MarkVersion = msg.Read<ushort>();
 
-            if (MySelf.Knights.IsInAlliance())
-            {
-                if (MySelf.IsKing())
-                {
-                    msg.Read<ushort>();
-                    msg.Read<uint>();
-                }
-                else
-                {
-                    MySelf.Knights.Cape = msg.Read<ushort>();
-                    MySelf.Knights.CapeR = msg.Read<byte>();
-                    MySelf.Knights.CapeG = msg.Read<byte>();
-                    MySelf.Knights.CapeB = msg.Read<byte>();
-                    msg.Read<byte>(); // << ((pKnights->m_byFlag > 1 && pKnights->m_byGrade < 3) ? uint8(1) : uint8(0));
-                }
-            }
-            else
-            {
-                if (MySelf.IsKing())
-                {
-                    msg.Read<ushort>();
-                    msg.Read<uint>();
-                }
-                else
-                {
-                    MySelf.Knights.Cape = msg.Read<ushort>();
-                    MySelf.Knights.CapeR = msg.Read<byte>();
-                    MySelf.Knights.CapeG = msg.Read<byte>();
-                    MySelf.Knights.CapeB = msg.Read<byte>();
-                    msg.Read<byte>(); // << ((pKnights->m_byFlag > 1 && pKnights->m_byGrade < 3) ? uint8(1) : uint8(0));
-                    msg.Read<byte>(); // 02
-                    msg.Read<byte>(); // 03
-                    msg.Read<byte>(); // 04
-                    msg.Read<byte>(); // 05
-                }
-            }
+            msg.Read<uint>();
+            msg.Read<uint>();
+            msg.Read<ushort>();
         }
         else
         {
@@ -328,7 +295,7 @@ public class CharacterHandler : IDisposable
 
             if (pItem.Table != null && pItem.Table.KindId == 151) // 151 - Pet Item
             {
-                var petName = msg.Read(true, "gb2312");     // pet name
+                var petName = msg.Read(true, "Shift-JIS");     // pet name
                 var petAttack = msg.Read<byte>();           // pet attack
                 var petLevel = msg.Read<byte>();            // pet level
                 var petExp = msg.Read<uint>();              // pet exp
@@ -389,9 +356,9 @@ public class CharacterHandler : IDisposable
             _ = msg.Read<byte>();
         }
 
-        character.Id = msg.Read<int>();
+        character.Id = msg.Read<short>();
 
-        character.Name = msg.Read(false, "gb2312");
+        character.Name = msg.Read(false, "Shift-JIS");
         character.NationId = msg.Read<byte>();
         _ = msg.Read<byte>();
         _ = msg.Read<byte>();
@@ -401,8 +368,8 @@ public class CharacterHandler : IDisposable
         {
             character.Knights = new();
             character.Knights.Alliance = msg.Read<ushort>();
-            character.Knights.Flag = msg.Read<byte>();
-            character.Knights.Name = msg.Read(false, "gb2312");
+            //character.Knights.Flag = msg.Read<byte>();
+            character.Knights.Name = msg.Read(false, "Shift-JIS");
             character.Knights.Grade = msg.Read<byte>();
             character.Knights.Ranking = msg.Read<byte>();
             character.Knights.MarkVersion = msg.Read<ushort>();
@@ -439,9 +406,6 @@ public class CharacterHandler : IDisposable
                     character.Knights.CapeB = msg.Read<byte>();
                     msg.Read<byte>(); // << ((pKnights->m_byFlag > 1 && pKnights->m_byGrade < 3) ? uint8(1) : uint8(0));
                     msg.Read<byte>(); // 02
-                    msg.Read<byte>(); // 03
-                    msg.Read<byte>(); // 04
-                    msg.Read<byte>(); // 05
                 }
             }
 
@@ -461,11 +425,9 @@ public class CharacterHandler : IDisposable
                 _ = msg.Read<byte>();      // Knights.m_bCapeB
                 _ = msg.Read<byte>(); // << ((pKnights->m_byFlag > 1 && pKnights->m_byGrade < 3) ? uint8(1) : uint8(9));
             }
-            //TODO: klanlı ve klansız bilgileri doğrula
-            // msg.SkipBytes(12); // 18 -> 22
+
             msg.Read<uint>();
             msg.Read<uint>();
-            msg.Read<byte>();
         }
 
         character.Level = msg.Read<byte>();
@@ -499,9 +461,10 @@ public class CharacterHandler : IDisposable
         character.KnightsRank = msg.Read<byte>();
         character.PersonalRank = msg.Read<byte>();
 
-        var loop = MySelf.LunarWarDressUp ? 9 : 15;
+        //_ = msg.Read<int>();
+        //_ = msg.Read<byte>();
 
-        _ = msg.Read<byte>();
+        var loop = MySelf.LunarWarDressUp ? 9 : 14;
 
         for (byte idx = 0; idx < loop; idx++)
         {
@@ -521,7 +484,7 @@ public class CharacterHandler : IDisposable
 
         character.SetPosition(character.GetPosition());
 
-        byte[] tmp = new byte[16]; //TODO : eksikleri tamamla
+        byte[] tmp = new byte[13]; //TODO : eksikleri tamamla
         msg.Read(tmp.AsSpan());
 
         return character;
@@ -531,7 +494,7 @@ public class CharacterHandler : IDisposable
     {
         var character = new Character();
 
-        character.Id = msg.Read<int>();
+        character.Id = msg.Read<short>();
         character.ProtoId = msg.Read<ushort>();
         character.MonsterOrNpc = msg.Read<byte>();
         character.PictureId = msg.Read<ushort>();
@@ -544,8 +507,8 @@ public class CharacterHandler : IDisposable
 
         if (character.ProtoId == 0)
         {
-            var petOwnerName = msg.Read(false, "gb2312"); // own Name
-            var petName = msg.Read(false, "gb2312"); // pet Name
+            var petOwnerName = msg.Read(false, "Shift-JIS"); // own Name
+            var petName = msg.Read(false, "Shift-JIS"); // pet Name
         }
 
         character.ModelGroup = msg.Read<byte>();

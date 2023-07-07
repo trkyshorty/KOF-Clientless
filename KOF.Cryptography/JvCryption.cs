@@ -55,19 +55,16 @@ public class JvCryption {
         }
     }
 
-    private int JvDecryptionWithCRC32(byte[] data) {
-        int result;
+    private void JvDecryptionWithCRC32(byte[] data) {
         JvEncryptionFast(data);
 
         // if (crc32(dataout, len - 4, -1) == *(unsigned long*)(len - 4 + dataout))
-        uint calculatedchecksym = BitConverter.ToUInt32(data[4..],0);
-        uint checksumvalue = CRC32.Compute(data[4..]);
-        if (checksumvalue == calculatedchecksym)
-            result = data.Length - 4;
-        else
-            result = -1;
-
-        return result;
+        //uint calculatedchecksym = BitConverter.ToUInt32(data[4..],0);
+        //uint checksumvalue = CRC32.Compute(data[4..]);
+        //if (checksumvalue == calculatedchecksym)
+        //    result = data.Length - 4;
+        //else
+        //    result = -1;
     }
 
     #endregion
@@ -92,7 +89,7 @@ public class JvCryption {
     }
 
     public Span<byte> Decrypt(byte[] data) {
-        int result = JvDecryptionWithCRC32(data);
+        JvDecryptionWithCRC32(data);
         return data.AsSpan()[5..];
     }
 
