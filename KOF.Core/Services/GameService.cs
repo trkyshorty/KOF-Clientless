@@ -169,7 +169,7 @@ public partial class GameService
         else if (commandType == 1)
         {
             ushort count = msg.Read<ushort>();
-            short[] playerIds = new short[count];
+            int[] playerIds = new int[count];
             msg.Read(playerIds.AsSpan());
 
             var playerIdList = playerIds.ToList();
@@ -196,7 +196,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_MOVE)]
     public Task MsgRecv_PlayerMovement(Session session, Message msg)
     {
-        short socketId = msg.Read<short>();
+        int socketId = msg.Read<int>();
 
         float will_x = msg.Read<ushort>() / 10.0f;
         float will_y = msg.Read<ushort>() / 10.0f;
@@ -239,14 +239,14 @@ public partial class GameService
                     break;
             }
 
-            session.Client.Character.SetPosition(new Vector3(will_x, will_y, will_z));
+            session.Client.Character.SetWillPosition(new Vector3(will_x, will_y, will_z));
 
         }
         else
         {
             if (!session.Client.CharacterHandler.PlayerList.Any(x => x.Id == socketId)) //Ghost Player?
             {
-                short[] playerIds = new short[1] { socketId };
+                int[] playerIds = new int[1] { socketId };
                 return session.SendAsync(MessageBuilder.MsgSend_UserRequest(1, playerIds));
             }
             else
@@ -317,7 +317,7 @@ public partial class GameService
                 break;
 
             case InOutType.INOUT_OUT:
-                int npcId = msg.Read<short>();
+                int npcId = msg.Read<int>();
 
                 lock (session.Client.CharacterHandler.NpcList)
                     session.Client.CharacterHandler.NpcList.RemoveAll((x) => x.Id == npcId);
@@ -344,7 +344,7 @@ public partial class GameService
             return Task.CompletedTask;
         }
 
-        short[] npcIds = new short[count];
+        int[] npcIds = new int[count];
         msg.Read(npcIds.AsSpan());
 
         var npcIdList = npcIds.ToList();
@@ -377,7 +377,7 @@ public partial class GameService
 
         if (commandType == 1 || commandType == 2)
         {
-            short npcId = msg.Read<short>();
+            int npcId = msg.Read<int>();
             float positionX = msg.Read<ushort>() / 10.0f;
             float positionY = msg.Read<ushort>() / 10.0f;
             float positionZ = msg.Read<ushort>() / 10.0f;
@@ -386,7 +386,7 @@ public partial class GameService
 
             if (!session.Client.CharacterHandler.NpcList.Any(x => x.Id == npcId)) //Ghost Monster?
             {
-                short[] npcIds = new short[1] { npcId };
+                int[] npcIds = new int[1] { npcId };
                 return session.SendAsync(MessageBuilder.MsgSend_NpcRequest(1, npcIds));
             }
             else
@@ -411,7 +411,7 @@ public partial class GameService
     {
         var character = session.Client.Character;
 
-        int targetId = msg.Read<short>();
+        int targetId = msg.Read<int>();
 
         if (character.Id == targetId)
         {
@@ -535,7 +535,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_TARGET_HP)]
     public Task MsgRecv_TargetHp(Session session, Message msg)
     {
-        int targetId = msg.Read<short>();
+        int targetId = msg.Read<int>();
         byte byUpdateImmediately = msg.Read<byte>();
         uint iTargetHPMax = msg.Read<uint>();
         uint iTargetHPCur = msg.Read<uint>();
@@ -606,8 +606,8 @@ public partial class GameService
 
             case AttackResult.ATTACK_TARGET_DEAD:
             case AttackResult.ATTACK_TARGET_DEAD_OK:
-                _ = msg.Read<short>(); // attackerId
-                var targetId = msg.Read<short>();
+                _ = msg.Read<int>(); // attackerId
+                var targetId = msg.Read<int>();
 
                 if (targetId == session.Client.Character.Id)
                 {
@@ -667,8 +667,8 @@ public partial class GameService
             case SkillMagicType.SKILL_MAGIC_TYPE_CASTING:
                 {
                     var skillId = msg.Read<int>();
-                    var sourceId = msg.Read<short>();
-                    var targetId = msg.Read<short>();
+                    var sourceId = msg.Read<int>();
+                    var targetId = msg.Read<int>();
 
                     session.Client.CharacterHandler.SkillCastingProcess(skillId, sourceId, targetId);
                 }
@@ -677,8 +677,8 @@ public partial class GameService
             case SkillMagicType.SKILL_MAGIC_TYPE_FLYING:
                 {
                     var skillId = msg.Read<int>();
-                    var sourceId = msg.Read<short>();
-                    var targetId = msg.Read<short>();
+                    var sourceId = msg.Read<int>();
+                    var targetId = msg.Read<int>();
 
                     session.Client.CharacterHandler.SkillFlyingProcess(skillId, sourceId, targetId);
                 }
@@ -687,8 +687,8 @@ public partial class GameService
             case SkillMagicType.SKILL_MAGIC_TYPE_EFFECTING:
                 {
                     var skillId = msg.Read<int>();
-                    var sourceId = msg.Read<short>();
-                    var targetId = msg.Read<short>();
+                    var sourceId = msg.Read<int>();
+                    var targetId = msg.Read<int>();
 
                     session.Client.CharacterHandler.SkillEffectingProcess(skillId, sourceId, targetId);
                 }
@@ -697,8 +697,8 @@ public partial class GameService
             case SkillMagicType.SKILL_MAGIC_TYPE_FAIL:
                 {
                     var skillId = msg.Read<int>();
-                    var sourceId = msg.Read<short>();
-                    var targetId = msg.Read<short>();
+                    var sourceId = msg.Read<int>();
+                    var targetId = msg.Read<int>();
 
                     List<short> data = new();
 
@@ -750,10 +750,7 @@ public partial class GameService
                         Count = msg.Read<ushort>(),
                         Flag = msg.Read<byte>(),
                         RentalTime = msg.Read<short>(),
-                        Serial = msg.Read<uint>(),
-                        Unk1 = msg.Read<ushort>(),
-                        Unk2 = msg.Read<uint>(),
-                        Unk3 = msg.Read<byte>(),
+                        Serial = msg.Read<uint>()
                     };
 
                     Item.Table = TableHandler.GetItemById((int)Item.ItemID);
@@ -809,7 +806,7 @@ public partial class GameService
                 session.Client.Character.TotalAc = msg.Read<ushort>();
                 session.Client.Character.MaxWeight = msg.Read<uint>() / 10;
 
-               // _ = msg.Read<ushort>();
+                _ = msg.Read<ushort>();
 
                 session.Client.Character.MaxHp = (ushort)msg.Read<short>();
                 session.Client.Character.MaxMp = (ushort)msg.Read<short>();
@@ -887,7 +884,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_ITEM_DROP)]
     public Task MsgRecv_ItemBundleDrop(Session session, Message msg)
     {
-        var npcId = msg.Read<short>();
+        var npcId = msg.Read<int>();
         var bundleId = msg.Read<uint>();
         var itemCount = msg.Read<byte>();
 
@@ -1025,7 +1022,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_LEVEL_CHANGE)]
     public Task MsgRecv_MyInfo_LevelChange(Session session, Message msg)
     {
-        var id = msg.Read<short>();
+        var id = msg.Read<int>();
         var level = msg.Read<byte>();
 
         if (id == session.Client.Character.Id)
@@ -1110,7 +1107,7 @@ public partial class GameService
         {
             case PartyUpdateType.Create:
                 {
-                    _ = msg.Read(true, "Shift-JIS");
+                    _ = msg.Read(true, "gb2312");
                     byte commandType = msg.Read<byte>();
 
                     lock (session.Client.Character.Party)
@@ -1122,8 +1119,8 @@ public partial class GameService
 
             case PartyUpdateType.Insert:
                 {
-                    int insertMemberId = msg.Read<short>();
-                    string invitedName = msg.Read(true, "Shift-JIS");
+                    int insertMemberId = msg.Read<int>();
+                    string invitedName = msg.Read(true, "gb2312");
 
                     var client = ClientHandler.ClientList.FirstOrDefault(x => x != null && x.Name == invitedName)!;
 
@@ -1209,7 +1206,7 @@ public partial class GameService
 
             case PartyUpdateType.Leave:
                 {
-                    var leftMemberId = msg.Read<short>();
+                    var leftMemberId = msg.Read<int>();
 
                     lock (session.Client.Character.Party.Members)
                         session.Client.Character.Party.Members.RemoveAll((partyMember) => partyMember.MemberId == leftMemberId);
@@ -1243,7 +1240,7 @@ public partial class GameService
 
             case PartyUpdateType.HealthManaChange:
                 {
-                    var HPMPMemberId = msg.Read<short>();
+                    var HPMPMemberId = msg.Read<int>();
 
                     session.Client.Character.Party.Members.ForEach((partyMember) =>
                     {
@@ -1261,7 +1258,7 @@ public partial class GameService
 
             case PartyUpdateType.LevelChange:
                 {
-                    var levelMemberId = msg.Read<short>();
+                    var levelMemberId = msg.Read<int>();
 
                     session.Client.Character.Party.Members.ForEach((partyMember) =>
                     {
@@ -1274,7 +1271,7 @@ public partial class GameService
 
             case PartyUpdateType.ClassChange:
                 {
-                    var classMemberId = msg.Read<short>();
+                    var classMemberId = msg.Read<int>();
 
                     session.Client.Character.Party.Members.ForEach((partyMember) =>
                     {
@@ -1288,7 +1285,7 @@ public partial class GameService
 
             case PartyUpdateType.StatusChange:
                 {
-                    var statusChangeMemberId = msg.Read<short>();
+                    var statusChangeMemberId = msg.Read<int>();
 
                     session.Client.Character.Party.Members.ForEach((partyMember) =>
                     {
@@ -1312,7 +1309,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_STATE_CHANGE)]
     public Task MsgRecv_StateChange(Session session, Message msg)
     {
-        int socketId = msg.Read<short>();
+        int socketId = msg.Read<int>();
         byte subPacket = msg.Read<byte>();
         uint state = msg.Read<uint>();
 
@@ -1435,8 +1432,8 @@ public partial class GameService
                     for (int i = 0; i < warpListCount; i++)
                     {
                         var Id = msg.Read<short>();
-                        var name = msg.Read(true, "Shift-JIS");
-                        var agreement = msg.Read(true, "Shift-JIS");
+                        var name = msg.Read(true, "gb2312");
+                        var agreement = msg.Read(true, "gb2312");
                         var zone = msg.Read<short>();
                         var maxUser = msg.Read<short>();
                         var gold = msg.Read<int>();
@@ -1487,7 +1484,7 @@ public partial class GameService
         {
             case (byte)TradeSubPacket.TRADE_REQ:
                 {
-                    var otherId = msg.Read<short>();
+                    var otherId = msg.Read<int>();
                     session.Client.CharacterHandler.ExhangeRequestProcess(otherId);
                 }
                 break;
@@ -1767,7 +1764,7 @@ public partial class GameService
     [MessageHandler(MessageID.WIZ_ROTATE)]
     public Task MsgRecv_Rotation(Session session, Message msg)
     {
-        var id = msg.Read<short>();
+        var id = msg.Read<int>();
         var rotate = msg.Read<short>() / 100.0f;
 
         session.Client.Character.Rotation = rotate;
