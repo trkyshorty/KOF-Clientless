@@ -16,6 +16,9 @@ public class Inventory
         target.Table = Table;
         target.ExpirationTime = ExpirationTime;
         target.SupplyFlag = SupplyFlag;
+        target.Unk1 = Unk1;
+        target.Unk2 = Unk2;
+        target.Unk3 = Unk3;
     }
 
     public byte Pos { get; set; }
@@ -43,9 +46,18 @@ public class Inventory
 
     public bool IsEmpty() => ItemID == 0;
 
+    [Browsable(false)]
+    public ushort SupplyFlag { get; set; }
 
     [Browsable(false)]
-    public byte SupplyFlag { get; set; }
+    public ushort Unk1 { get; set; }
+
+    [Browsable(false)]
+    public uint Unk2 { get; set; }
+
+    [Browsable(false)]
+    public byte Unk3 { get; set; }
+
 
 
     public void Reset()
@@ -58,6 +70,9 @@ public class Inventory
         Serial = 0;
         ExpirationTime = 0;
         Table = default!;
+        Unk1 = 0;
+        Unk2 = 0;
+        Unk3 = 0;
     }
 
     public override string ToString()

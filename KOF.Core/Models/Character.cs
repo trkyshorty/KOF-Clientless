@@ -10,7 +10,7 @@ namespace KOF.Core.Models;
 public class Character
 {
     [Browsable(false)]
-    public int Id { get; set; }
+    public short Id { get; set; }
 
     public string Name { get; set; } = "";
 
@@ -347,6 +347,20 @@ public class Character
     public bool LunarWarDressUp { get; set; }
 
     public string Nation { get { return GetNationName(NationId); } }
+
+    [Browsable(false)]
+    public float LastSendedX { get; set; }
+
+    [Browsable(false)]
+    public float LastSendedY { get; set; }
+
+    [Browsable(false)]
+    public float LastSendedZ { get; set; }
+
+    public Vector3 GetLastSendedPosition()
+    {
+        return new((float)Math.Round(LastSendedX, 1), (float)Math.Round(LastSendedY, 1), (float)Math.Round(LastSendedZ, 1));
+    }
 
     public static string GetNationName(int NationId)
     {
