@@ -24,6 +24,7 @@ public partial class LoginService
     [MessageHandler(MessageID.LS_LOGIN_REQ)]
     public Task MsgRecv_LoginREQ(Session session, Message msg)
     {
+        _ = msg.Read<short>(); // unknown
         LoginError result = (LoginError)msg.Read<byte>();
 
         string authMessage = result switch
@@ -84,7 +85,7 @@ public partial class LoginService
         if (!session.Ready)
             return Task.CompletedTask;
 
-        return session.SendAsync(MessageBuilder.MsgSend_AccountLogin(session.Account.Login, session.Account.Password, session.Client.Server.Platform));
+        return session.SendAsync(MessageBuilder.MsgSend_AccountLogin(session.Account.Login, session.Account.Password));
     }
 
     [MessageHandler(MessageID.WIZ_LOGIN)]
@@ -98,9 +99,7 @@ public partial class LoginService
             case 0:
             case 1:
             case 2:
-                {
-                    return session.SendAsync(MessageBuilder.MsgSend_AllCharacterInfoRequest());
-                }       
+                return session.SendAsync(MessageBuilder.MsgSend_HackTool(6, "70e725bf"));
 
             case 17: // not signed in -> last login check.
                 return session.DisconnectAsync();
@@ -117,7 +116,8 @@ public partial class LoginService
         byte commandType = msg.Read<byte>();
         short reason = msg.Read<short>();
 
-        //return session.SendAsync(MessageBuilder.MsgSend_AllCharacterInfoRequest());
+        if (commandType == 6 && reason != -1)
+            return session.SendAsync(MessageBuilder.MsgSend_LoadingLogin());
 
         //return session.DisconnectAsync();
 
@@ -151,7 +151,38 @@ public partial class LoginService
 
         if (messageCheck)
         {
-            
+            var characterData = JsonSerializer.Deserialize<List<Lobby>>(session.Account.CharacterData)!;
+
+            if (session.Account.Character != "" && characterData.Any(x => x.Name == session.Account.Character))
+            {
+                var selectedCharacter = characterData.FirstOrDefault(x => x.Name == session.Account.Character)!;
+
+                session.Client.Character.Name = selectedCharacter.Name;
+                session.Client.Character.Level = selectedCharacter.Level;
+                session.Client.Character.Race = selectedCharacter.Race;
+                session.Client.Character.Zone = selectedCharacter.Zone;
+
+                return session.SendAsync(MessageBuilder.MsgSend_SelectedCharacter(session.Account.Login, session.Account.Character, session.Client.Character.Zone));
+            }
+
+            else
+            {
+                var selectableCharacter = characterData.FirstOrDefault(x => x.Name != "");
+
+                if (selectableCharacter != null)
+                {
+                    session.Account.Character = selectableCharacter.Name;
+
+                    session.Client.Character.Name = selectableCharacter.Name;
+                    session.Client.Character.Level = selectableCharacter.Level;
+                    session.Client.Character.Race = selectableCharacter.Race;
+                    session.Client.Character.Zone = selectableCharacter.Zone;
+
+                    SQLiteHandler.Update(session.Account);
+
+                    return session.SendAsync(MessageBuilder.MsgSend_SelectedCharacter(session.Account.Login, session.Account.Character, session.Client.Character.Zone));
+                }
+            }
         }
         else
         {
@@ -163,12 +194,12 @@ public partial class LoginService
             {
                 _ = msg.Read<byte>(); // unknown
 
-                for (byte i = 0; i < 3; i++)
+                for (byte i = 0; i < 4; i++)
                 {
                     var _character = new Lobby()
                     {
                         Slot = i,
-                        Name = msg.Read(true, "Shift-JIS"),
+                        Name = msg.Read(true, "gb2312"),
                         Race = msg.Read<byte>(),
                         Class = msg.Read<ushort>(),
                         Level = msg.Read<byte>(),
@@ -178,7 +209,7 @@ public partial class LoginService
                         G = msg.Read<byte>(),
                         B = msg.Read<byte>(),
                         Zone = msg.Read<byte>(),
-                        //Unknown1 = msg.Read<byte>(),
+                        Unknown1 = msg.Read<byte>(),
                         VisibleEquipment = VisibleEquipment(msg)
                     };
 
@@ -215,39 +246,6 @@ public partial class LoginService
                     }
                     return _itemArray;
                 }
-
-                var characterData = JsonSerializer.Deserialize<List<Lobby>>(session.Account.CharacterData)!;
-
-                if (session.Account.Character != "" && characterData.Any(x => x.Name == session.Account.Character))
-                {
-                    var selectedCharacter = characterData.FirstOrDefault(x => x.Name == session.Account.Character)!;
-
-                    session.Client.Character.Name = selectedCharacter.Name;
-                    session.Client.Character.Level = selectedCharacter.Level;
-                    session.Client.Character.Race = selectedCharacter.Race;
-                    session.Client.Character.Zone = selectedCharacter.Zone;
-
-                    return session.SendAsync(MessageBuilder.MsgSend_SelectedCharacter(session.Account.Login, session.Account.Character, session.Client.Character.Zone));
-                }
-
-                else
-                {
-                    var selectableCharacter = characterData.FirstOrDefault(x => x.Name != "");
-
-                    if (selectableCharacter != null)
-                    {
-                        session.Account.Character = selectableCharacter.Name;
-
-                        session.Client.Character.Name = selectableCharacter.Name;
-                        session.Client.Character.Level = selectableCharacter.Level;
-                        session.Client.Character.Race = selectableCharacter.Race;
-                        session.Client.Character.Zone = selectableCharacter.Zone;
-
-                        SQLiteHandler.Update(session.Account);
-
-                        return session.SendAsync(MessageBuilder.MsgSend_SelectedCharacter(session.Account.Login, session.Account.Character, session.Client.Character.Zone));
-                    }
-                }
             }
         }
 
@@ -271,8 +269,8 @@ public partial class LoginService
 
             session.Client.Character.SetPosition(session.Client.Character.GetPosition());
 
-            //session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
-            //session.SendAsync(MessageBuilder.MsgSend_BufferSize()).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
+            session.SendAsync(MessageBuilder.MsgSend_BufferSize()).ConfigureAwait(false);
             //session.SendAsync(MessageBuilder.MsgSend_Rental()).ConfigureAwait(false);
 
             session.SendAsync(MessageBuilder.MsgSend_SpeedCheck(session.Client.StartTime, true)).ConfigureAwait(false);

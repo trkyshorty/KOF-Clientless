@@ -210,8 +210,8 @@ public class Client
                 Random rnd = new Random();
 
                 byte randomPort = (byte)rnd.Next(1, 9);
-
-                await Session.ConnectAsync(Server.GatewayIp, 15100); // TODO: Get values from database
+                
+                await Session.ConnectAsync(Server.GatewayIp, 15101 + randomPort); // TODO: Get values from database
                 await Session.SendAsync(MessageBuilder.MsgSend_Cryption());
                 await Session.RunAsync();
             }
