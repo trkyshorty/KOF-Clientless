@@ -1,10 +1,9 @@
-﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using KOF.Core.Enums;
-using KOF.Data.Models;
+﻿using KOF.Core.Enums;
 using KOF.Core.Models;
-using System.Text;
+using KOF.Data.Models;
+using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace KOF.Core.Communications;
 
@@ -305,7 +304,7 @@ public class MessageBuilder
 
         msg.Write(opcode);
 
-        if(zoneId != 0)
+        if (zoneId != 0)
         {
             msg.Write(zoneId);
             msg.Write<byte>(0);
@@ -518,16 +517,16 @@ public class MessageBuilder
 
     public static Message MsgSend_StartSkillCastingAtPosPacket(Skill skill, int socketId, Vector3 targetPosition)
     {
-        var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
+        var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);// byte 31
 
-        msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_CASTING);
+        msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_CASTING); //byte 
         msg.Write(skill.Id);
         msg.Write(socketId);
         msg.Write(-1);
 
-        msg.Write((int)targetPosition.X * 10.0f);
-        msg.Write((int)targetPosition.Z * 10.0f);
-        msg.Write((int)targetPosition.Y * 10.0f);
+        msg.Write<int>((short)(targetPosition.X));
+        msg.Write<int>((short)(targetPosition.Z));
+        msg.Write<int>((short)(targetPosition.Y));
 
         msg.Write(0);
         msg.Write(0);
@@ -547,11 +546,12 @@ public class MessageBuilder
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_FLYING);
         msg.Write(skill.Id);
         msg.Write(socketId);
+        msg.Write(-1);
         msg.Write(targetId);
 
-        msg.Write((int)targetPosition.X * 10.0f);
-        msg.Write((int)targetPosition.Z * 10.0f);
-        msg.Write((int)targetPosition.Y * 10.0f);
+        msg.Write<int>((short)(targetPosition.X));
+        msg.Write<int>((short)(targetPosition.Z));
+        msg.Write<int>((short)(targetPosition.Y));
 
         msg.Write(arrowIndex);
 
@@ -570,9 +570,10 @@ public class MessageBuilder
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_EFFECTING);
         msg.Write(skill.Id);
         msg.Write(socketId);
-        msg.Write(targetId);
+        msg.Write(-1);
+        //msg.Write(targetId);
 
-        if(skill.CastTime == 0)
+        if (skill.CastTime == 0)
         {
             msg.Write(1);
             msg.Write(1);
@@ -580,9 +581,11 @@ public class MessageBuilder
         }
         else
         {
-            msg.Write(targetPosition.X * 10.0f);
-            msg.Write(targetPosition.Z * 10.0f);
-            msg.Write(targetPosition.Y * 10.0f);
+            msg.Write(targetPosition.X);
+            msg.Write(targetPosition.Z);
+            msg.Write(targetPosition.Y);
+
+
         }
 
         msg.Write(arrowIndex);
@@ -591,6 +594,8 @@ public class MessageBuilder
 
         msg.Write(0);
         msg.Write(0);
+
+
 
         return msg;
     }
@@ -604,13 +609,17 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(-1);
 
-        msg.Write((int)targetPosition.X * 10.0f);
-        msg.Write((int)targetPosition.Z * 10.0f);
-        msg.Write((int)targetPosition.Y * 10.0f);
+        msg.Write<int>((short)(targetPosition.X));
+        msg.Write<int>((short)(targetPosition.Z));
+        msg.Write<int>((short)(targetPosition.Y));
 
         msg.Write(0);
         msg.Write(0);
         msg.Write(0);
+
+        msg.Write(0);
+
+        msg.Write<short>(0);
 
         return msg;
     }
@@ -624,9 +633,9 @@ public class MessageBuilder
         msg.Write(socketId);
         msg.Write(targetId);
 
-        msg.Write((int)targetPosition.X * 10.0f);
-        msg.Write((int)targetPosition.Z * 10.0f);
-        msg.Write((int)targetPosition.Y * 10.0f);
+        msg.Write((int)targetPosition.X);
+        msg.Write((int)targetPosition.Z);
+        msg.Write((int)targetPosition.Y);
 
         msg.Write(-101);
 
@@ -638,7 +647,7 @@ public class MessageBuilder
 
         return msg;
     }
-    
+
     public static Message MsgSend_CancelSkillPacket(uint skillId, int socketId)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
@@ -658,7 +667,7 @@ public class MessageBuilder
 
         return msg;
     }
-    
+
     public static Message MsgSend_CancelSkillPacket(Skill skill, int socketId)
     {
         return MsgSend_CancelSkillPacket((uint)skill.Id, socketId);
@@ -952,7 +961,7 @@ public class MessageBuilder
         msg.Write(count);
         msg.Write(shopPage);
         msg.Write(shopItemPosition);
-        
+
         return msg;
     }
 
