@@ -546,7 +546,6 @@ public class MessageBuilder
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_FLYING);
         msg.Write(skill.Id);
         msg.Write(socketId);
-        msg.Write(-1);
         msg.Write(targetId);
 
         msg.Write<int>((short)(targetPosition.X));
@@ -570,8 +569,7 @@ public class MessageBuilder
         msg.Write((byte)SkillMagicType.SKILL_MAGIC_TYPE_EFFECTING);
         msg.Write(skill.Id);
         msg.Write(socketId);
-        msg.Write(-1);
-        //msg.Write(targetId);
+        msg.Write(targetId);
 
         if (skill.CastTime == 0)
         {
