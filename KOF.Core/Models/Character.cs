@@ -225,7 +225,7 @@ public class Character
     public string Area { get { return GetRepresentZoneName(Zone); } }
 
     [Browsable(false)]
-    public Inventory[] VisibleEquip { get; set; } = new Inventory[15];
+    public Inventory[] VisibleEquip { get; set; } = new Inventory[16];
 
     [Browsable(false)]
     public ushort ProtoId { get; set; }
@@ -633,7 +633,6 @@ public class Character
             Z = (float)Math.Round(position.Z, 1);
     }
 
-
     public Vector3 GetPosition()
     {
         return new((float)Math.Round(X, 1), (float)Math.Round(Y, 1), (float)Math.Round(Z, 1));
@@ -688,5 +687,22 @@ public class Character
     {
         return TargetId;
     }
+
+    internal  Clan FromKnightsMessage(KOF.Core.Communications.Message msg) => new()
+    {
+        Alliance = msg.Read<ushort>(),
+        Flag = msg.Read<byte>(),
+        Name = msg.Read(false),
+        Grade = msg.Read<byte>(),
+        Ranking = msg.Read<byte>(),
+        MarkVersion = msg.Read<ushort>(),
+        Cape = msg.Read<ushort>(),
+        CapeR = msg.Read<byte>(),
+        CapeG = msg.Read<byte>(),
+        CapeB = msg.Read<byte>(),
+        UnknownValueA = msg.Read<short>(),
+        UnknownValueB = msg.Read<short>(),
+        UnknownValueC = msg.Read<byte>()
+    };
 
 }

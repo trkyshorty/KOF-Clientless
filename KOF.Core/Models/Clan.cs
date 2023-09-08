@@ -35,5 +35,9 @@ namespace KOF.Core.Models
         public ushort Lose { get; set; }
         public ushort Victory { get; set; }
         public bool IsInAlliance() => Alliance > 0;
+
+        public dynamic UnknownValueA { get; set; }
+        public dynamic UnknownValueB { get; set; }
+        public dynamic UnknownValueC { get; set; }
     }
 }

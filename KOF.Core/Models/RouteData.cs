@@ -30,4 +30,6 @@ public class RouteData
     public bool NpcEventSend { get; set; }
 
     public Queue<RouteData> SubQueue = new();
+
+    public bool OnlyPotion { get; set; }
 }

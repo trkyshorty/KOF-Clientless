@@ -1,62 +1,52 @@
-﻿using System.ComponentModel;
-using System.Data;
+﻿using KOF.Core;
+using KOF.Core.Enums;
+using KOF.Core.Handlers;
+using KOF.Core.Models;
+using KOF.Database;
+using KOF.Database.Models;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json;
-using KOF.Core;
-using KOF.Database.Models;
-using KOF.Core.Models;
-using KOF.Core.Handlers;
-using KOF.Core.Enums;
 using Control = System.Windows.Forms.Control;
-using System.Diagnostics;
-using KOF.Data;
-using KOF.Database;
 
 namespace KOF.UI.Forms;
 
-public partial class RoutePlanner : Form
-{
+public partial class RoutePlanner : Form {
     public Client Client { get; set; } = default!;
     private Character Character { get { return Client.Character; } }
     private CharacterHandler CharacterHandler { get { return Client.CharacterHandler; } }
     private Controller Controller { get { return CharacterHandler.Controller; } }
     private BindingList<Route> RouteList { get; set; } = new();
     private List<RouteData> RouteData { get; set; } = new();
-    public RoutePlanner(Client client)
-    {
+    public RoutePlanner(Client client) {
         Client = client;
 
         InitializeComponent();
     }
 
-    private void InitializeControl()
-    {
+    private void InitializeControl() {
         Control control = GetNextControl(this, true);
 
-        do
-        {
+        do {
             control = GetNextControl(control, true);
 
-            if (control != null)
-            {
-                if (control.GetType() == typeof(CheckBox))
-                {
+            if (control != null) {
+                if (control.GetType() == typeof(CheckBox)) {
                     CheckBox checkBox = ((CheckBox)control);
                     bool value = Controller.GetControl(checkBox.Name, checkBox.Checked);
 
                     if (value != checkBox.Checked)
                         checkBox.Checked = value;
                 }
-                else if (control.GetType() == typeof(NumericUpDown))
-                {
+                else if (control.GetType() == typeof(NumericUpDown)) {
                     NumericUpDown numericUpDown = ((NumericUpDown)control);
                     decimal value = Controller.GetControl(numericUpDown.Name, numericUpDown.Value);
 
                     if (value != numericUpDown.Value)
                         numericUpDown.Value = value;
                 }
-                else if (control.GetType() == typeof(ComboBox))
-                {
+                else if (control.GetType() == typeof(ComboBox)) {
                     ComboBox comboBox = ((ComboBox)control);
 
                     if (comboBox.Name == "SelectedRouteComboBox")
@@ -71,10 +61,8 @@ public partial class RoutePlanner : Form
         }
         while (control != null);
 
-        foreach (Route route in SelectedRouteComboBox.Items)
-        {
-            if(route.Id == Controller.GetControl("SelectedRoute", 0))
-            {
+        foreach (Route route in SelectedRouteComboBox.Items) {
+            if (route.Id == Controller.GetControl("SelectedRoute", 0)) {
                 SelectedRouteComboBox.SelectedItem = route;
                 RouteName.Text = route.Name;
 
@@ -82,8 +70,7 @@ public partial class RoutePlanner : Form
             }
         }
     }
-    private void RoutePlanner_Load(object sender, EventArgs e)
-    {
+    private void RoutePlanner_Load(object sender, EventArgs e) {
         RouteList = new BindingList<Route>(SQLiteHandler.Table<Route>().Where(x => x.Zone == Character.Zone).ToList());
 
         SelectedRouteComboBox.DataSource = RouteList;
@@ -92,97 +79,82 @@ public partial class RoutePlanner : Form
         InitializeControl();
     }
 
-    private void RenderTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Character == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+    private void RenderTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Character == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                return;
 
             var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-            if (zoneData == null) return;
+            if (zoneData == null)
+                return;
 
             string dataDirectory = Directory.GetCurrentDirectory() + "\\data\\image";
 
             Bitmap image = new Bitmap($"{dataDirectory}\\{zoneData.GetMinimapBigImage()}");
 
-            using (Graphics graphic = Graphics.FromImage(image))
-            {
+            using (Graphics graphic = Graphics.FromImage(image)) {
                 Vector3 characterPosition = GetWorldPositionToMinimap(Map, Character.GetPosition().X, Character.GetPosition().Y);
 
                 graphic.FillRectangle(Brushes.SpringGreen, characterPosition.X, characterPosition.Y, 4, 4);
                 graphic.DrawString("Now Here", this.Font, Brushes.Yellow, characterPosition.X - 25, characterPosition.Y);
 
-                for (int i = 0; i < RouteData.Count; i++)
-                {
-                    var routeData = RouteData[i];                
+                for (int i = 0; i < RouteData.Count; i++) {
+                    var routeData = RouteData[i];
 
                     Vector3 position = GetWorldPositionToMinimap(Map, routeData.X, routeData.Y);
 
-                    if(i == 0)
-                    {
-                        if (routeData.Action == RouteActionType.TOWN)
-                        {
+                    if (i == 0) {
+                        if (routeData.Action == RouteActionType.TOWN) {
                             graphic.FillRectangle(Brushes.Blue, position.X, position.Y, 4, 4);
                             graphic.DrawString($"Town ({i})", this.Font, Brushes.Blue, position.X - 15, position.Y);
                         }
-                        else if (routeData.Action == RouteActionType.SUPPLY)
-                        {
+                        else if (routeData.Action == RouteActionType.SUPPLY) {
                             graphic.FillRectangle(Brushes.Purple, position.X, position.Y, 4, 4);
                             graphic.DrawString($"Supply ({i})", this.Font, Brushes.Purple, position.X - 15, position.Y);
                         }
-                        else if (routeData.Action == RouteActionType.INN)
-                        {
+                        else if (routeData.Action == RouteActionType.INN) {
                             graphic.FillRectangle(Brushes.White, position.X, position.Y, 4, 4);
                             graphic.DrawString($"Inn Hostess ({i})", this.Font, Brushes.White, position.X - 25, position.Y);
                         }
-                        else
-                        {
+                        else {
                             graphic.FillRectangle(Brushes.Red, position.X, position.Y, 4, 4);
                             graphic.DrawString($"Move ({i})", this.Font, Brushes.Red, position.X - 15, position.Y);
                         }
                     }
-                    else 
-                    {
+                    else {
                         var prevRouteData = RouteData[i - 1];
 
                         Vector3 prevPosition = GetWorldPositionToMinimap(Map, prevRouteData.X, prevRouteData.Y);
 
-                        if (i != RouteData.Count - 1)
-                        {
-                            if(prevRouteData.Action != RouteActionType.TOWN)
-                            {
+                        if (i != RouteData.Count - 1) {
+                            if (prevRouteData.Action != RouteActionType.TOWN) {
                                 Pen linePen = new Pen(Brushes.Orange);
 
                                 linePen.Width = 3;
                                 graphic.DrawLine(linePen, prevPosition.X, prevPosition.Y, position.X, position.Y);
                             }
 
-                            if(routeData.Action == RouteActionType.TOWN)
-                            {
+                            if (routeData.Action == RouteActionType.TOWN) {
                                 graphic.FillRectangle(Brushes.Blue, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Town ({i})", this.Font, Brushes.Blue, position.X - 15, position.Y);
                             }
-                            else if(routeData.Action == RouteActionType.SUPPLY)
-                            {
+                            else if (routeData.Action == RouteActionType.SUPPLY) {
                                 graphic.FillRectangle(Brushes.Purple, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Supply ({i})", this.Font, Brushes.Purple, position.X - 15, position.Y);
                             }
-                            else if (routeData.Action == RouteActionType.INN)
-                            {
+                            else if (routeData.Action == RouteActionType.INN) {
                                 graphic.FillRectangle(Brushes.White, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Inn Hostess ({i})", this.Font, Brushes.White, position.X - 25, position.Y);
                             }
-                            else
-                            {
+                            else {
                                 graphic.FillRectangle(Brushes.Red, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Move ({i})", this.Font, Brushes.Red, position.X - 15, position.Y);
                             }
                         }
-                        else
-                        {
-                            if (routeData.Action == RouteActionType.TOWN)
-                            {
+                        else {
+                            if (routeData.Action == RouteActionType.TOWN) {
                                 Pen linePen = new Pen(Brushes.Orange);
 
                                 linePen.Width = 3;
@@ -191,10 +163,8 @@ public partial class RoutePlanner : Form
                                 graphic.FillRectangle(Brushes.Blue, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Town ({i})", this.Font, Brushes.Blue, position.X - 15, position.Y);
                             }
-                            else if (routeData.Action == RouteActionType.SUPPLY)
-                            {
-                                if (prevRouteData.Action != RouteActionType.TOWN)
-                                {
+                            else if (routeData.Action == RouteActionType.SUPPLY) {
+                                if (prevRouteData.Action != RouteActionType.TOWN) {
                                     Pen linePen = new Pen(Brushes.Orange);
 
                                     linePen.Width = 3;
@@ -204,10 +174,8 @@ public partial class RoutePlanner : Form
                                 graphic.FillRectangle(Brushes.Purple, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Supply ({i})", this.Font, Brushes.Purple, position.X - 15, position.Y);
                             }
-                            else if (routeData.Action == RouteActionType.INN)
-                            {
-                                if (prevRouteData.Action != RouteActionType.TOWN)
-                                {
+                            else if (routeData.Action == RouteActionType.INN) {
+                                if (prevRouteData.Action != RouteActionType.TOWN) {
                                     Pen linePen = new Pen(Brushes.Orange);
 
                                     linePen.Width = 3;
@@ -217,10 +185,8 @@ public partial class RoutePlanner : Form
                                 graphic.FillRectangle(Brushes.White, position.X, position.Y, 4, 4);
                                 graphic.DrawString($"Inn Hostess ({i})", this.Font, Brushes.White, position.X - 15, position.Y);
                             }
-                            else
-                            {
-                                if (prevRouteData.Action != RouteActionType.TOWN)
-                                {
+                            else {
+                                if (prevRouteData.Action != RouteActionType.TOWN) {
                                     Pen linePen = new Pen(Brushes.Orange);
 
                                     linePen.Width = 3;
@@ -239,19 +205,18 @@ public partial class RoutePlanner : Form
 
                 Map.Image = image;
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    public Vector3 GetMiniMapPositionToWorld(PictureBox Picture, float X, float Y)
-    {
-        if (Character == null) return new Vector3();
+    public Vector3 GetMiniMapPositionToWorld(PictureBox Picture, float X, float Y) {
+        if (Character == null)
+            return new Vector3();
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return new Vector3();
+        if (zoneData == null)
+            return new Vector3();
 
         float fWidth = (Picture.Right - Picture.Left);
         float fHeight = (Picture.Bottom - Picture.Top);
@@ -266,12 +231,13 @@ public partial class RoutePlanner : Form
         return coordinate;
     }
 
-    public Vector3 GetWorldPositionToMinimap(PictureBox Picture, float X, float Y)
-    {
-        if (Character == null) return new Vector3();
+    public Vector3 GetWorldPositionToMinimap(PictureBox Picture, float X, float Y) {
+        if (Character == null)
+            return new Vector3();
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return new Vector3();
+        if (zoneData == null)
+            return new Vector3();
 
         float fWidth = (Picture.Right - Picture.Left);
         float fHeight = (Picture.Bottom - Picture.Top);
@@ -286,12 +252,13 @@ public partial class RoutePlanner : Form
         return coordinate;
     }
 
-    private void Map_MouseDown(object sender, MouseEventArgs e)
-    {
+    private void Map_MouseDown(object sender, MouseEventArgs e) {
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return;
+        if (zoneData == null)
+            return;
 
         Vector3 mapPosition = GetMiniMapPositionToWorld(Map, e.X, e.Y);
+
 
         var routeData = new RouteData();
 
@@ -303,11 +270,9 @@ public partial class RoutePlanner : Form
         RouteData.Add(routeData);
     }
 
-    private void RoutePlanner_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Control && e.KeyCode == Keys.Z)
-        {
-            if(RouteData.Count > 0)
+    private void RoutePlanner_KeyDown(object sender, KeyEventArgs e) {
+        if (e.Control && e.KeyCode == Keys.Z) {
+            if (RouteData.Count > 0)
                 RouteData.RemoveAt(RouteData.Count - 1);
         }
 
@@ -315,10 +280,8 @@ public partial class RoutePlanner : Form
             RouteData.Clear();
     }
 
-    private void TownActionButton_Click(object sender, EventArgs e)
-    {
-        if(RouteData.Count > 0)
-        {
+    private void TownActionButton_Click(object sender, EventArgs e) {
+        if (RouteData.Count > 0) {
             var routeData = RouteData[RouteData.Count - 1];
 
             var newRouteData = new RouteData();
@@ -330,8 +293,7 @@ public partial class RoutePlanner : Form
 
             RouteData[RouteData.Count - 1] = newRouteData;
         }
-        else
-        {
+        else {
             var routeData = new RouteData();
 
             routeData.Action = RouteActionType.TOWN;
@@ -343,10 +305,8 @@ public partial class RoutePlanner : Form
         }
     }
 
-    private void SupplyAreaActionButton_Click(object sender, EventArgs e)
-    {
-        if (RouteData.Count > 0)
-        {
+    private void SupplyAreaActionButton_Click(object sender, EventArgs e) {
+        if (RouteData.Count > 0) {
             var routeData = RouteData[RouteData.Count - 1];
 
             var newRouteData = new RouteData();
@@ -358,8 +318,7 @@ public partial class RoutePlanner : Form
 
             RouteData[RouteData.Count - 1] = newRouteData;
         }
-        else
-        {
+        else {
             var routeData = new RouteData();
 
             routeData.Action = RouteActionType.SUPPLY;
@@ -371,10 +330,8 @@ public partial class RoutePlanner : Form
         }
     }
 
-    private void InnHostessAreaButton_Click(object sender, EventArgs e)
-    {
-        if (RouteData.Count > 0)
-        {
+    private void InnHostessAreaButton_Click(object sender, EventArgs e) {
+        if (RouteData.Count > 0) {
             var routeData = RouteData[RouteData.Count - 1];
 
             var newRouteData = new RouteData();
@@ -386,8 +343,7 @@ public partial class RoutePlanner : Form
 
             RouteData[RouteData.Count - 1] = newRouteData;
         }
-        else
-        {
+        else {
             var routeData = new RouteData();
 
             routeData.Action = RouteActionType.INN;
@@ -399,18 +355,15 @@ public partial class RoutePlanner : Form
         }
     }
 
-    private void SaveRouteButton_Click(object sender, EventArgs e)
-    {
-        if(RouteName.Text == "")
-        {
+    private void SaveRouteButton_Click(object sender, EventArgs e) {
+        if (RouteName.Text == "") {
             MessageBox.Show("Please type a route name", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
         var route = RouteList.SingleOrDefault(x => x.Name == RouteName.Text);
 
-        if (route == null)
-        {
+        if (route == null) {
             route = new Route();
 
             route.Name = RouteName.Text;
@@ -421,8 +374,7 @@ public partial class RoutePlanner : Form
 
             RouteList.Add(route);
         }
-        else
-        {
+        else {
             route.Data = JsonSerializer.Serialize(RouteData);
 
             SQLiteHandler.Update(route);
@@ -431,11 +383,11 @@ public partial class RoutePlanner : Form
         RouteList.ResetBindings();
     }
 
-    private void DeleteRouteButton_Click(object sender, EventArgs e)
-    {
+    private void DeleteRouteButton_Click(object sender, EventArgs e) {
         var route = (Route)SelectedRouteComboBox.SelectedItem;
 
-        if (route == null) return;
+        if (route == null)
+            return;
 
         SQLiteHandler.Delete(route);
 
@@ -445,19 +397,16 @@ public partial class RoutePlanner : Form
         SelectedRouteComboBox_SelectionChangeCommitted(SelectedRouteComboBox, EventArgs.Empty);
     }
 
-    private void RunRouteButton_Click(object sender, EventArgs e)
-    {
+    private void RunRouteButton_Click(object sender, EventArgs e) {
         CharacterHandler.RouteQueue.Clear();
 
         CharacterHandler.Route(RouteData);
     }
 
-    private void SelectedRouteComboBox_SelectionChangeCommitted(object sender, EventArgs e)
-    {
+    private void SelectedRouteComboBox_SelectionChangeCommitted(object sender, EventArgs e) {
         var route = (Route)SelectedRouteComboBox.SelectedItem;
 
-        if (route == null)
-        {
+        if (route == null) {
             RouteData.Clear();
             return;
         }
@@ -469,25 +418,48 @@ public partial class RoutePlanner : Form
         RouteData = JsonSerializer.Deserialize<List<RouteData>>(route.Data)!;
     }
 
-    private void SelectedRouteComboBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
+    private void SelectedRouteComboBox_SelectedIndexChanged(object sender, EventArgs e) {
 
     }
 
-    private void RoutePlanner_VisibleChanged(object sender, EventArgs e)
-    {
+    private void RoutePlanner_VisibleChanged(object sender, EventArgs e) {
         if (Visible)
             RenderTimer.Start();
         else
             RenderTimer.Stop();
     }
 
-    private void ResetRouteButton_Click(object sender, EventArgs e)
-    {
+    private void ResetRouteButton_Click(object sender, EventArgs e) {
         RouteData.Clear();
 
         RouteName.Text = "";
 
         Controller.SetControl("SelectedRoute", 0);
+    }
+
+    private void cbxOnlyPotionBuy_CheckedChanged(object sender, EventArgs e) {
+        Controller.SetControl("OnlyPotionBuy", cbxOnlyPotionBuy.Checked);
+    }
+
+    private void btnAddEndPosition_Click(object sender, EventArgs e) {
+
+        if (MoveCoordinateX.Value == 0 && MoveCoordinateY.Value == 0)
+            return;
+
+        var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
+        if (zoneData == null)
+            return;
+
+        Vector3 mapPosition = new(((float)MoveCoordinateX.Value), ((float)MoveCoordinateY.Value), 0.0f);
+        mapPosition.Z = zoneData.GetHeightBy2DPos(mapPosition.X, mapPosition.Y);
+
+        var routeData = new RouteData();
+
+        routeData.Action = RouteActionType.MOVE;
+        routeData.X = mapPosition.X;
+        routeData.Y = mapPosition.Y;
+        routeData.Z = mapPosition.Z;
+
+        RouteData.Add(routeData);
     }
 }

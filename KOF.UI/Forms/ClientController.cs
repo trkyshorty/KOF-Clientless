@@ -16,11 +16,11 @@ using KOF.Database;
 using AStar;
 using AStar.Options;
 using System.Reflection;
+using KOF.Core.Communications;
 
 namespace KOF.UI.Forms;
 
-public partial class ClientController : Form
-{
+public partial class ClientController : Form {
     public Client Client { get; set; } = default!;
     private Character Character { get { return Client.Character; } }
     private CharacterHandler CharacterHandler { get { return Client.CharacterHandler; } }
@@ -30,8 +30,7 @@ public partial class ClientController : Form
     private CancellationTokenSource sendPacketCancelationToken { get; set; }
     CancellationToken sendPacketCancelationTokenCt { get; set; }
 
-    public ClientController(Client client)
-    {
+    public ClientController(Client client) {
         Client = client;
 
         InitializeComponent();
@@ -63,8 +62,7 @@ public partial class ClientController : Form
 
     }
 
-    private void ClientController_Load(object sender, EventArgs e)
-    {
+    private void ClientController_Load(object sender, EventArgs e) {
         Text = $"{Character.Name}";
 
         FollowSelect.DataSource = ClientHandler.ClientList;
@@ -74,35 +72,30 @@ public partial class ClientController : Form
         InitializeControl();
     }
 
-    private void ClientController_VisibleChanged(object sender, EventArgs e)
-    {
-        if (Visible)
-        {
+    private void ClientController_VisibleChanged(object sender, EventArgs e) {
+        if (Visible) {
             MiniMapTimer.Start();
             StatusTimer.Start();
 
             InitializeSkillList();
             InitializeControl();
         }
-        else
-        {
+        else {
             MiniMapTimer.Stop();
             StatusTimer.Stop();
             StatusTimer.Stop();
         }
     }
 
-    private void ClientController_FormClosing(object sender, FormClosingEventArgs e)
-    {
+    private void ClientController_FormClosing(object sender, FormClosingEventArgs e) {
         Visible = false;
         e.Cancel = true;
     }
 
-    private void InitializeSkillList()
-    {
+    private void InitializeSkillList() {
+
         AttackSkillCheckedListBox.DataSource = Character.SkillList
-            .Where(x =>
-            {
+            .Where(x => {
                 return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level
                         && (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery])
@@ -113,8 +106,7 @@ public partial class ClientController : Form
         AttackSkillCheckedListBox.DisplayMember = "Name";
 
         SelfSkillCheckedListBox.DataSource = Character.SkillList
-            .Where(x =>
-            {
+            .Where(x => {
                 return x.ClassBaseId >= 100 && x.ClassBaseId.ToString().Substring(0, 3) == Character.Class.ToString() &&
                         x.Point <= Character.Level &&
                         (x.Mastery == 0 || x.Point <= Character.Skills[5 + x.Mastery]) &&
@@ -125,44 +117,38 @@ public partial class ClientController : Form
         SelfSkillCheckedListBox.DisplayMember = "Name";
     }
 
-    private void InitializeControl()
-    {
-        if (Controller == null) return;
+    private void InitializeControl() {
+        if (Controller == null)
+            return;
 
         Control control = GetNextControl(this, true);
 
-        do
-        {
+        do {
             control = GetNextControl(control, true);
 
-            if (control != null)
-            {
-                if (control.GetType() == typeof(CheckBox))
-                {
+            if (control != null) {
+                if (control.GetType() == typeof(CheckBox)) {
                     CheckBox checkBox = ((CheckBox)control);
                     bool value = Controller.GetControl(checkBox.Name, checkBox.Checked);
 
                     if (value != checkBox.Checked)
                         checkBox.Checked = value;
                 }
-                else if (control.GetType() == typeof(NumericUpDown))
-                {
+                else if (control.GetType() == typeof(NumericUpDown)) {
                     NumericUpDown numericUpDown = ((NumericUpDown)control);
                     decimal value = Controller.GetControl(numericUpDown.Name, numericUpDown.Value);
 
                     if (value != numericUpDown.Value)
                         numericUpDown.Value = value;
                 }
-                else if (control.GetType() == typeof(TextBox))
-                {
+                else if (control.GetType() == typeof(TextBox)) {
                     TextBox textBox = ((TextBox)control);
                     string value = Controller.GetControl(textBox.Name, textBox.Text);
 
                     if (value != textBox.Text)
                         textBox.Text = value;
                 }
-                else if (control.GetType() == typeof(ComboBox))
-                {
+                else if (control.GetType() == typeof(ComboBox)) {
                     ComboBox comboBox = ((ComboBox)control);
 
                     string value = Controller.GetControl(comboBox.Name, comboBox.SelectedText);
@@ -176,8 +162,7 @@ public partial class ClientController : Form
 
         var selectedSkillIds = JsonSerializer.Deserialize<List<int>>(Controller.GetControl("SelectedSkillList", "[]"))!;
 
-        for (int i = 0; i <= AttackSkillCheckedListBox.Items.Count - 1; i++)
-        {
+        for (int i = 0; i <= AttackSkillCheckedListBox.Items.Count - 1; i++) {
             Skill skill = (Skill)AttackSkillCheckedListBox.Items[i];
 
             if (selectedSkillIds.Any(x => x == skill.Id))
@@ -186,8 +171,7 @@ public partial class ClientController : Form
                 AttackSkillCheckedListBox.SetItemCheckState(i, CheckState.Unchecked);
         }
 
-        for (int i = 0; i <= SelfSkillCheckedListBox.Items.Count - 1; i++)
-        {
+        for (int i = 0; i <= SelfSkillCheckedListBox.Items.Count - 1; i++) {
             Skill skill = (Skill)SelfSkillCheckedListBox.Items[i];
 
             if (selectedSkillIds.Any(x => x == skill.Id))
@@ -209,12 +193,13 @@ public partial class ClientController : Form
         SupplyItemDataGrid.Columns[1].ReadOnly = true;
     }
 
-    public Vector3 GetMiniMapPositionToWorld(PictureBox Picture, float X, float Y)
-    {
-        if (Character == null) return new Vector3();
+    public Vector3 GetMiniMapPositionToWorld(PictureBox Picture, float X, float Y) {
+        if (Character == null)
+            return new Vector3();
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return new Vector3();
+        if (zoneData == null)
+            return new Vector3();
 
         float fWidth = (Picture.Right - Picture.Left);
         float fHeight = (Picture.Bottom - Picture.Top);
@@ -229,12 +214,13 @@ public partial class ClientController : Form
         return coordinate;
     }
 
-    public Vector3 GetWorldPositionToMinimap(PictureBox Picture, float X, float Y)
-    {
-        if (Character == null) return new Vector3();
+    public Vector3 GetWorldPositionToMinimap(PictureBox Picture, float X, float Y) {
+        if (Character == null)
+            return new Vector3();
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return new Vector3();
+        if (zoneData == null)
+            return new Vector3();
 
         float fWidth = (Picture.Right - Picture.Left);
         float fHeight = (Picture.Bottom - Picture.Top);
@@ -249,12 +235,13 @@ public partial class ClientController : Form
         return coordinate;
     }
 
-    private void Map_MouseDown(object sender, MouseEventArgs e)
-    {
-        if (Character == null) return;
+    private void Map_MouseDown(object sender, MouseEventArgs e) {
+        if (Character == null)
+            return;
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-        if (zoneData == null) return;
+        if (zoneData == null)
+            return;
 
         CharacterHandler.RouteQueue.Clear();
         CharacterHandler.SelectTarget(-1);
@@ -263,8 +250,7 @@ public partial class ClientController : Form
         Character.SetMovePosition(mapPosition);
     }
 
-    private void SearchTargetButton_Click(object sender, EventArgs e)
-    {
+    private void SearchTargetButton_Click(object sender, EventArgs e) {
         var selectedTargetIds = JsonSerializer.Deserialize<List<int>>(Controller.GetControl("SelectedTargetList", "[]"))!;
 
         TargetCheckedListBox.DataSource = TableHandler.GetMonsterList()
@@ -275,8 +261,7 @@ public partial class ClientController : Form
 
         TargetCheckedListBox.DisplayMember = "Name";
 
-        for (int i = 0; i <= TargetCheckedListBox.Items.Count - 1; i++)
-        {
+        for (int i = 0; i <= TargetCheckedListBox.Items.Count - 1; i++) {
             var target = (Monster)TargetCheckedListBox.Items[i];
 
             if (selectedTargetIds.Contains(target.Id))
@@ -286,14 +271,13 @@ public partial class ClientController : Form
         }
     }
 
-    private void AttackSkillCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-    {
-        if (Controller == null) return;
+    private void AttackSkillCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e) {
+        if (Controller == null)
+            return;
 
         Skill selectedSkill = (Skill)AttackSkillCheckedListBox.Items[e.Index];
 
-        if (e.NewValue == CheckState.Checked)
-        {
+        if (e.NewValue == CheckState.Checked) {
             if (!Character.SelectedSkillList.Any(x => x.Id == selectedSkill.Id))
                 Character.SelectedSkillList.Add(selectedSkill);
         }
@@ -303,14 +287,13 @@ public partial class ClientController : Form
         Controller.SetControl("SelectedSkillList", JsonSerializer.Serialize(Character.SelectedSkillList.Select(e => e.Id)));
     }
 
-    private void SelfSkillCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-    {
-        if (Controller == null) return;
+    private void SelfSkillCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e) {
+        if (Controller == null)
+            return;
 
         Skill selectedSkill = (Skill)SelfSkillCheckedListBox.Items[e.Index];
 
-        if (e.NewValue == CheckState.Checked)
-        {
+        if (e.NewValue == CheckState.Checked) {
             if (!Character.SelectedSkillList.Any(x => x.Id == selectedSkill.Id))
                 Character.SelectedSkillList.Add(selectedSkill);
         }
@@ -320,14 +303,13 @@ public partial class ClientController : Form
         Controller.SetControl("SelectedSkillList", JsonSerializer.Serialize(Character.SelectedSkillList.Select(e => e.Id)));
     }
 
-    private void TargetCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e)
-    {
-        if (Controller == null) return;
+    private void TargetCheckedListBox_ItemCheck(object sender, ItemCheckEventArgs e) {
+        if (Controller == null)
+            return;
 
         Monster selectedTarget = (Monster)TargetCheckedListBox.Items[e.Index];
 
-        if (e.NewValue == CheckState.Checked)
-        {
+        if (e.NewValue == CheckState.Checked) {
             if (!Character.SelectedTargetList.Any(x => x.Id == selectedTarget.Id))
                 Character.SelectedTargetList.Add(selectedTarget);
         }
@@ -337,9 +319,9 @@ public partial class ClientController : Form
         Controller.SetControl("SelectedTargetList", JsonSerializer.Serialize(Character.SelectedTargetList.Select(e => e.Id)));
     }
 
-    private void AttackButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void AttackButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (Controller.GetControl("Attack", false))
             Controller.SetControl("Attack", false);
@@ -347,33 +329,31 @@ public partial class ClientController : Form
             Controller.SetControl("Attack", true);
     }
 
-    private void PressOkButton_Click(object sender, EventArgs e)
-    {
+    private void PressOkButton_Click(object sender, EventArgs e) {
         CharacterHandler.Regen();
     }
 
-    private void TownButton_Click(object sender, EventArgs e)
-    {
+    private void TownButton_Click(object sender, EventArgs e) {
         CharacterHandler.Town();
     }
 
-    private void HpPotionCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void HpPotionCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(HpPotionCheckBox.Name, HpPotionCheckBox.Checked);
     }
 
-    private void MpPotionCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MpPotionCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(MpPotionCheckBox.Name, MpPotionCheckBox.Checked);
     }
 
-    private void SelfSkillButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void SelfSkillButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (Controller.GetControl("SelfSkill", true))
             Controller.SetControl("SelfSkill", false);
@@ -381,90 +361,86 @@ public partial class ClientController : Form
             Controller.SetControl("SelfSkill", true);
     }
 
-    private void AttackRange_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void AttackRange_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(AttackRange.Name, AttackRange.Value);
     }
 
-    private void RoutePlannerButton_Click(object sender, EventArgs e)
-    {
+    private void RoutePlannerButton_Click(object sender, EventArgs e) {
         RoutePlanner routePlanner = new RoutePlanner(Client);
         routePlanner.ShowDialog();
     }
 
-    private void InventoryButton_Click(object sender, EventArgs e)
-    {
+    private void InventoryButton_Click(object sender, EventArgs e) {
         InventoryController inventoryController = new InventoryController(Client);
         inventoryController.ShowDialog();
     }
 
-    private void CharacterInfoButton_Click(object sender, EventArgs e)
-    {
+    private void CharacterInfoButton_Click(object sender, EventArgs e) {
         CharacterInfo characterInfo = new CharacterInfo(Client);
         characterInfo.ShowDialog();
     }
 
-    private void SkillInfoButton_Click(object sender, EventArgs e)
-    {
+    private void SkillInfoButton_Click(object sender, EventArgs e) {
         SkillInfo skillInfo = new SkillInfo(Client);
         skillInfo.ShowDialog();
     }
 
-    private void EnableLoot_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void EnableLoot_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(EnableLoot.Name, EnableLoot.Checked);
     }
 
-    private void LootMinPrice_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void LootMinPrice_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(LootMinPrice.Name, LootMinPrice.Value);
     }
 
-    private void HpPotionPercentageValue_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void HpPotionPercentageValue_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(HpPotionPercentageValue.Name, HpPotionPercentageValue.Value);
     }
 
-    private void MpPotionPercentageValue_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MpPotionPercentageValue_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(HpPotionPercentageValue.Name, HpPotionPercentageValue.Value);
     }
 
-    private void SupplyItemDataGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-    {
-        if (Controller == null) return;
+    private void SupplyItemDataGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl("SupplyList", JsonSerializer.Serialize(SupplyItemList));
     }
 
-    private void SupplyItemDataGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-    {
-        if (Controller == null) return;
+    private void SupplyItemDataGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl("SupplyList", JsonSerializer.Serialize(SupplyItemList));
     }
 
-    private void MoveToTarget_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MoveToTarget_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(MoveToTarget.Name, MoveToTarget.Checked);
     }
 
-    private void FollowSelect_SelectionChangeCommitted(object sender, EventArgs e)
-    {
+    private void FollowSelect_SelectionChangeCommitted(object sender, EventArgs e) {
         var client = (Client)FollowSelect.SelectedItem;
-        if (client == null) return;
+        if (client == null)
+            return;
 
         if (client.Character.Name != Character.Name)
             Controller.SetControl("Follow", client.Name);
@@ -472,157 +448,146 @@ public partial class ClientController : Form
             Controller.SetControl("Follow", "");
     }
 
-    private void PartyAcceptButton_Click(object sender, EventArgs e)
-    {
+    private void PartyAcceptButton_Click(object sender, EventArgs e) {
         CharacterHandler.PartyAccept();
     }
 
-    private void PartyDeclineButton_Click(object sender, EventArgs e)
-    {
+    private void PartyDeclineButton_Click(object sender, EventArgs e) {
         CharacterHandler.PartyDestroy();
     }
 
-    private void PartyKickButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in PartyListDataGrid.SelectedRows)
-        {
+    private void PartyKickButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in PartyListDataGrid.SelectedRows) {
             var partyMember = (PartyMember)row.DataBoundItem;
             CharacterHandler.PartyRemove(partyMember.MemberId);
         }
     }
 
-    private void PartyDisbandButton_Click(object sender, EventArgs e)
-    {
+    private void PartyDisbandButton_Click(object sender, EventArgs e) {
         CharacterHandler.PartyDestroy();
     }
 
-    private void RefreshPlayerListButton_Click(object sender, EventArgs e)
-    {
-        
+    private void RefreshPlayerListButton_Click(object sender, EventArgs e) {
+
     }
 
-    private void SendPartyButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in NearbyPlayerListDataGrid.SelectedRows)
-        {
+    private void SendPartyButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in NearbyPlayerListDataGrid.SelectedRows) {
             var player = (Character)row.DataBoundItem;
             CharacterHandler.PartySend(player.Name);
         }
     }
 
-    private void RebornWhenDie_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void RebornWhenDie_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(RegenerateWhenDie.Name, RegenerateWhenDie.Checked);
     }
 
-    private void PartyMakeLeaderButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in PartyListDataGrid.SelectedRows)
-        {
+    private void PartyMakeLeaderButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in PartyListDataGrid.SelectedRows) {
             var partyMember = (PartyMember)row.DataBoundItem;
             CharacterHandler.PartyPromoteLeader(partyMember.MemberId);
         }
     }
 
-    private void FollowTargetSync_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void FollowTargetSync_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(FollowTargetSync.Name, FollowTargetSync.Checked);
     }
 
-    private void FollowOnlyNearby_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void FollowOnlyNearby_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(FollowOnlyNearby.Name, FollowOnlyNearby.Checked);
     }
 
-    private void FullScreenMapButton_Click(object sender, EventArgs e)
-    {
+    private void FullScreenMapButton_Click(object sender, EventArgs e) {
         MapController mapController = new MapController(Client);
         mapController.ShowDialog();
     }
 
-    private void MinorCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MinorCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(MinorCheckBox.Name, MinorCheckBox.Checked);
     }
 
-    private void MinorPercentageValue_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MinorPercentageValue_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(MinorPercentageValue.Name, MinorPercentageValue.Value);
     }
 
-    private void GodModeCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void GodModeCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(GodModeCheckBox.Name, GodModeCheckBox.Checked);
     }
 
-    private void HyperNoahCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void HyperNoahCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(HyperNoahCheckBox.Name, HyperNoahCheckBox.Checked);
     }
 
-    private void MoveToLootCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MoveToLootCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(MoveToLootCheckBox.Name, MoveToLootCheckBox.Checked);
     }
 
-    private void ReloadSkillButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void ReloadSkillButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl("SelectedSkillList", "[]");
         CharacterHandler.InitializeSkillList();
         InitializeSkillList();
         InitializeControl();
     }
 
-    private void SwiftPartyMemberCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void SwiftPartyMemberCheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(SwiftPartyMemberCheckBox.Name, SwiftPartyMemberCheckBox.Checked);
     }
 
-    private void MiniMapTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler == null || Character == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+    private void MiniMapTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler == null || Character == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                return;
 
             var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
-            if (zoneData == null) return;
+            if (zoneData == null)
+                return;
 
             string dataDirectory = Directory.GetCurrentDirectory() + "\\data\\image";
             Bitmap image = new Bitmap($"{dataDirectory}\\{zoneData.GetMinimapImage()}");
 
-            if (image == null) return;
+            if (image == null)
+                return;
 
-            using (Graphics graphic = Graphics.FromImage(image))
-            {
-                if (CharacterHandler.RouteQueue.Count > 0)
-                {
+            using (Graphics graphic = Graphics.FromImage(image)) {
+                if (CharacterHandler.RouteQueue.Count > 0) {
                     var moveList = CharacterHandler.RouteQueue.ToList();
 
                     Vector3 prevPosition = GetWorldPositionToMinimap(MiniMap, Character.X, Character.Y);
 
-                    moveList.ForEach(x =>
-                    {
+                    moveList.ForEach(x => {
                         Pen linePen = new Pen(Brushes.Orange);
                         linePen.Width = 3;
                         Vector3 position = GetWorldPositionToMinimap(MiniMap, x.X, x.Y);
@@ -633,8 +598,7 @@ public partial class ClientController : Form
 
                 Vector3 characterPosition = GetWorldPositionToMinimap(MiniMap, Character.GetPosition().X, Character.GetPosition().Y);
 
-                if (Character.GetMovePosition() != Vector3.Zero)
-                {
+                if (Character.GetMovePosition() != Vector3.Zero) {
                     Vector3 movePosition = GetWorldPositionToMinimap(MiniMap, Character.GetMovePosition().X, Character.GetMovePosition().Y);
 
                     Pen linePen = new Pen(Brushes.Red);
@@ -642,17 +606,15 @@ public partial class ClientController : Form
                     graphic.DrawLine(linePen, characterPosition.X, characterPosition.Y, movePosition.X, movePosition.Y);
                 }
 
-                CharacterHandler?.GetPlayerList().ForEach(x =>
-                {
-                    if (x == null) return;
+                CharacterHandler?.GetPlayerList().ForEach(x => {
+                    if (x == null)
+                        return;
                     Vector3 otherPlayerPosition = GetWorldPositionToMinimap(MiniMap, x.GetPosition().X, x.GetPosition().Y);
                     graphic.FillRectangle(Brushes.DeepSkyBlue, otherPlayerPosition.X, otherPlayerPosition.Y, 4, 4);
                 });
 
-                CharacterHandler?.GetNpcList().ForEach(x =>
-                {
-                    if (x?.MonsterOrNpc == 1)
-                    {
+                CharacterHandler?.GetNpcList().ForEach(x => {
+                    if (x?.MonsterOrNpc == 1) {
                         var monColor = Brushes.Red;
 
                         if (x.IsDead())
@@ -661,10 +623,8 @@ public partial class ClientController : Form
                         Vector3 otherMonsterPosition = GetWorldPositionToMinimap(MiniMap, x.GetPosition().X, x.GetPosition().Y);
                         graphic.FillRectangle(monColor, otherMonsterPosition.X, otherMonsterPosition.Y, 4, 4);
                     }
-                    else
-                    {
-                        if (x != null)
-                        {
+                    else {
+                        if (x != null) {
                             Vector3 otherNpcPosition = GetWorldPositionToMinimap(MiniMap, x.GetPosition().X, x.GetPosition().Y);
                             graphic.FillRectangle(Brushes.DarkBlue, otherNpcPosition.X, otherNpcPosition.Y, 4, 4);
                         }
@@ -681,25 +641,26 @@ public partial class ClientController : Form
 
                 MiniMap.Image = image;
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Console.WriteLine(ex.StackTrace);
         }
     }
 
-    private void SupplyTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsRouting()) return;
-            if (Character.IsTrading) return;
-            if (!Controller.GetControl("Bot", false)) return;
+    private void SupplyTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsRouting())
+                return;
+            if (Character.IsTrading)
+                return;
+            if (!Controller.GetControl("Bot", false))
+                return;
 
             var route = SQLiteHandler.Table<Route>().SingleOrDefault(x => x.Id == Controller.GetControl("SelectedRoute", 0));
 
-            if (route == null) return;
+            if (route == null)
+                return;
 
             BindingList<Supply> supplyList = (BindingList<Supply>)SupplyItemDataGrid.DataSource;
 
@@ -710,31 +671,28 @@ public partial class ClientController : Form
 
             needSupply = needSupply || CharacterHandler.IsNeedRepair() || CharacterHandler.IsInventoryFull();
 
-            if (needSupply && route.Zone == Character.Zone)
-            {
+            if (needSupply && route.Zone == Character.Zone) {
                 CharacterHandler.RouteQueue.Clear();
                 CharacterHandler.Route(JsonSerializer.Deserialize<List<RouteData>>(route.Data)!);
             }
-                
-        }
-        catch (Exception ex)
-        {
+
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void ProtectionTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable() || Character.IsDead()) return;
-            if (Character.IsTrading) return;
+    private void ProtectionTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable() || Character.IsDead())
+                return;
+            if (Character.IsTrading)
+                return;
 
             double hpPotionPercent = Math.Ceiling((Character.Hp * 100) / (float)Character.MaxHp);
 
-            if (Controller.GetControl("HpPotionCheckBox", false) && (decimal)hpPotionPercent <= Controller.GetControl("HpPotionPercentageValue", HpPotionPercentageValue.Value))
-            {
+            if (Controller.GetControl("HpPotionCheckBox", true) && (decimal)hpPotionPercent <= Controller.GetControl("HpPotionPercentageValue", HpPotionPercentageValue.Value)) {
                 int[] hpPotion = {
                         389064000, 910005000, 389063000, 399014000,
                         810265000, 810267000, 810269000, 810272000,
@@ -760,8 +718,7 @@ public partial class ClientController : Form
 
             double mpPotionPercent = Math.Ceiling((Character.Mp * 100) / (float)Character.MaxMp);
 
-            if (Controller.GetControl("MpPotionCheckBox", false) && (decimal)mpPotionPercent <= Controller.GetControl("MpPotionPercentageValue", MpPotionPercentageValue.Value))
-            {
+            if (Controller.GetControl("MpPotionCheckBox", true) && (decimal)mpPotionPercent <= Controller.GetControl("MpPotionPercentageValue", MpPotionPercentageValue.Value)) {
                 int[] mpPotion = {
                         389072000, 800125000, 800127000, 810192000,
                         810248000, 900487000, 811006000, 811008000,
@@ -782,86 +739,71 @@ public partial class ClientController : Form
                     CharacterHandler.UseItem(item.ItemID);
             }
 
-            if (Character.GetRepresentClass(Character.Class) == (int)ClassRepresentType.CLASS_REPRESENT_ROGUE)
-            {
+            if (Character.GetRepresentClass(Character.Class) == (int)ClassRepresentType.CLASS_REPRESENT_ROGUE) {
                 double hpPercent = Math.Ceiling((Character.Hp * 100) / (float)Character.MaxHp);
 
-                if (Controller.GetControl("MinorCheckBox", false) && (decimal)hpPercent <= Controller.GetControl("MinorPercentageValue", MinorPercentageValue.Value))
-                {
+                if (Controller.GetControl("MinorCheckBox", false) && (decimal)hpPercent <= Controller.GetControl("MinorPercentageValue", MinorPercentageValue.Value)) {
                     var skill = Character.SkillList.FirstOrDefault(x => x.Id.ToString().Substring(0, 3) == Character.Class.ToString() && x.BaseId == 107705); //Minor Healing
 
                     if (skill != null &&
                         !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
-                        Character.Mp >= skill.Mana)
-                    {
+                        Character.Mp >= skill.Mana) {
                         CharacterHandler.SkillQueue.Enqueue(skill);
                     }
                 }
 
             }
 
-            if (Controller.GetControl("GodModeCheckBox", true))
-            {
+            if (Controller.GetControl("GodModeCheckBox", true)) {
                 var skill = Character.SkillList.FirstOrDefault(x => x.Id == 500344);
 
                 if (skill != null &&
                     !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
-                    Environment.TickCount - skill.GetSkillUseTime() > (skill.CoolDown))
-                {
+                    Environment.TickCount - skill.GetSkillUseTime() > (skill.CoolDown)) {
                     double hpGodModePercent = Math.Ceiling((Character.Hp * 100) / (float)Character.MaxHp);
                     double mpGodModePercent = Math.Ceiling((Character.Mp * 100) / (float)Character.MaxMp);
 
                     if ((decimal)hpGodModePercent <= Controller.GetControl("HpPotionPercentageValue", HpPotionPercentageValue.Value) ||
                         (decimal)mpGodModePercent <= Controller.GetControl("MpPotionPercentageValue", MpPotionPercentageValue.Value) ||
-                        !CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
-                    {
+                        !CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType)) {
                         CharacterHandler.CancelSkill(skill);
                         CharacterHandler.SkillQueue.Enqueue(skill);
                     }
                 }
             }
 
-            if (Controller.GetControl("HyperNoahCheckBox", true))
-            {
+            if (Controller.GetControl("HyperNoahCheckBox", true)) {
                 var skill = Character.SkillList.FirstOrDefault(x => x.Id == 500094);
 
-                if (skill != null && !CharacterHandler.SkillQueue.Any(x => x != null && x.Id == skill.Id))
-                {
-                    if (!CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType))
-                    {
+                if (skill != null && !CharacterHandler.SkillQueue.Any(x => x != null && x.Id == skill.Id)) {
+                    if (!CharacterHandler.SkillBuffEffected((byte)skill.Extension.BuffType)) {
                         CharacterHandler.SkillQueue.Enqueue(skill);
                     }
                 }
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void StatusTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
+    private void StatusTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
 
-            if (Character.Hp <= Character.MaxHp)
-            {
+            if (Character.Hp <= Character.MaxHp) {
                 HealthProgressBar.Minimum = 0;
                 HealthProgressBar.Maximum = Character.MaxHp;
                 HealthProgressBar.Value = Character.Hp;
             }
 
-            if (Character.Mp <= Character.MaxMp)
-            {
+            if (Character.Mp <= Character.MaxMp) {
                 ManaProgressBar.Minimum = 0;
                 ManaProgressBar.Maximum = Character.MaxMp;
                 ManaProgressBar.Value = Character.Mp;
             }
 
-            if ((int)Character.Experience <= (int)Character.MaxExperience)
-            {
+            if ((int)Character.Experience <= (int)Character.MaxExperience) {
                 ExperienceProgressBar.Minimum = 0;
                 ExperienceProgressBar.Maximum = (int)Character.MaxExperience;
                 ExperienceProgressBar.Value = (int)Character.Experience;
@@ -887,118 +829,115 @@ public partial class ClientController : Form
             else
                 QuestButton.ForeColor = Color.Red;
 
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void SelfSkillTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (!Controller.GetControl("SelfSkill", true)) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
-            if (Character.IsTrading) return;
+    private void SelfSkillTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (!Controller.GetControl("SelfSkill", true))
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable())
+                return;
+            if (Character.IsTrading)
+                return;
 
             CharacterHandler.SelfProtection();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void AutoPartyTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
-            if (Character.IsTrading) return;
+    private void AutoPartyTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                return;
+            if (Character.IsTrading)
+                return;
 
-            var followers = ClientHandler.ClientList.Where(x =>
-            {
-                if (x.CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return false;
+            var followers = ClientHandler.ClientList.Where(x => {
+                if (x.CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                    return false;
                 return x.CharacterHandler.Controller?.GetControl("Follow", "") == Character.Name && x.Name != Character.Name;
             }).ToList();
 
-            if (followers.Count == 0) return;
+            if (followers.Count == 0)
+                return;
 
-            if (Character.Party.IsInParty())
-            {
-                if (Character.Party.IsFull()) return;
+            if (Character.Party.IsInParty()) {
+                if (Character.Party.IsFull())
+                    return;
 
-                followers.ForEach(x =>
-                {
-                    if (Character.Party.IsFull()) return;
-                    if (Character.Zone != x.Character.Zone) return;
+                followers.ForEach(x => {
+                    if (Character.Party.IsFull())
+                        return;
+                    if (Character.Zone != x.Character.Zone)
+                        return;
 
                     if (Character.Party.GetMemberById(x.Character.Id) == null)
                         CharacterHandler.PartySend(x.Character);
                 });
             }
-            else
-            {
-                followers.ForEach(x =>
-                {
-                    if (x.Character.Party.IsInParty())
-                    {
-                        if (x.Character.Party.IsFull()) return;
-                        if (x.Character.Zone != Character.Zone) return;
+            else {
+                followers.ForEach(x => {
+                    if (x.Character.Party.IsInParty()) {
+                        if (x.Character.Party.IsFull())
+                            return;
+                        if (x.Character.Zone != Character.Zone)
+                            return;
 
                         if (x.Character.Party.GetMemberById(Character.Id) == null)
                             x.CharacterHandler.PartySend(Character);
                     }
-                    else
-                    {
-                        if (Character.Party.IsFull()) return;
-                        if (Character.Zone != x.Character.Zone) return;
+                    else {
+                        if (Character.Party.IsFull())
+                            return;
+                        if (Character.Zone != x.Character.Zone)
+                            return;
 
                         CharacterHandler.PartySend(x.Character);
-                    }  
+                    }
                 });
             }
 
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void PartyTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
-            if (!Character.Party.IsInParty()) return;
-            if (Character.IsTrading) return;
+    private void PartyTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable())
+                return;
+            if (!Character.Party.IsInParty())
+                return;
+            if (Character.IsTrading)
+                return;
 
-            Character.Party.Members.ForEach(x =>
-            {
-                if (Character.GetRepresentClass(Character.Class) == (int)ClassRepresentType.CLASS_REPRESENT_ROGUE && Controller.GetControl("SwiftPartyMemberCheckBox", true))
-                {
+            Character.Party.Members.ForEach(x => {
+                if (Character.GetRepresentClass(Character.Class) == (int)ClassRepresentType.CLASS_REPRESENT_ROGUE && Controller.GetControl("SwiftPartyMemberCheckBox", true)) {
                     var character = Character;
 
                     if (x.MemberId != Character.Id)
                         character = CharacterHandler.PlayerList.FirstOrDefault(y => y.Id == x.MemberId)!;
 
-                    if (character != null && !character.IsDead())
-                    {
-                        if (character.Id == Character.Id) return;
+                    if (character != null && !character.IsDead()) {
+                        if (character.Id == Character.Id)
+                            return;
 
-                        if (character.Speed == 45)
-                        {
+                        if (character.Speed == 45) {
                             var skill = Character.SkillList.FirstOrDefault(x => x.Id.ToString().Substring(0, 3) == Character.Class.ToString() && x.BaseId == 107010); //Swift
 
                             if (skill != null &&
                                 !CharacterHandler.SkillQueue.Any(x => x.Id == skill.Id) &&
-                                    Character.Mp >= skill.Mana)
-                            {
+                                    Character.Mp >= skill.Mana) {
                                 skill.SetTarget(character.Id);
                                 CharacterHandler.SkillQueue.Enqueue(skill);
                                 character.Speed = 67;
@@ -1007,27 +946,24 @@ public partial class ClientController : Form
                     }
                 }
             });
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void ChangeCampTo1Button_Click(object sender, EventArgs e)
-    {
+    private void ChangeCampTo1Button_Click(object sender, EventArgs e) {
         CharacterHandler.ZoneChange(1);
     }
 
-    private void ChangeCampTo2Button_Click(object sender, EventArgs e)
-    {
+    private void ChangeCampTo2Button_Click(object sender, EventArgs e) {
         CharacterHandler.ZoneChange(5);
     }
 
-    private void LoadWarpListButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
-        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+    private void LoadWarpListButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+            return;
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
 
@@ -1043,27 +979,26 @@ public partial class ClientController : Form
         //        CharacterHandler.ObjectEvent(gateObject.sIndex, gateObject.sControlNpcID);
         //}
 
-        
+
         GateListDataGrid.Update();
     }
 
-    private void GoToNearestGateButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
-        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+    private void GoToNearestGateButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+            return;
 
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
 
-        if (zoneData != null)
-        {
+        if (zoneData != null) {
             var gateObject = zoneData.ObjectPostData.ShapeManager.Shapes
                 .OrderBy(x => Vector2.Distance(new Vector2(x.GetPosition.X, x.GetPosition.Z), Character.GetPosition2D()))
                 .FirstOrDefault(x => x.GetBelong == Character.NationId && x.GetEventType == 5)!;
 
             var distance = Vector2.Distance(new Vector2(gateObject.GetPosition.X, gateObject.GetPosition.Z), Character.GetPosition2D());
 
-            if (distance > 100.0f)
-            {
+            if (distance > 100.0f) {
                 var routeData = new List<RouteData>()
                 {
                     new RouteData() { Action = RouteActionType.TOWN, X = 0, Y = 0, Z = 0 },
@@ -1087,8 +1022,7 @@ public partial class ClientController : Form
                 // Forward action to all followers
                 var followers = CharacterHandler.GetFollowersAtSameZone();
 
-                followers.ForEach(x =>
-                {
+                followers.ForEach(x => {
                     if (x.CharacterHandler.IsRouting())
                         x.CharacterHandler.RouteQueue.Clear();
 
@@ -1097,8 +1031,7 @@ public partial class ClientController : Form
             }
             //else if (distance <= 10.0f)
             //    CharacterHandler.ObjectEvent((short)gateObject.GetEventId, (short)gateObject.GetNpcId);
-            else
-            {
+            else {
                 var routeData = new List<RouteData>()
                 {
                     new RouteData() {
@@ -1122,8 +1055,7 @@ public partial class ClientController : Form
                 // Forward action to all followers
                 var followers = CharacterHandler.GetFollowersAtSameZone();
 
-                followers.ForEach(x =>
-                {
+                followers.ForEach(x => {
                     if (x.CharacterHandler.IsRouting())
                         x.CharacterHandler.RouteQueue.Clear();
 
@@ -1135,39 +1067,34 @@ public partial class ClientController : Form
         }
     }
 
-    private void GateTeleportButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in GateListDataGrid.SelectedRows)
-        {
+    private void GateTeleportButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in GateListDataGrid.SelectedRows) {
             var warpInfo = (Data.Models.WarpInfo)row.DataBoundItem;
 
-            if (warpInfo != null)
-            {
+            if (warpInfo != null) {
                 // Self action
                 CharacterHandler.WarpTeleport(warpInfo);
 
                 // Forward action to all followers
                 var followers = CharacterHandler.GetFollowersAtSameZone();
 
-                followers.ForEach(x =>
-                {
+                followers.ForEach(x => {
                     x.CharacterHandler.WarpTeleport(warpInfo);
                 });
             }
         }
     }
 
-    private void UITimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
+    private void UITimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                return;
 
             var partyMembers = Character.Party.Members;
 
-            if (PartyListDataGrid.RowCount != partyMembers.Count())
-            {
+            if (PartyListDataGrid.RowCount != partyMembers.Count()) {
                 PartyListDataGrid.DataSource = null;
                 PartyListDataGrid.DataSource = partyMembers;
 
@@ -1176,13 +1103,12 @@ public partial class ClientController : Form
                 if (cm != null)
                     cm.Refresh();
             }
-                
+
             PartyListDataGrid.Refresh();
 
             var playerList = CharacterHandler.GetPlayerList();
 
-            if (NearbyPlayerListDataGrid.RowCount != playerList.Count())
-            {
+            if (NearbyPlayerListDataGrid.RowCount != playerList.Count()) {
                 NearbyPlayerListDataGrid.DataSource = null;
                 NearbyPlayerListDataGrid.DataSource = playerList;
 
@@ -1196,8 +1122,7 @@ public partial class ClientController : Form
 
             var warpList = CharacterHandler.WarpList.ToList();
 
-            if (GateListDataGrid.RowCount != warpList.Count())
-            {
+            if (GateListDataGrid.RowCount != warpList.Count()) {
                 GateListDataGrid.DataSource = null;
                 GateListDataGrid.DataSource = warpList;
 
@@ -1212,8 +1137,7 @@ public partial class ClientController : Form
             var npcShopList = CharacterHandler.NpcList
             .FindAll(x => x.MonsterOrNpc == 2 && (x.FamilyType == 21 || x.FamilyType == 22 || x.FamilyType == 41));
 
-            if (NpcShopDataList.RowCount != npcShopList.Count())
-            {
+            if (NpcShopDataList.RowCount != npcShopList.Count()) {
                 NpcShopDataList.DataSource = null;
                 NpcShopDataList.DataSource = npcShopList;
 
@@ -1225,26 +1149,22 @@ public partial class ClientController : Form
 
             NpcShopDataList.Refresh();
 
-            if (Character.NpcEventGroup != 0)
-            {
+            if (Character.NpcEventGroup != 0) {
                 ItemListButton.ForeColor = Color.LimeGreen;
                 ItemListButton.Enabled = true;
             }
-            else
-            {
+            else {
                 ItemListButton.ForeColor = Color.Black;
                 ItemListButton.Enabled = false;
             }
 
             MapGroupBox.Text = $"Minimap ({Character.X}, {Character.Y})";
 
-            if (GateListDataGrid.RowCount > 0)
-            {
+            if (GateListDataGrid.RowCount > 0) {
                 GateTeleportButton.ForeColor = Color.LimeGreen;
                 GateTeleportButton.Enabled = true;
             }
-            else
-            {
+            else {
                 GateTeleportButton.ForeColor = Color.Black;
                 GateTeleportButton.Enabled = false;
             }
@@ -1254,8 +1174,7 @@ public partial class ClientController : Form
                 .OrderBy(x => x.LuaName)
                 .ToList();
 
-            if (RunningQuestListDataGrid.RowCount != activeQuestList.Count)
-            {
+            if (RunningQuestListDataGrid.RowCount != activeQuestList.Count) {
                 RunningQuestListDataGrid.DataSource = null;
                 RunningQuestListDataGrid.DataSource = activeQuestList;
                 RunningQuestListDataGrid.Refresh();
@@ -1267,8 +1186,7 @@ public partial class ClientController : Form
                 .OrderBy(x => x.LuaName)
                 .ToList();
 
-            if (FinishedQuestListDataGrid.RowCount != finishedQuestList.Count)
-            {
+            if (FinishedQuestListDataGrid.RowCount != finishedQuestList.Count) {
                 FinishedQuestListDataGrid.DataSource = null;
                 FinishedQuestListDataGrid.DataSource = finishedQuestList;
                 FinishedQuestListDataGrid.Refresh();
@@ -1280,8 +1198,7 @@ public partial class ClientController : Form
                 .OrderBy(x => x.LuaName)
                 .ToList();
 
-            if (CompletedQuestListDataGrid.RowCount != completedQuestList.Count)
-            {
+            if (CompletedQuestListDataGrid.RowCount != completedQuestList.Count) {
                 CompletedQuestListDataGrid.DataSource = null;
                 CompletedQuestListDataGrid.DataSource = completedQuestList;
                 CompletedQuestListDataGrid.Refresh();
@@ -1293,45 +1210,43 @@ public partial class ClientController : Form
                 .OrderBy(x => x.LuaName)
                 .ToList();
 
-            if (QuestListViewDataGrid.RowCount != questList.Count)
-            {
+            if (QuestListViewDataGrid.RowCount != questList.Count) {
                 QuestListViewDataGrid.DataSource = null;
                 QuestListViewDataGrid.DataSource = questList;
                 QuestListViewDataGrid.Refresh();
                 QuestListTab.Text = $"Quests ({questList.Count})";
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void MasterCharacter_TextChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MasterCharacter_TextChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl(MasterCharacter.Name, MasterCharacter.Text);
     }
 
-    private void SendTradeMasterNearby_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void SendTradeMasterNearby_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl(SendTradeMasterNearby.Name, SendTradeMasterNearby.Checked);
     }
 
-    private void MasterGiveNoahAmount_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void MasterGiveNoahAmount_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl(MasterGiveNoahAmount.Name, MasterGiveNoahAmount.Value);
     }
 
-    private void MasterCharacterTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME) return;
-            if (!Controller.GetControl("SendTradeMasterNearby", false)) return;
+    private void MasterCharacterTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+                return;
+            if (!Controller.GetControl("SendTradeMasterNearby", false))
+                return;
 
             var master = CharacterHandler.PlayerList.FirstOrDefault(x => x.Name == Controller.GetControl("MasterCharacter", ""));
             var giveNoah = Controller.GetControl("MasterGiveNoahAmount", 0);
@@ -1339,16 +1254,14 @@ public partial class ClientController : Form
             if (master != null && Vector3.Distance(master.GetPosition(), Character.GetPosition()) <= 5.0f && Character.IsTrading == false && Character.Gold >= (giveNoah + 500000))
                 CharacterHandler.ExhangeRequest(master.Id);
 
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void BotButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void BotButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (Controller.GetControl("Bot", false))
             Controller.SetControl("Bot", false);
@@ -1356,22 +1269,19 @@ public partial class ClientController : Form
             Controller.SetControl("Bot", true);
     }
 
-    private void LoadNpcListButton_Click(object sender, EventArgs e)
-    {
-        if (Character == null) return;
-        
+    private void LoadNpcListButton_Click(object sender, EventArgs e) {
+        if (Character == null)
+            return;
+
         QuestNpcList.DataSource = CharacterHandler.NpcList
             .FindAll(x => x.MonsterOrNpc == 2 && x.FamilyType != 11 && x.FamilyType != 15 && x.FamilyType != 74 && x.FamilyType != 24 && x.FamilyType != 174);
     }
 
-    private void GoToNpcButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in QuestNpcList.SelectedRows)
-        {
+    private void GoToNpcButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in QuestNpcList.SelectedRows) {
             var character = (Character)row.DataBoundItem;
 
-            if (character != null)
-            {
+            if (character != null) {
                 CharacterHandler.QuestList.Clear();
 
                 CharacterHandler.Route(new List<RouteData>()
@@ -1391,8 +1301,7 @@ public partial class ClientController : Form
 
                 var followers = CharacterHandler.GetFollowersAtSameZone();
 
-                followers.ForEach(x =>
-                {
+                followers.ForEach(x => {
                     x.CharacterHandler.QuestList.Clear();
 
                     x.CharacterHandler.Route(new List<RouteData>()
@@ -1414,45 +1323,43 @@ public partial class ClientController : Form
         }
     }
 
-    private void TakeQuestButton_Click(object sender, EventArgs e)
-    {
+    private void TakeQuestButton_Click(object sender, EventArgs e) {
         /*if(QuestListViewDataGrid.SelectedRows.Count > 1)
         {
             MessageBox.Show("You cannot take one more than task at same time.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }*/
 
-        foreach (DataGridViewRow row in QuestListViewDataGrid.SelectedRows)
-        {
+        foreach (DataGridViewRow row in QuestListViewDataGrid.SelectedRows) {
             var quest = (Quest)row.DataBoundItem;
-            if (quest == null) continue;
+            if (quest == null)
+                continue;
 
             var npc = CharacterHandler.NpcList.FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
 
-            if (npc == null) continue;
+            if (npc == null)
+                continue;
 
             // Self action
-           // if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
-                CharacterHandler.QuestTake((uint)quest.BaseId);
+            // if (!Character.ActiveQuestList.Any(x => x.Id == quest.Id))
+            CharacterHandler.QuestTake((uint)quest.BaseId);
 
             // Forward action to all followers
             var followers = CharacterHandler.GetFollowersAtSameZone();
 
-            followers.ForEach(x =>
-            {
+            followers.ForEach(x => {
                 //if (!x.Character.ActiveQuestList.Any(x => x.Id == quest.Id))
-                    x.CharacterHandler.QuestTake((uint)quest.BaseId);
+                x.CharacterHandler.QuestTake((uint)quest.BaseId);
             });
         }
     }
 
-    private void RemoveQuestButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in RunningQuestListDataGrid.SelectedRows)
-        {
+    private void RemoveQuestButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in RunningQuestListDataGrid.SelectedRows) {
             var quest = (Quest)row.DataBoundItem;
 
-            if (quest == null) continue;
+            if (quest == null)
+                continue;
 
             // Self action
             CharacterHandler.QuestRemove((uint)quest.BaseId);
@@ -1460,31 +1367,30 @@ public partial class ClientController : Form
             // Forward action to all followers
             var followers = CharacterHandler.GetFollowersAtSameZone();
 
-            followers.ForEach(x =>
-            {
+            followers.ForEach(x => {
                 x.CharacterHandler.QuestRemove((uint)quest.BaseId);
             });
         }
     }
 
-    private void QuestTimer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsRouting()) return;
-            if (!Controller.GetControl("Quest", false)) return;
+    private void QuestTimer_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsRouting())
+                return;
+            if (!Controller.GetControl("Quest", false))
+                return;
 
             var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
 
             var runningQuest = Character.ActiveQuestList
-                .FindAll(x =>
-                {
-                    if (x.TargetNpc != null && 
+                .FindAll(x => {
+                    if (x.TargetNpc != null &&
                         x.TargetNpc.Any(x => x.ProtoId != 0 && x.KillCount < x.NeededKillCount) && !x.GetQuestNpcPosition().Equals(Vector3.Zero) && x.NpcZone == Character.Zone)
                         return true;
 
-                    if (x.CollectItem != null && 
+                    if (x.CollectItem != null &&
                         x.CollectItem.Any(x => x.CollectableNpcProtoId != 0 && !x.GetCollectableNpcPosition().Equals(Vector3.Zero) && x.CollectableNpcZone == Character.Zone))
                         return true;
 
@@ -1493,10 +1399,8 @@ public partial class ClientController : Form
                 .OrderBy(x => x.MinLevel)
                 .FirstOrDefault(x => x.Status == 1)!;
 
-            if (runningQuest != null)
-            {
-                if (runningQuest.TargetNpc != null)
-                {
+            if (runningQuest != null) {
+                if (runningQuest.TargetNpc != null) {
                     var target = runningQuest.TargetNpc.FirstOrDefault(x => x.ProtoId != 0 && x.KillCount < x.NeededKillCount)!;
 
                     Vector3 targetPosition = new Vector3(target.NpcX, target.NpcY, 0.0f);
@@ -1506,12 +1410,10 @@ public partial class ClientController : Form
                     if (Vector3.Distance(Character.GetPosition(), targetPosition) > 65.0f)
                         Character.SetMovePosition(targetPosition);
 
-                    if (!Character.SelectedTargetList.Any(x => x.Id == target.ProtoId))
-                    {
+                    if (!Character.SelectedTargetList.Any(x => x.Id == target.ProtoId)) {
                         var selectedTarget = TableHandler.GetMonsterList().FirstOrDefault(x => x.Id == target.ProtoId);
 
-                        if (selectedTarget != null)
-                        {
+                        if (selectedTarget != null) {
                             TargetCheckedListBox.DataSource = null;
 
                             Character.SelectedTargetList.Clear();
@@ -1527,10 +1429,8 @@ public partial class ClientController : Form
                         }
                     }
                 }
-                else
-                {
-                    if (runningQuest.CollectItem != null)
-                    {
+                else {
+                    if (runningQuest.CollectItem != null) {
                         var collectableNpc = runningQuest.CollectItem.FirstOrDefault(x => x.CollectableNpcProtoId != 0)!;
 
                         Vector3 targetPosition = new Vector3(collectableNpc.CollectableNpcX, collectableNpc.CollectableNpcY, 0.0f);
@@ -1539,14 +1439,11 @@ public partial class ClientController : Form
 
                         if (Vector3.Distance(Character.GetPosition(), targetPosition) > 65.0f)
                             Character.SetMovePosition(targetPosition);
-                        else
-                        {
-                            if (!Character.SelectedTargetList.Any(x => x.Id == collectableNpc.CollectableNpcProtoId))
-                            {
+                        else {
+                            if (!Character.SelectedTargetList.Any(x => x.Id == collectableNpc.CollectableNpcProtoId)) {
                                 var selectedTarget = TableHandler.GetMonsterList().FirstOrDefault(x => x.Id == collectableNpc.CollectableNpcProtoId);
 
-                                if (selectedTarget != null)
-                                {
+                                if (selectedTarget != null) {
                                     TargetCheckedListBox.DataSource = null;
 
                                     Character.SelectedTargetList.Clear();
@@ -1565,27 +1462,23 @@ public partial class ClientController : Form
                     }
                 }
             }
-            else
-            {
+            else {
                 var completedQuest = Character.ActiveQuestList
                     .FindAll(x => !x.GetQuestNpcPosition().Equals(Vector3.Zero) && x.NpcZone == Character.Zone)
                     .OrderBy(x => x.MinLevel)
                     .FirstOrDefault(x => x.Status == 3)!;
 
-                if (completedQuest != null)
-                {
+                if (completedQuest != null) {
                     Vector3 targetPosition = completedQuest.GetQuestNpcPosition();
 
                     targetPosition.Z = zoneData.GetHeightBy2DPos(targetPosition.X, targetPosition.Y);
 
                     if (Character.GetPosition() != targetPosition)
                         Character.SetMovePosition(targetPosition);
-                    else
-                    {
+                    else {
                         var character = CharacterHandler.GetNpcList().FirstOrDefault(x => x.ProtoId == completedQuest.NpcProtoId)!;
 
-                        if (character != null)
-                        {
+                        if (character != null) {
                             CharacterHandler.NpcEvent(character.Id);
 
                             CharacterHandler.QuestGive((uint)completedQuest.BaseId);
@@ -1597,16 +1490,14 @@ public partial class ClientController : Form
                     }
                 }
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void QuestButton_Click(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void QuestButton_Click(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (Controller.GetControl("Quest", false))
             Controller.SetControl("Quest", false);
@@ -1614,13 +1505,12 @@ public partial class ClientController : Form
             Controller.SetControl("Quest", true);
     }
 
-    private void RemoveCompletedQuestButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in CompletedQuestListDataGrid.SelectedRows)
-        {
+    private void RemoveCompletedQuestButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in CompletedQuestListDataGrid.SelectedRows) {
             var quest = (Quest)row.DataBoundItem;
 
-            if (quest == null) continue;
+            if (quest == null)
+                continue;
 
             // Self action
             CharacterHandler.QuestRemove((uint)quest.BaseId);
@@ -1628,28 +1518,24 @@ public partial class ClientController : Form
             // Forward action to all followers
             var followers = CharacterHandler.GetFollowersAtSameZone();
 
-            followers.ForEach((x) =>
-            {
+            followers.ForEach((x) => {
                 x.CharacterHandler.QuestRemove((uint)quest.BaseId);
             });
         }
     }
 
-    private async void GiveQuestButton_Click(object sender, EventArgs e)
-    {
-        foreach (DataGridViewRow row in CompletedQuestListDataGrid.SelectedRows)
-        {
+    private async void GiveQuestButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in CompletedQuestListDataGrid.SelectedRows) {
             var quest = (Quest)row.DataBoundItem;
 
-            if (quest == null) continue;
+            if (quest == null)
+                continue;
 
             var npc = CharacterHandler.GetNpcList().FirstOrDefault(x => x.ProtoId == quest.NpcProtoId)!;
 
-            if (npc != null)
-            {
+            if (npc != null) {
                 // Self action
-                await Task.Run(async () =>
-                {
+                await Task.Run(async () => {
                     CharacterHandler.NpcEvent(npc.Id);
                     await Task.Delay(250);
                     CharacterHandler.QuestGive((uint)quest.BaseId);
@@ -1665,10 +1551,8 @@ public partial class ClientController : Form
                 // Forward action to all followers
                 var followers = CharacterHandler.GetFollowersAtSameZone();
 
-                followers.ForEach(async (x) =>
-                {
-                    await Task.Run(async () =>
-                    {
+                followers.ForEach(async (x) => {
+                    await Task.Run(async () => {
                         x.CharacterHandler.NpcEvent(npc.Id);
                         await Task.Delay(250);
                         x.CharacterHandler.QuestGive((uint)quest.BaseId);
@@ -1686,27 +1570,25 @@ public partial class ClientController : Form
         }
     }
 
-    private void AttackSpeed_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void AttackSpeed_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(AttackSpeed.Name, AttackSpeed.Value);
     }
 
-    private void SpeedhackCheckbox_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void SpeedhackCheckbox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl(SpeedhackCheckbox.Name, SpeedhackCheckbox.Checked);
     }
 
-    private void GetCurrentCoordinate_Click(object sender, EventArgs e)
-    {
+    private void GetCurrentCoordinate_Click(object sender, EventArgs e) {
         MoveCoordinateX.Value = (decimal)Character.X;
         MoveCoordinateY.Value = (decimal)Character.Y;
     }
 
-    private void MoveCoordinateDirect_Click(object sender, EventArgs e)
-    {
+    private void MoveCoordinateDirect_Click(object sender, EventArgs e) {
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
 
         if (zoneData == null)
@@ -1717,8 +1599,7 @@ public partial class ClientController : Form
         Character.SetMovePosition(movePosition);
     }
 
-    private void MoveCoordinateWithRoute_Click(object sender, EventArgs e)
-    {
+    private void MoveCoordinateWithRoute_Click(object sender, EventArgs e) {
         var zoneData = ClientHandler.ZoneList.FirstOrDefault(x => x.GetZoneIndex() == Character.Zone)!;
 
         if (zoneData == null)
@@ -1732,27 +1613,19 @@ public partial class ClientController : Form
         });
     }
 
-    private void SendPacket_Click(object sender, EventArgs e)
-    {
+    private void SendPacket_Click(object sender, EventArgs e) {
         var repatCount = SendPacketRepeatCount.Value;
         var packetTextBoxArray = PacketTextBox.Lines.ToArray();
         var sendPacketDelay = SendPacketDelay.Value;
 
-        Task t = new Task(async () =>
-        {
-            for (int a = 0; a < (int)repatCount; a++)
-            {
-                for (int b = 0; b < packetTextBoxArray.Length; b++)
-                {
-                    try
-                    {
-                        if (sendPacketCancelationTokenCt.IsCancellationRequested)
-                        {
+        Task t = new Task(async () => {
+            for (int a = 0; a < (int)repatCount; a++) {
+                for (int b = 0; b < packetTextBoxArray.Length; b++) {
+                    try {
+                        if (sendPacketCancelationTokenCt.IsCancellationRequested) {
                             sendPacketCancelationTokenCt.ThrowIfCancellationRequested();
                         }
-                    }
-                    catch (Exception)
-                    {
+                    } catch (Exception) {
                         sendPacketCancelationToken = new CancellationTokenSource();
                         sendPacketCancelationTokenCt = sendPacketCancelationToken.Token;
                         return;
@@ -1773,39 +1646,34 @@ public partial class ClientController : Form
 
     }
 
-    private void DisableSkillCasting_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void DisableSkillCasting_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
         Controller.SetControl(DisableSkillCasting.Name, DisableSkillCasting.Checked);
     }
 
-    private void TargetSearchRange_ValueChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void TargetSearchRange_ValueChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         Controller.SetControl(TargetSearchRange.Name, TargetSearchRange.Value);
     }
 
-    private void ItemListButton_Click(object sender, EventArgs e)
-    {
-        if(Character.NpcEventGroup != 0)
-        {
+    private void ItemListButton_Click(object sender, EventArgs e) {
+        if (Character.NpcEventGroup != 0) {
             ShopWindow shopBuyItem = new ShopWindow(Client);
             shopBuyItem.ShowDialog();
         }
     }
 
-    private void GoToNpcShopButton_Click(object sender, EventArgs e)
-    {
+    private void GoToNpcShopButton_Click(object sender, EventArgs e) {
         Character.NpcEventGroup = 0;
 
-        foreach (DataGridViewRow row in NpcShopDataList.SelectedRows)
-        {
-           var character = (Character)row.DataBoundItem;
+        foreach (DataGridViewRow row in NpcShopDataList.SelectedRows) {
+            var character = (Character)row.DataBoundItem;
 
-           if (character != null)
-           {
-               CharacterHandler.Route(new List<RouteData>()
+            if (character != null) {
+                CharacterHandler.Route(new List<RouteData>()
                {
                    new RouteData() { Action = RouteActionType.MOVE, X = character.X, Y = character.Y, Z = character.Z },
 
@@ -1817,13 +1685,13 @@ public partial class ClientController : Form
                        NpcId = character.Id
                    }
                });
-           }
+            }
         }
     }
 
-    private void ConvertMsToExp_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void ConvertMsToExp_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (ConvertMsToExp.Checked)
             AutoJoinMs.Enabled = false;
@@ -1833,9 +1701,9 @@ public partial class ClientController : Form
         Controller.SetControl(ConvertMsToExp.Name, ConvertMsToExp.Checked);
     }
 
-    private void AutoJoinMs_CheckedChanged(object sender, EventArgs e)
-    {
-        if (Controller == null) return;
+    private void AutoJoinMs_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
 
         if (AutoJoinMs.Checked)
             ConvertMsToExp.Enabled = false;
@@ -1845,20 +1713,19 @@ public partial class ClientController : Form
         Controller.SetControl(AutoJoinMs.Name, AutoJoinMs.Checked);
     }
 
-    private void MSAutoEvent_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
-            if (!Controller.GetControl("AutoJoinMs", false)) return;
+    private void MSAutoEvent_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable())
+                return;
+            if (!Controller.GetControl("AutoJoinMs", false))
+                return;
 
-            if (Character.IsInMonsterStone())
-            {
+            if (Character.IsInMonsterStone()) {
                 var monsterStonePhase = Controller.GetControl("MonsterStonePhase", 0);
 
-                if(monsterStonePhase == 0)
-                {
+                if (monsterStonePhase == 0) {
                     if (Character.GetPosition() == Character.GetMovePosition())
                         Controller.SetControl("MonsterStonePhase", 1);
                     else
@@ -1867,27 +1734,25 @@ public partial class ClientController : Form
 
                 MSAutoEvent.Interval = 1000;
             }
-            else
-            {
+            else {
                 var monsterStone = Character.Inventory.FirstOrDefault(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase));
 
-                if (monsterStone == null) return;
+                if (monsterStone == null)
+                    return;
 
                 var selectedTarget = TableHandler.GetMonsterList().FindAll(x => x.Id == 9824 || x.Id == 8800 || x.Id == 8737 || x.Id == 8784);
 
-                if (selectedTarget != null)
-                {
+                if (selectedTarget != null) {
                     TargetCheckedListBox.DataSource = null;
 
                     Character.SelectedTargetList.Clear();
-                    
-                    selectedTarget.ForEach(x =>
-                    {
+
+                    selectedTarget.ForEach(x => {
                         Character.SelectedTargetList.Add(x);
                     });
 
                     Controller.SetControl("SelectedTargetList", JsonSerializer.Serialize(Character.SelectedTargetList.Select(e => e.Id)));
-                    
+
                     TargetCheckedListBox.DataSource = Character.SelectedTargetList;
                     TargetCheckedListBox.DisplayMember = "Name";
 
@@ -1901,38 +1766,64 @@ public partial class ClientController : Form
 
                 MSAutoEvent.Interval = 5000;
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void MSConvertExperience_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            if (Controller == null) return;
-            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable()) return;
-            if (!Controller.GetControl("ConvertMsToExp", false)) return;
+    private void MSConvertExperience_Tick(object sender, EventArgs e) {
+        try {
+            if (Controller == null)
+                return;
+            if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME || CharacterHandler.IsUntouchable())
+                return;
+            if (!Controller.GetControl("ConvertMsToExp", false))
+                return;
 
             var monsterStone = Character.Inventory.Where(x => x.Name != null && x.Name.Contains("Monster Stone", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
-            if (monsterStone == null) return;
+            if (monsterStone == null)
+                return;
 
-            monsterStone.ForEach(x =>
-            {
+            monsterStone.ForEach(x => {
                 CharacterHandler.Event((byte)EventOpCode.MONSTER_STONE_EXP, x.ItemID);
             });
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Debug.WriteLine(ex.StackTrace);
         }
     }
 
-    private void SendPacketStop_Click(object sender, EventArgs e)
-    {
+    private void SendPacketStop_Click(object sender, EventArgs e) {
         sendPacketCancelationToken.Cancel();
+    }
+
+    private void FastLootMoney_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(FastLootMoney.Name, FastLootMoney.Checked);
+    }
+
+    private void ExpSealcheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(ExpSealcheckBox.Name, ExpSealcheckBox.Checked);
+
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+            return;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_ExpSeal(ExpSealcheckBox.Checked)).ConfigureAwait(false);
+    }
+
+    private void btnSpawnCreature_Click(object sender, EventArgs e) {
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_QuestGive(5645)).ConfigureAwait(false);
+        Client.Session.SendAsync(MessageBuilder.MsgSend_SelectMenu(0, "25023_Ex_Worm.lua")).ConfigureAwait(false);
+        Client.Session.SendAsync(MessageBuilder.MsgSend_SelectMenu(0, "25023_Ex_Worm.lua")).ConfigureAwait(false);
     }
 }

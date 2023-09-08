@@ -116,7 +116,7 @@ internal class ClientMessageProtocol : MessageProtocol
             //case MessageID.WIZ_SPEEDHACK_CHECK:
             //case MessageID.WIZ_GENIE:
             //case MessageID.WIZ_ITEM_COUNT_CHANGE:
-            //    break;
+                //break;
 
             default:
                 Debug.WriteLine($"{DateTime.Now:HH:mm:ss} SEND:[{Sequence}] {session.Account.Login} : {Convert.ToHexString(msg.AsDataSpan()).ToLower()}");

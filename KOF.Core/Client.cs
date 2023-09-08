@@ -116,7 +116,7 @@ public class Client
             return "<none>";
         }
     }
-    public string Area { get { return Character.Area; } }
+    public string Area { get { return $"{Character.Area}({Character.GetPosition2D()})"; } }
     public bool Bot
     {
         get

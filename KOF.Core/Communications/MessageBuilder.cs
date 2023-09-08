@@ -3,6 +3,7 @@ using KOF.Core.Models;
 using KOF.Data.Models;
 using System.Diagnostics;
 using System.Numerics;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
 namespace KOF.Core.Communications;
@@ -375,13 +376,13 @@ public class MessageBuilder
         return msg;
     }
 
-    public static Message MsgSend_HackTool(byte commandType, string crc)
+    public static Message MsgSend_HackTool(byte commandType, string crc,int unknown)
     {
         var msg = new Message(MessageID.WIZ_HACKTOOL);
 
         msg.Write(commandType);
         msg.Write<byte>(Convert.FromHexString(crc));
-        msg.Write(2);
+        msg.Write(unknown);
 
         return msg;
     }
@@ -1136,6 +1137,15 @@ public class MessageBuilder
         return msg;
     }
 
+    public static Message MsgSend_ExpSeal(bool on_off) {
+        var msg = new Message(MessageID.WIZ_SEALEXP);
 
+        if (on_off)
+            msg.Write<byte>(0x01);
+        else
+            msg.Write<byte>(0x02);
+
+        return msg;
+    }
 
 }

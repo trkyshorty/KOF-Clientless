@@ -37,10 +37,12 @@ public static class ClientHandler
 
     static ClientHandler()
     {
+
         TableHandler.Load().ContinueWith((task) =>
         {
             Ready = true;
         });
+
 
         string localAppFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
