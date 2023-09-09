@@ -15,6 +15,20 @@ using System.Numerics;
 namespace KOF.Core.Services;
 
 public partial class GameService {
+
+    [MessageHandler(MessageID.WIZ_SEALEXP)]
+    public Task MsgRecv_ExpSeal(Session session,Message msg) {
+
+        byte subcode = msg.Read<byte>();
+
+        if(subcode == 0x02) {
+            if (session.Client.CharacterHandler.Controller.GetControl("ExpSealcheckBox", true))
+               return session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true));
+        }
+
+        return Task.CompletedTask;
+    }
+
     [MessageHandler(MessageID.WIZ_COMPRESS_PACKET)]
     public Task MsgRecv_Compress(Session session, Message msg) {
         ushort compressLength = (ushort)msg.Read<uint>(); // out len.
@@ -67,16 +81,16 @@ public partial class GameService {
         session.Client.CharacterHandler.MoveToSelectedRouteFinal();
 
         // EXP seal
-        if (session.Client.CharacterHandler.Controller.GetControl("ExpSealcheckBox", true) && session.Client.Character.Level >= 30)
+        if (session.Client.CharacterHandler.Controller.GetControl("ExpSealcheckBox", true))
             session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true)).ConfigureAwait(false);
 
         // Trade block
-
-        // combat block
+        if (session.Client.CharacterHandler.Controller.GetControl("TradeBlockcheckBox", true))
+            session.SendAsync(MessageBuilder.MsgSend_TradeBlock(true)).ConfigureAwait(false);
 
         // pm block
-
-
+        if (session.Client.CharacterHandler.Controller.GetControl("PrivateChatcheckBox", true))
+            session.SendAsync(MessageBuilder.MsgSend_PrivateChatBlock(true)).ConfigureAwait(false);
 
         return Task.CompletedTask;
     }

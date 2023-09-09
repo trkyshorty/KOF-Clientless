@@ -731,6 +731,7 @@ public class CharacterHandler : IDisposable {
                 await Task.Run(async () => {
                     // Super Archer
                     if (skill.Id == 999897) {
+
                         var arrowShower = MySelf.SkillList.First(
                             x => x.Name == "arrow shower" &&
                             x.ClassBaseId >= 100 &&
@@ -918,6 +919,9 @@ public class CharacterHandler : IDisposable {
 
     public void Regen() {
         Client.Session.SendAsync(MessageBuilder.MsgSend_Regen()).ConfigureAwait(false);
+
+        if (Client.CharacterHandler.Controller.GetControl("ExpSealcheckBox", true))
+            Client.Session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true)).ConfigureAwait(false);
     }
 
     public void RemoveItem(byte slotType, byte pos, uint itemId) {
@@ -1101,6 +1105,24 @@ public class CharacterHandler : IDisposable {
             return;
 
         Client.Session.SendAsync(MessageBuilder.MsgSend_PartyPromoteLeader(memberId)).ConfigureAwait(false);
+    }
+
+    public void PartySummomMember(int memberId) {
+        if (!MySelf.Party.IsInParty() && MySelf.Id == memberId)
+            return;
+
+        if (Character.GetRepresentClass(MySelf.Class) != (int)ClassRepresentType.CLASS_REPRESENT_WIZARD)
+            return;
+
+        var skill = MySelf.SkillList.FirstOrDefault(x => x.Id.ToString().Substring(0, 3) == MySelf.Class.ToString() && x.BaseId == 109004);
+
+        if (skill is null)
+            return;
+
+        Character target = new() { Id = memberId };
+        target.SetPosition(new Vector3(0, 0, 0));
+
+        UseSkill(skill, target).ConfigureAwait(false);
     }
 
     public void ItemBundleDrop(int npcId, uint bundleId, byte itemCount) {
@@ -1325,7 +1347,7 @@ public class CharacterHandler : IDisposable {
 
                         if (potion != null)
                             route.SubQueue.Enqueue(new RouteData() { Action = RouteActionType.POTION, TargetId = potion.Id, X = potion.X, Y = potion.Y, Z = potion.Z });
-                        
+
                         if (!Controller.GetControl("OnlyPotionBuy", true)) {
 
                             var sundries = GetNpcList().FirstOrDefault(x => x.Name.Contains("Sundries", StringComparison.InvariantCultureIgnoreCase));

@@ -36,6 +36,8 @@ partial class ClientController {
         ConvertMsToExp = new CheckBox();
         AutoJoinMs = new CheckBox();
         groupBox15 = new GroupBox();
+        PrivateChatcheckBox = new CheckBox();
+        TradeBlockcheckBox = new CheckBox();
         ExpSealcheckBox = new CheckBox();
         GodModeCheckBox = new CheckBox();
         HyperNoahCheckBox = new CheckBox();
@@ -87,6 +89,7 @@ partial class ClientController {
         NearbyPlayerListDataGrid = new DataGridView();
         PartyListGroupBox = new GroupBox();
         groupBox10 = new GroupBox();
+        SummonButton = new Button();
         SwiftPartyMemberCheckBox = new CheckBox();
         PartyMakeLeaderButton = new Button();
         groupBox8 = new GroupBox();
@@ -339,6 +342,8 @@ partial class ClientController {
         // 
         // groupBox15
         // 
+        groupBox15.Controls.Add(PrivateChatcheckBox);
+        groupBox15.Controls.Add(TradeBlockcheckBox);
         groupBox15.Controls.Add(ExpSealcheckBox);
         groupBox15.Controls.Add(GodModeCheckBox);
         groupBox15.Controls.Add(HyperNoahCheckBox);
@@ -350,22 +355,49 @@ partial class ClientController {
         groupBox15.TabStop = false;
         groupBox15.Text = "Features";
         // 
+        // PrivateChatcheckBox
+        // 
+        PrivateChatcheckBox.AutoSize = true;
+        PrivateChatcheckBox.Checked = true;
+        PrivateChatcheckBox.CheckState = CheckState.Indeterminate;
+        PrivateChatcheckBox.Location = new Point(289, 47);
+        PrivateChatcheckBox.Name = "PrivateChatcheckBox";
+        PrivateChatcheckBox.Size = new Size(76, 19);
+        PrivateChatcheckBox.TabIndex = 23;
+        PrivateChatcheckBox.Text = "PM Block";
+        PrivateChatcheckBox.UseVisualStyleBackColor = true;
+        PrivateChatcheckBox.CheckedChanged += PrivateChatcheckBox_CheckedChanged;
+        // 
+        // TradeBlockcheckBox
+        // 
+        TradeBlockcheckBox.AutoSize = true;
+        TradeBlockcheckBox.Checked = true;
+        TradeBlockcheckBox.CheckState = CheckState.Indeterminate;
+        TradeBlockcheckBox.Location = new Point(289, 22);
+        TradeBlockcheckBox.Name = "TradeBlockcheckBox";
+        TradeBlockcheckBox.Size = new Size(86, 19);
+        TradeBlockcheckBox.TabIndex = 22;
+        TradeBlockcheckBox.Text = "Trade Block";
+        TradeBlockcheckBox.UseVisualStyleBackColor = true;
+        TradeBlockcheckBox.CheckedChanged += TradeBlockcheckBox_CheckedChanged;
+        // 
         // ExpSealcheckBox
         // 
         ExpSealcheckBox.AutoSize = true;
         ExpSealcheckBox.Checked = true;
         ExpSealcheckBox.CheckState = CheckState.Indeterminate;
-        ExpSealcheckBox.Location = new Point(247, 47);
+        ExpSealcheckBox.Location = new Point(133, 47);
         ExpSealcheckBox.Name = "ExpSealcheckBox";
         ExpSealcheckBox.Size = new Size(129, 19);
         ExpSealcheckBox.TabIndex = 21;
-        ExpSealcheckBox.Text = "Exp Seal ( 33 lv. <=)";
+        ExpSealcheckBox.Text = "Exp Seal ( 30 lv. >=)";
         ExpSealcheckBox.UseVisualStyleBackColor = true;
         ExpSealcheckBox.CheckedChanged += ExpSealcheckBox_CheckedChanged;
         // 
         // GodModeCheckBox
         // 
         GodModeCheckBox.AutoSize = true;
+        GodModeCheckBox.Enabled = false;
         GodModeCheckBox.Location = new Point(6, 22);
         GodModeCheckBox.Name = "GodModeCheckBox";
         GodModeCheckBox.Size = new Size(82, 19);
@@ -388,7 +420,7 @@ partial class ClientController {
         // SpeedhackCheckbox
         // 
         SpeedhackCheckbox.AutoSize = true;
-        SpeedhackCheckbox.Location = new Point(247, 22);
+        SpeedhackCheckbox.Location = new Point(134, 22);
         SpeedhackCheckbox.Name = "SpeedhackCheckbox";
         SpeedhackCheckbox.Size = new Size(83, 19);
         SpeedhackCheckbox.TabIndex = 20;
@@ -749,8 +781,6 @@ partial class ClientController {
         // MoveToTarget
         // 
         MoveToTarget.AutoSize = true;
-        MoveToTarget.Checked = true;
-        MoveToTarget.CheckState = CheckState.Checked;
         MoveToTarget.Location = new Point(6, 24);
         MoveToTarget.Name = "MoveToTarget";
         MoveToTarget.Size = new Size(104, 19);
@@ -921,6 +951,7 @@ partial class ClientController {
         // 
         // groupBox10
         // 
+        groupBox10.Controls.Add(SummonButton);
         groupBox10.Controls.Add(SwiftPartyMemberCheckBox);
         groupBox10.Location = new Point(6, 243);
         groupBox10.Name = "groupBox10";
@@ -928,6 +959,16 @@ partial class ClientController {
         groupBox10.TabIndex = 17;
         groupBox10.TabStop = false;
         groupBox10.Text = "Settings";
+        // 
+        // SummonButton
+        // 
+        SummonButton.Location = new Point(271, 18);
+        SummonButton.Name = "SummonButton";
+        SummonButton.Size = new Size(154, 23);
+        SummonButton.TabIndex = 17;
+        SummonButton.Text = "Summon ( only mage )";
+        SummonButton.UseVisualStyleBackColor = true;
+        SummonButton.Click += SummonButton_Click;
         // 
         // SwiftPartyMemberCheckBox
         // 
@@ -1366,9 +1407,9 @@ partial class ClientController {
         // 
         btnSpawnCreature.Location = new Point(8, 312);
         btnSpawnCreature.Name = "btnSpawnCreature";
-        btnSpawnCreature.Size = new Size(127, 23);
+        btnSpawnCreature.Size = new Size(174, 23);
         btnSpawnCreature.TabIndex = 15;
-        btnSpawnCreature.Text = "spawn creature";
+        btnSpawnCreature.Text = "spawn creature initialize";
         btnSpawnCreature.UseVisualStyleBackColor = true;
         btnSpawnCreature.Click += btnSpawnCreature_Click;
         // 
@@ -2086,4 +2127,7 @@ partial class ClientController {
     private CheckBox FastLootMoney;
     private CheckBox ExpSealcheckBox;
     private Button btnSpawnCreature;
+    private Button SummonButton;
+    private CheckBox PrivateChatcheckBox;
+    private CheckBox TradeBlockcheckBox;
 }

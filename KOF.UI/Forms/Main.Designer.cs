@@ -44,12 +44,17 @@
             tabPage1 = new TabPage();
             ClientTabPage = new TabPage();
             groupBox5 = new GroupBox();
+            FlagSet = new Button();
+            PrivateChatcheckBox = new CheckBox();
+            TradeBlockcheckBox = new CheckBox();
+            ExpSealcheckBox = new CheckBox();
+            SpeedhackCheckbox = new CheckBox();
+            DisableSkillCasting = new CheckBox();
             SetGroupColorButton = new Button();
             groupBox6 = new GroupBox();
             ClearFollowButton = new Button();
             SetFollowButton = new Button();
             groupBox3 = new GroupBox();
-            cbxSpeedHack = new CheckBox();
             TownButton = new Button();
             RunRouteButton = new Button();
             CloseClientButton = new Button();
@@ -269,6 +274,12 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(FlagSet);
+            groupBox5.Controls.Add(PrivateChatcheckBox);
+            groupBox5.Controls.Add(TradeBlockcheckBox);
+            groupBox5.Controls.Add(ExpSealcheckBox);
+            groupBox5.Controls.Add(SpeedhackCheckbox);
+            groupBox5.Controls.Add(DisableSkillCasting);
             groupBox5.Controls.Add(SetGroupColorButton);
             groupBox5.Controls.Add(groupBox6);
             groupBox5.Controls.Add(groupBox3);
@@ -279,6 +290,73 @@
             groupBox5.TabIndex = 0;
             groupBox5.TabStop = false;
             groupBox5.Text = "Client";
+            // 
+            // FlagSet
+            // 
+            FlagSet.Location = new Point(727, 233);
+            FlagSet.Name = "FlagSet";
+            FlagSet.Size = new Size(134, 23);
+            FlagSet.TabIndex = 26;
+            FlagSet.Text = "Set";
+            FlagSet.UseVisualStyleBackColor = true;
+            FlagSet.Click += FlagSet_Click;
+            // 
+            // PrivateChatcheckBox
+            // 
+            PrivateChatcheckBox.AutoSize = true;
+            PrivateChatcheckBox.Checked = true;
+            PrivateChatcheckBox.CheckState = CheckState.Indeterminate;
+            PrivateChatcheckBox.Location = new Point(727, 206);
+            PrivateChatcheckBox.Name = "PrivateChatcheckBox";
+            PrivateChatcheckBox.Size = new Size(76, 19);
+            PrivateChatcheckBox.TabIndex = 25;
+            PrivateChatcheckBox.Text = "PM Block";
+            PrivateChatcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // TradeBlockcheckBox
+            // 
+            TradeBlockcheckBox.AutoSize = true;
+            TradeBlockcheckBox.Checked = true;
+            TradeBlockcheckBox.CheckState = CheckState.Indeterminate;
+            TradeBlockcheckBox.Location = new Point(727, 179);
+            TradeBlockcheckBox.Name = "TradeBlockcheckBox";
+            TradeBlockcheckBox.Size = new Size(86, 19);
+            TradeBlockcheckBox.TabIndex = 24;
+            TradeBlockcheckBox.Text = "Trade Block";
+            TradeBlockcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ExpSealcheckBox
+            // 
+            ExpSealcheckBox.AutoSize = true;
+            ExpSealcheckBox.Checked = true;
+            ExpSealcheckBox.CheckState = CheckState.Indeterminate;
+            ExpSealcheckBox.Location = new Point(727, 152);
+            ExpSealcheckBox.Name = "ExpSealcheckBox";
+            ExpSealcheckBox.Size = new Size(129, 19);
+            ExpSealcheckBox.TabIndex = 22;
+            ExpSealcheckBox.Text = "Exp Seal ( 30 lv. >=)";
+            ExpSealcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // SpeedhackCheckbox
+            // 
+            SpeedhackCheckbox.AutoSize = true;
+            SpeedhackCheckbox.Location = new Point(727, 125);
+            SpeedhackCheckbox.Name = "SpeedhackCheckbox";
+            SpeedhackCheckbox.Size = new Size(83, 19);
+            SpeedhackCheckbox.TabIndex = 5;
+            SpeedhackCheckbox.Text = "Speedhack";
+            SpeedhackCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // DisableSkillCasting
+            // 
+            DisableSkillCasting.AutoSize = true;
+            DisableSkillCasting.ForeColor = Color.Red;
+            DisableSkillCasting.Location = new Point(727, 98);
+            DisableSkillCasting.Name = "DisableSkillCasting";
+            DisableSkillCasting.Size = new Size(128, 19);
+            DisableSkillCasting.TabIndex = 10;
+            DisableSkillCasting.Text = "Disable skill casting";
+            DisableSkillCasting.UseVisualStyleBackColor = true;
             // 
             // SetGroupColorButton
             // 
@@ -324,7 +402,6 @@
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(cbxSpeedHack);
             groupBox3.Controls.Add(TownButton);
             groupBox3.Controls.Add(RunRouteButton);
             groupBox3.Controls.Add(CloseClientButton);
@@ -334,17 +411,6 @@
             groupBox3.TabIndex = 6;
             groupBox3.TabStop = false;
             groupBox3.Text = "Action";
-            // 
-            // cbxSpeedHack
-            // 
-            cbxSpeedHack.AutoSize = true;
-            cbxSpeedHack.Enabled = false;
-            cbxSpeedHack.Location = new Point(248, 26);
-            cbxSpeedHack.Name = "cbxSpeedHack";
-            cbxSpeedHack.Size = new Size(84, 19);
-            cbxSpeedHack.TabIndex = 5;
-            cbxSpeedHack.Text = "SpeecHack";
-            cbxSpeedHack.UseVisualStyleBackColor = true;
             // 
             // TownButton
             // 
@@ -394,7 +460,7 @@
             ClientListDataGrid.RowTemplate.Height = 25;
             ClientListDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ClientListDataGrid.ShowEditingIcon = false;
-            ClientListDataGrid.Size = new Size(858, 504);
+            ClientListDataGrid.Size = new Size(718, 504);
             ClientListDataGrid.TabIndex = 3;
             ClientListDataGrid.VirtualMode = true;
             ClientListDataGrid.CellDoubleClick += ClientListDataGrid_CellDoubleClick;
@@ -432,9 +498,9 @@
             tabPage1.ResumeLayout(false);
             ClientTabPage.ResumeLayout(false);
             groupBox5.ResumeLayout(false);
+            groupBox5.PerformLayout();
             groupBox6.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
-            groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ClientListDataGrid).EndInit();
             ResumeLayout(false);
         }
@@ -470,6 +536,11 @@
         private Button SetGroupColorButton;
         private ColorDialog GroupColorDialog;
         private NotifyIcon SystemTrayNotify;
-        private CheckBox cbxSpeedHack;
+        private CheckBox SpeedhackCheckbox;
+        private CheckBox DisableSkillCasting;
+        private CheckBox ExpSealcheckBox;
+        private CheckBox PrivateChatcheckBox;
+        private CheckBox TradeBlockcheckBox;
+        private Button FlagSet;
     }
 }

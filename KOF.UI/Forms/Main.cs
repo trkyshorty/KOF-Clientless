@@ -1,19 +1,14 @@
-﻿using KOF.Core;
-using KOF.Core.Handlers;
-using KOF.Database.Models;
-using KOF.Core.Models;
-using System.Text.Json;
-using KOF.Cryptography;
+﻿using AutoUpdaterDotNET;
+using KOF.Core;
 using KOF.Core.Enums;
-using System.Reflection;
-using System.Diagnostics;
+using KOF.Core.Handlers;
+using KOF.Core.Models;
+using KOF.Cryptography;
 using KOF.Database;
-using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
-using System.Text;
-using AutoUpdaterDotNET;
+using KOF.Database.Models;
 using System.Net;
-using System.Windows.Forms;
+using System.Reflection;
+using System.Text.Json;
 
 namespace KOF.UI.Forms;
 
@@ -491,20 +486,11 @@ public partial class Main : Form {
             var followSellect = (Client)FollowSelect.SelectedItem;
 
             if (followSellect != null) {
-                if (client.Character.Name != followSellect.Character.Name) {
+                if (client.Character.Name != followSellect.Character.Name)
                     client.CharacterHandler.Controller.SetControl("Follow", followSellect.Name);
 
-                    // speed
-                    if (cbxSpeedHack.Checked)
-                        client.CharacterHandler.Controller.SetControl("SpeedhackCheckbox", true);
-                }
-                else {
+                else
                     client.CharacterHandler.Controller.SetControl("Follow", "");
-
-                    if (!cbxSpeedHack.Checked)
-                        client.CharacterHandler.Controller.SetControl("SpeedhackCheckbox", false);
-
-                }
             }
         }
     }
@@ -610,7 +596,7 @@ public partial class Main : Form {
 
             client.CharacterHandler.Controller.SetControl("Follow", "");
 
-            if (!cbxSpeedHack.Checked)
+            if (!SpeedhackCheckbox.Checked)
                 client.CharacterHandler.Controller.SetControl("SpeedhackCheckbox", false);
         }
     }
@@ -663,5 +649,91 @@ public partial class Main : Form {
         Show();
         this.WindowState = FormWindowState.Normal;
         SystemTrayNotify.Visible = false;
+    }
+
+
+
+    private void DisableSkillCasting_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("DisableSkillCasting", DisableSkillCasting.Checked);
+        }
+    }
+
+    private void SpeedhackCheckbox_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("SpeedhackCheckbox", SpeedhackCheckbox.Checked);
+
+        }
+    }
+
+    private void ExpSealcheckBox_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("ExpSealcheckBox", ExpSealcheckBox.Checked);
+        }
+    }
+
+
+    private void FlagSet_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            // disable casting
+            client.CharacterHandler.Controller.SetControl(DisableSkillCasting.Name, DisableSkillCasting.Checked);
+
+            // speed hack
+            client.CharacterHandler.Controller.SetControl(SpeedhackCheckbox.Name, SpeedhackCheckbox.Checked);
+
+            // exp seal
+            client.CharacterHandler.Controller.SetControl(ExpSealcheckBox.Name, ExpSealcheckBox.Checked);
+
+            // trade block
+            client.CharacterHandler.Controller.SetControl(TradeBlockcheckBox.Name, TradeBlockcheckBox.Checked);
+
+            // pm block
+            client.CharacterHandler.Controller.SetControl(PrivateChatcheckBox.Name, PrivateChatcheckBox.Checked);
+
+        }
     }
 }

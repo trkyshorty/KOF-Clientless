@@ -1148,4 +1148,27 @@ public class MessageBuilder
         return msg;
     }
 
+    public static Message MsgSend_TradeBlock(bool on_off) {
+        var msg = new Message(0xBD);
+        msg.Write<byte>(0x01);
+
+        if (on_off)
+            msg.Write<byte>(0x01);
+        else
+            msg.Write<byte>(0x00);
+
+        return msg;
+    }
+
+    public static Message MsgSend_PrivateChatBlock(bool on_off) {
+        var msg = new Message(MessageID.WIZ_CHAT_TARGET);
+        msg.Write<byte>(0x02);
+
+        if (on_off)
+            msg.Write<byte>(0x01);
+        else
+            msg.Write<byte>(0x00);
+
+        return msg;
+    }
 }

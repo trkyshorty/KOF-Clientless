@@ -1632,10 +1632,13 @@ public partial class ClientController : Form {
                     }
 
                     var packetText = packetTextBoxArray[b];
+                    if (string.IsNullOrEmpty(packetText))
+                        continue;
                     var packetArray = Convert.FromHexString(packetText);
                     var message = new KOF.Core.Communications.Message(packetArray.Length, packetArray);
 
-                    await Client.Session.SendAsync(message);
+                    if (Client.Character.GameState == GameState.GAME_STATE_INGAME)
+                        await Client.Session.SendAsync(message);
                     await Task.Delay((int)sendPacketDelay);
                 }
             }
@@ -1810,7 +1813,7 @@ public partial class ClientController : Form {
 
         Controller.SetControl(ExpSealcheckBox.Name, ExpSealcheckBox.Checked);
 
-        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME && Character.Level <= 30)
             return;
 
         Client.Session.SendAsync(MessageBuilder.MsgSend_ExpSeal(ExpSealcheckBox.Checked)).ConfigureAwait(false);
@@ -1818,12 +1821,54 @@ public partial class ClientController : Form {
 
     private void btnSpawnCreature_Click(object sender, EventArgs e) {
 
-        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
-        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
-        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        if (Character.IsDead())
+            return;
 
+        MoveCoordinateX.Value = 60;
+        MoveCoordinateY.Value = 875;
+
+        MoveCoordinateDirect_Click(sender, e);
+
+        if ((Vector3.Distance(Character.GetPosition(), new Vector3(((float)MoveCoordinateX.Value), ((float)MoveCoordinateY.Value), 0.0f)) < 5.0f) == false)
+            return;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        Task.Delay(TimeSpan.FromSeconds(1)).Wait();
         Client.Session.SendAsync(MessageBuilder.MsgSend_QuestGive(5645)).ConfigureAwait(false);
+        Task.Delay(TimeSpan.FromSeconds(1)).Wait();
         Client.Session.SendAsync(MessageBuilder.MsgSend_SelectMenu(0, "25023_Ex_Worm.lua")).ConfigureAwait(false);
+        Task.Delay(TimeSpan.FromSeconds(1)).Wait();
         Client.Session.SendAsync(MessageBuilder.MsgSend_SelectMenu(0, "25023_Ex_Worm.lua")).ConfigureAwait(false);
+    }
+
+    private void SummonButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in PartyListDataGrid.SelectedRows) {
+            var partyMember = (PartyMember)row.DataBoundItem;
+            CharacterHandler.PartySummomMember(partyMember.MemberId);
+        }
+    }
+
+    private void TradeBlockcheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(TradeBlockcheckBox.Name, TradeBlockcheckBox.Checked);
+
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+            return;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_TradeBlock(TradeBlockcheckBox.Checked)).ConfigureAwait(false);
+    }
+
+    private void PrivateChatcheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(PrivateChatcheckBox.Name, PrivateChatcheckBox.Checked);
+
+        if (CharacterHandler.GetGameState() != GameState.GAME_STATE_INGAME)
+            return;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_PrivateChatBlock(PrivateChatcheckBox.Checked)).ConfigureAwait(false);
     }
 }
