@@ -85,6 +85,7 @@ partial class ClientController {
         AttackSkillCheckedListBox = new CheckedListBox();
         PartyPage = new TabPage();
         groupBox9 = new GroupBox();
+        SendPartyPlayerNametextBox = new TextBox();
         SendPartyButton = new Button();
         NearbyPlayerListDataGrid = new DataGridView();
         PartyListGroupBox = new GroupBox();
@@ -824,7 +825,7 @@ partial class ClientController {
         // 
         // TargetListClearButton
         // 
-        TargetListClearButton.Location = new Point(251, 195);
+        TargetListClearButton.Location = new Point(322, 195);
         TargetListClearButton.Name = "TargetListClearButton";
         TargetListClearButton.Size = new Size(113, 23);
         TargetListClearButton.TabIndex = 5;
@@ -833,7 +834,7 @@ partial class ClientController {
         // 
         // SearchTargetButton
         // 
-        SearchTargetButton.Location = new Point(251, 22);
+        SearchTargetButton.Location = new Point(322, 22);
         SearchTargetButton.Name = "SearchTargetButton";
         SearchTargetButton.Size = new Size(113, 23);
         SearchTargetButton.TabIndex = 1;
@@ -901,6 +902,7 @@ partial class ClientController {
         // 
         // groupBox9
         // 
+        groupBox9.Controls.Add(SendPartyPlayerNametextBox);
         groupBox9.Controls.Add(SendPartyButton);
         groupBox9.Controls.Add(NearbyPlayerListDataGrid);
         groupBox9.Location = new Point(5, 391);
@@ -909,6 +911,15 @@ partial class ClientController {
         groupBox9.TabIndex = 16;
         groupBox9.TabStop = false;
         groupBox9.Text = "Nearby Players";
+        // 
+        // SendPartyPlayerNametextBox
+        // 
+        SendPartyPlayerNametextBox.Location = new Point(100, 22);
+        SendPartyPlayerNametextBox.Name = "SendPartyPlayerNametextBox";
+        SendPartyPlayerNametextBox.PlaceholderText = "Character Name";
+        SendPartyPlayerNametextBox.Size = new Size(140, 23);
+        SendPartyPlayerNametextBox.TabIndex = 4;
+        SendPartyPlayerNametextBox.TextAlign = HorizontalAlignment.Center;
         // 
         // SendPartyButton
         // 
@@ -935,6 +946,7 @@ partial class ClientController {
         NearbyPlayerListDataGrid.RowTemplate.Height = 25;
         NearbyPlayerListDataGrid.Size = new Size(431, 186);
         NearbyPlayerListDataGrid.TabIndex = 1;
+        NearbyPlayerListDataGrid.Click += NearbyPlayerListDataGrid_Click;
         // 
         // PartyListGroupBox
         // 
@@ -1938,6 +1950,7 @@ partial class ClientController {
         SkillGroupBox.ResumeLayout(false);
         PartyPage.ResumeLayout(false);
         groupBox9.ResumeLayout(false);
+        groupBox9.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)NearbyPlayerListDataGrid).EndInit();
         PartyListGroupBox.ResumeLayout(false);
         groupBox10.ResumeLayout(false);
@@ -2130,4 +2143,5 @@ partial class ClientController {
     private Button SummonButton;
     private CheckBox PrivateChatcheckBox;
     private CheckBox TradeBlockcheckBox;
+    private TextBox SendPartyPlayerNametextBox;
 }

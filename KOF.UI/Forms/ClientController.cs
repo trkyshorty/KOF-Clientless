@@ -472,6 +472,13 @@ public partial class ClientController : Form {
     }
 
     private void SendPartyButton_Click(object sender, EventArgs e) {
+
+        if (!string.IsNullOrEmpty(SendPartyPlayerNametextBox.Text)) {
+            CharacterHandler.PartySend(SendPartyPlayerNametextBox.Text);
+            SendPartyPlayerNametextBox.Text = string.Empty;
+            return;
+        }
+
         foreach (DataGridViewRow row in NearbyPlayerListDataGrid.SelectedRows) {
             var player = (Character)row.DataBoundItem;
             CharacterHandler.PartySend(player.Name);
@@ -1870,5 +1877,12 @@ public partial class ClientController : Form {
             return;
 
         Client.Session.SendAsync(MessageBuilder.MsgSend_PrivateChatBlock(PrivateChatcheckBox.Checked)).ConfigureAwait(false);
+    }
+
+    private void NearbyPlayerListDataGrid_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in NearbyPlayerListDataGrid.SelectedRows) {
+            var player = (Character)row.DataBoundItem;
+            SendPartyPlayerNametextBox.Text = player.Name;
+        }
     }
 }

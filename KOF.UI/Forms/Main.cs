@@ -78,14 +78,18 @@ public partial class Main : Form {
         ClientListDataGrid.Columns[1].Width = 50;
         ClientListDataGrid.Columns[2].Width = 50;
         ClientListDataGrid.Columns[3].Width = 50;
-        ClientListDataGrid.Columns[4].Width = 100;
-        ClientListDataGrid.Columns[5].Width = 100;
-        ClientListDataGrid.Columns[6].Width = 100;
-        ClientListDataGrid.Columns[7].Width = 100;
 
-        ClientListDataGrid.Columns[8].Width = 50;
+        // money
+        ClientListDataGrid.Columns[4].Width = 85;
+
+        ClientListDataGrid.Columns[5].Width = 75;
+        ClientListDataGrid.Columns[6].Width = 75;
+        ClientListDataGrid.Columns[7].Width = 50;
+        ClientListDataGrid.Columns[8].Width = 130;
+
         ClientListDataGrid.Columns[9].Width = 50;
         ClientListDataGrid.Columns[10].Width = 50;
+        ClientListDataGrid.Columns[11].Width = 50;
 
         FollowSelect.DataSource = FollowableClientList;
         FollowSelect.DisplayMember = "Name";
@@ -705,7 +709,6 @@ public partial class Main : Form {
         }
     }
 
-
     private void FlagSet_Click(object sender, EventArgs e) {
         foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
 
@@ -734,6 +737,40 @@ public partial class Main : Form {
             // pm block
             client.CharacterHandler.Controller.SetControl(PrivateChatcheckBox.Name, PrivateChatcheckBox.Checked);
 
+        }
+    }
+
+    private void TradeBlockcheckBox_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("TradeBlockcheckBox", TradeBlockcheckBox.Checked);
+        }
+    }
+
+    private void PrivateChatcheckBox_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("PrivateChatcheckBox", PrivateChatcheckBox.Checked);
         }
     }
 }

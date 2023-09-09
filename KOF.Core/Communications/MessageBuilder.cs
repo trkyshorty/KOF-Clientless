@@ -492,6 +492,15 @@ public class MessageBuilder
         return msg;
     }
 
+    public static Message MsgSend_NpcRequest(int npcId) {
+        var msg = new Message(MessageID.WIZ_REQ_NPCIN);
+
+        msg.Write(1);
+        msg.Write(npcId);
+
+        return msg;
+    }
+
     public static Message MsgSend_StartSkillCastingAtTargetPacket(Skill skill, int socketId, int targetId)
     {
         var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);

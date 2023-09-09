@@ -65,10 +65,23 @@ public class Client
             return 0;
         }
     }
+
+    public string Money
+    {
+        get
+        {
+            return Character.Gold.ToString("N0");
+        }
+    }
+
     public string Job
     {
         get
         {
+            // TODO: delete this later...
+            if (Character.GameState == Enums.GameState.GAME_STATE_INGAME && CharacterHandler.Controller.GetControl("FastLootMoney", true))
+                return $"box: {Character.bundlecount}";
+
             if (Character.Job != "")
                 return Character.Job;
 

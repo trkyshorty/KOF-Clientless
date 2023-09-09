@@ -10,6 +10,9 @@ namespace KOF.Core.Models;
 public class Character
 {
     [Browsable(false)]
+    public long bundlecount { get; set; }
+
+    [Browsable(false)]
     public int Id { get; set; }
 
     public string Name { get; set; } = "";

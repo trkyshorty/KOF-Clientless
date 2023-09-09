@@ -824,9 +824,10 @@ public partial class GameService {
         var npcId = msg.Read<int>();
         var bundleId = msg.Read<uint>();
         var itemCount = msg.Read<byte>();
-
-        if (session.Client.CharacterHandler.Controller.GetControl("FastLootMoney", true))
+        if (session.Client.CharacterHandler.Controller.GetControl("FastLootMoney", true)) {
+            session.Client.Character.bundlecount++;
             return session.SendAsync(MessageBuilder.MsgSend_RequestItemBundleOpen((int)bundleId));
+        }
         else
             session.Client.CharacterHandler.ItemBundleDrop(npcId, bundleId, itemCount);
 
@@ -839,8 +840,10 @@ public partial class GameService {
         var result = msg.Read<byte>();
 
         // fast money loot
-        if (session.Client.CharacterHandler.Controller.GetControl("FastLootMoney", true))
+        if (session.Client.CharacterHandler.Controller.GetControl("FastLootMoney", true)) {
+            session.Client.Character.bundlecount--;
             return session.SendAsync(MessageBuilder.MsgSend_RequestItemBundleGet((int)bundleId, 900_000_000, 0));
+        }
 
         var bundle = session.Client.CharacterHandler.LootList.FirstOrDefault(x => x.BundleId == bundleId);
 
