@@ -44,15 +44,23 @@
             tabPage1 = new TabPage();
             ClientTabPage = new TabPage();
             groupBox5 = new GroupBox();
+            groupBox17 = new GroupBox();
+            SendPacketStop = new Button();
+            SendPacketRepeatCount = new NumericUpDown();
+            label10 = new Label();
+            SendPacketDelay = new NumericUpDown();
+            label8 = new Label();
+            SendPacket = new Button();
+            PacketTextBox = new RichTextBox();
             FastLootMoney = new CheckBox();
             EnableLoot = new CheckBox();
-            FlagSet = new Button();
             SetGroupColorButton = new Button();
             groupBox6 = new GroupBox();
             ClearFollowButton = new Button();
             SetFollowButton = new Button();
             PrivateChatcheckBox = new CheckBox();
             groupBox3 = new GroupBox();
+            ClanAcceptButton = new Button();
             RegenButton = new Button();
             TownButton = new Button();
             RunRouteButton = new Button();
@@ -64,7 +72,6 @@
             ExpSealcheckBox = new CheckBox();
             GroupColorDialog = new ColorDialog();
             SystemTrayNotify = new NotifyIcon(components);
-            ClanAcceptButton = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
@@ -73,6 +80,9 @@
             tabPage1.SuspendLayout();
             ClientTabPage.SuspendLayout();
             groupBox5.SuspendLayout();
+            groupBox17.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SendPacketRepeatCount).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SendPacketDelay).BeginInit();
             groupBox6.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ClientListDataGrid).BeginInit();
@@ -278,9 +288,9 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(groupBox17);
             groupBox5.Controls.Add(FastLootMoney);
             groupBox5.Controls.Add(EnableLoot);
-            groupBox5.Controls.Add(FlagSet);
             groupBox5.Controls.Add(SetGroupColorButton);
             groupBox5.Controls.Add(groupBox6);
             groupBox5.Controls.Add(PrivateChatcheckBox);
@@ -296,6 +306,91 @@
             groupBox5.TabIndex = 0;
             groupBox5.TabStop = false;
             groupBox5.Text = "Client";
+            // 
+            // groupBox17
+            // 
+            groupBox17.Controls.Add(SendPacketStop);
+            groupBox17.Controls.Add(SendPacketRepeatCount);
+            groupBox17.Controls.Add(label10);
+            groupBox17.Controls.Add(SendPacketDelay);
+            groupBox17.Controls.Add(label8);
+            groupBox17.Controls.Add(SendPacket);
+            groupBox17.Controls.Add(PacketTextBox);
+            groupBox17.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
+            groupBox17.Location = new Point(504, 515);
+            groupBox17.Name = "groupBox17";
+            groupBox17.Size = new Size(357, 104);
+            groupBox17.TabIndex = 29;
+            groupBox17.TabStop = false;
+            groupBox17.Text = "Packet Sender";
+            // 
+            // SendPacketStop
+            // 
+            SendPacketStop.Location = new Point(53, 71);
+            SendPacketStop.Name = "SendPacketStop";
+            SendPacketStop.Size = new Size(45, 23);
+            SendPacketStop.TabIndex = 15;
+            SendPacketStop.Text = "Stop";
+            SendPacketStop.UseVisualStyleBackColor = true;
+            SendPacketStop.Click += SendPacketStop_Click;
+            // 
+            // SendPacketRepeatCount
+            // 
+            SendPacketRepeatCount.Location = new Point(159, 71);
+            SendPacketRepeatCount.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+            SendPacketRepeatCount.Name = "SendPacketRepeatCount";
+            SendPacketRepeatCount.Size = new Size(68, 22);
+            SendPacketRepeatCount.TabIndex = 6;
+            SendPacketRepeatCount.TextAlign = HorizontalAlignment.Center;
+            SendPacketRepeatCount.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(104, 71);
+            label10.Name = "label10";
+            label10.Size = new Size(49, 13);
+            label10.TabIndex = 5;
+            label10.Text = "Repeat :";
+            // 
+            // SendPacketDelay
+            // 
+            SendPacketDelay.Increment = new decimal(new int[] { 50, 0, 0, 0 });
+            SendPacketDelay.Location = new Point(280, 74);
+            SendPacketDelay.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+            SendPacketDelay.Name = "SendPacketDelay";
+            SendPacketDelay.Size = new Size(68, 22);
+            SendPacketDelay.TabIndex = 4;
+            SendPacketDelay.TextAlign = HorizontalAlignment.Center;
+            SendPacketDelay.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(233, 73);
+            label8.Name = "label8";
+            label8.Size = new Size(41, 13);
+            label8.TabIndex = 3;
+            label8.Text = "Delay :";
+            // 
+            // SendPacket
+            // 
+            SendPacket.Location = new Point(6, 71);
+            SendPacket.Name = "SendPacket";
+            SendPacket.Size = new Size(41, 23);
+            SendPacket.TabIndex = 1;
+            SendPacket.Text = "start";
+            SendPacket.UseVisualStyleBackColor = true;
+            SendPacket.Click += SendPacket_Click;
+            // 
+            // PacketTextBox
+            // 
+            PacketTextBox.BorderStyle = BorderStyle.FixedSingle;
+            PacketTextBox.Location = new Point(6, 19);
+            PacketTextBox.Name = "PacketTextBox";
+            PacketTextBox.Size = new Size(343, 46);
+            PacketTextBox.TabIndex = 0;
+            PacketTextBox.Text = "4800";
             // 
             // FastLootMoney
             // 
@@ -321,19 +416,9 @@
             EnableLoot.UseVisualStyleBackColor = true;
             EnableLoot.CheckedChanged += EnableLoot_CheckedChanged;
             // 
-            // FlagSet
-            // 
-            FlagSet.Location = new Point(141, 598);
-            FlagSet.Name = "FlagSet";
-            FlagSet.Size = new Size(278, 23);
-            FlagSet.TabIndex = 26;
-            FlagSet.Text = "Set all flag | (pm / trade / exp seal .. etc.)";
-            FlagSet.UseVisualStyleBackColor = true;
-            FlagSet.Click += FlagSet_Click;
-            // 
             // SetGroupColorButton
             // 
-            SetGroupColorButton.Location = new Point(750, 594);
+            SetGroupColorButton.Location = new Point(3, 516);
             SetGroupColorButton.Name = "SetGroupColorButton";
             SetGroupColorButton.Size = new Size(108, 23);
             SetGroupColorButton.TabIndex = 5;
@@ -400,6 +485,17 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Action";
             // 
+            // ClanAcceptButton
+            // 
+            ClanAcceptButton.ForeColor = SystemColors.ControlText;
+            ClanAcceptButton.Location = new Point(308, 20);
+            ClanAcceptButton.Name = "ClanAcceptButton";
+            ClanAcceptButton.Size = new Size(99, 23);
+            ClanAcceptButton.TabIndex = 6;
+            ClanAcceptButton.Text = "Clan accept";
+            ClanAcceptButton.UseVisualStyleBackColor = true;
+            ClanAcceptButton.Click += ClanAcceptButton_Click;
+            // 
             // RegenButton
             // 
             RegenButton.ForeColor = SystemColors.ControlText;
@@ -459,7 +555,7 @@
             ClientListDataGrid.RowTemplate.Height = 25;
             ClientListDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ClientListDataGrid.ShowEditingIcon = false;
-            ClientListDataGrid.Size = new Size(858, 463);
+            ClientListDataGrid.Size = new Size(858, 426);
             ClientListDataGrid.TabIndex = 3;
             ClientListDataGrid.VirtualMode = true;
             ClientListDataGrid.CellDoubleClick += ClientListDataGrid_CellDoubleClick;
@@ -520,17 +616,6 @@
             SystemTrayNotify.Visible = true;
             SystemTrayNotify.MouseDoubleClick += SystemTrayNotify_MouseDoubleClick;
             // 
-            // ClanAcceptButton
-            // 
-            ClanAcceptButton.ForeColor = SystemColors.ControlText;
-            ClanAcceptButton.Location = new Point(308, 20);
-            ClanAcceptButton.Name = "ClanAcceptButton";
-            ClanAcceptButton.Size = new Size(99, 23);
-            ClanAcceptButton.TabIndex = 6;
-            ClanAcceptButton.Text = "Clan accept";
-            ClanAcceptButton.UseVisualStyleBackColor = true;
-            ClanAcceptButton.Click += ClanAcceptButton_Click;
-            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -558,6 +643,10 @@
             ClientTabPage.ResumeLayout(false);
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
+            groupBox17.ResumeLayout(false);
+            groupBox17.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)SendPacketRepeatCount).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SendPacketDelay).EndInit();
             groupBox6.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ClientListDataGrid).EndInit();
@@ -600,10 +689,17 @@
         private CheckBox ExpSealcheckBox;
         private CheckBox PrivateChatcheckBox;
         private CheckBox TradeBlockcheckBox;
-        private Button FlagSet;
         private CheckBox FastLootMoney;
         private CheckBox EnableLoot;
         private Button RegenButton;
         private Button ClanAcceptButton;
+        private GroupBox groupBox17;
+        private Button SendPacketStop;
+        private NumericUpDown SendPacketRepeatCount;
+        private Label label10;
+        private NumericUpDown SendPacketDelay;
+        private Label label8;
+        private Button SendPacket;
+        private RichTextBox PacketTextBox;
     }
 }

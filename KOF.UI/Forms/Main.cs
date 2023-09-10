@@ -710,34 +710,7 @@ public partial class Main : Form {
     }
 
     private void FlagSet_Click(object sender, EventArgs e) {
-        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
 
-            var client = (Client)row.DataBoundItem;
-
-            if (client == null)
-                return;
-
-            var character = client.CharacterHandler;
-
-            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
-                continue;
-
-            // disable casting
-            client.CharacterHandler.Controller.SetControl(DisableSkillCasting.Name, DisableSkillCasting.Checked);
-
-            // speed hack
-            client.CharacterHandler.Controller.SetControl(SpeedhackCheckbox.Name, SpeedhackCheckbox.Checked);
-
-            // exp seal
-            client.CharacterHandler.Controller.SetControl(ExpSealcheckBox.Name, ExpSealcheckBox.Checked);
-
-            // trade block
-            client.CharacterHandler.Controller.SetControl(TradeBlockcheckBox.Name, TradeBlockcheckBox.Checked);
-
-            // pm block
-            client.CharacterHandler.Controller.SetControl(PrivateChatcheckBox.Name, PrivateChatcheckBox.Checked);
-
-        }
     }
 
     private void TradeBlockcheckBox_CheckedChanged(object sender, EventArgs e) {
@@ -841,5 +814,34 @@ public partial class Main : Form {
 
             client.CharacterHandler.ClanAccept();
         }
+    }
+    CancellationTokenSource pkt_cts = default!;
+    private void SendPacket_Click(object sender, EventArgs e) {
+
+        pkt_cts ??= new CancellationTokenSource();
+
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            if (string.IsNullOrEmpty(PacketTextBox.Text))
+                continue;
+
+            client.CharacterHandler
+                .PacketSend_Continous(PacketTextBox.Lines, (int)SendPacketRepeatCount.Value, (int)SendPacketDelay.Value, pkt_cts.Token)
+                .ConfigureAwait(false);
+        }
+    }
+
+    private void SendPacketStop_Click(object sender, EventArgs e) {
+        pkt_cts?.Cancel();
+        pkt_cts = null!;
     }
 }

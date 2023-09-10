@@ -402,7 +402,6 @@ partial class ClientController {
         // GodModeCheckBox
         // 
         GodModeCheckBox.AutoSize = true;
-        GodModeCheckBox.Enabled = false;
         GodModeCheckBox.Location = new Point(6, 22);
         GodModeCheckBox.Name = "GodModeCheckBox";
         GodModeCheckBox.Size = new Size(82, 19);
@@ -1607,12 +1606,14 @@ partial class ClientController {
         // 
         // SendPacketDelay
         // 
+        SendPacketDelay.Increment = new decimal(new int[] { 50, 0, 0, 0 });
         SendPacketDelay.Location = new Point(361, 167);
         SendPacketDelay.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
         SendPacketDelay.Name = "SendPacketDelay";
         SendPacketDelay.Size = new Size(68, 23);
         SendPacketDelay.TabIndex = 4;
         SendPacketDelay.TextAlign = HorizontalAlignment.Center;
+        SendPacketDelay.Value = new decimal(new int[] { 500, 0, 0, 0 });
         // 
         // label8
         // 
@@ -1640,7 +1641,7 @@ partial class ClientController {
         PacketTextBox.Name = "PacketTextBox";
         PacketTextBox.Size = new Size(426, 139);
         PacketTextBox.TabIndex = 0;
-        PacketTextBox.Text = "";
+        PacketTextBox.Text = "64070D160000\n55001132353032335F45785F576F726D2E6C7561\n55001132353032335F45785F576F726D2E6C7561";
         // 
         // StatusGroupBox
         // 

@@ -125,6 +125,11 @@ public partial class GameService {
         session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_PROCESS)).ConfigureAwait(false);
         session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_LETTER)).ConfigureAwait(false);
         session.SendAsync(MessageBuilder.MsgSend_GameStart((byte)session.Client.Character.GameState, session.Account.Character)).ConfigureAwait(false);
+
+        session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+        session.SendAsync(MessageBuilder.MsgSend_NpcEvent(59642)).ConfigureAwait(false);
+
         session.SendAsync(MessageBuilder.MsgSend_QuestInit(session.Client.Character.Id)).ConfigureAwait(false);
         session.SendAsync(MessageBuilder.MsgSend_SurroundingUserProcess((byte)SurroundingUserType.USER_INFO, session.Account.Character)).ConfigureAwait(false);
         session.SendAsync(MessageBuilder.MsgSend_Rotate(session.Client.Character.Rotation, session.Account.Character)).ConfigureAwait(false);

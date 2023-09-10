@@ -942,6 +942,29 @@ public class CharacterHandler : IDisposable {
         Client.Character.m_iJoinReqClan = 0;
     }
 
+    public async Task PacketSend_Continous(string[] packet_array, int repeat, int delay, CancellationToken cancellationToken = default!) {
+
+        for (int a = 0; a < repeat; a++) {
+            for (int b = 0; b < packet_array.Length; b++) {
+
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
+                var packetText = packet_array[b];
+                if (string.IsNullOrEmpty(packetText))
+                    continue;
+
+                var packetArray = Convert.FromHexString(packetText);
+                var message = new Message(packetArray.Length, packetArray);
+
+                if (Client.Character.GameState == GameState.GAME_STATE_INGAME)
+                    await Client.Session.SendAsync(message).ConfigureAwait(false);
+
+                await Task.Delay(delay, cancellationToken);
+            }
+        }
+    }
+
     public void RemoveItem(byte slotType, byte pos, uint itemId) {
         Client.Session.SendAsync(MessageBuilder.MsgSend_ItemRemove(slotType, pos, itemId)).ConfigureAwait(false);
         Client.Session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
