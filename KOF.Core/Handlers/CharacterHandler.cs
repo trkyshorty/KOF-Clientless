@@ -924,6 +924,24 @@ public class CharacterHandler : IDisposable {
             Client.Session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true)).ConfigureAwait(false);
     }
 
+    public void ClanAccept() {
+
+        if (Client.Character.IsInClan())
+            return;
+
+        var m_iJoinReqClanRequierID = Client.Character.m_iJoinReqClanRequierID;
+        var m_iJoinReqClan          = Client.Character.m_iJoinReqClan;
+
+        if (m_iJoinReqClanRequierID == 0 && m_iJoinReqClan == 0)
+            return;
+
+        Client.Session.SendAsync(MessageBuilder.MsgSend_KnightsAccept(true, m_iJoinReqClanRequierID, m_iJoinReqClan)).ConfigureAwait(false);
+
+        // reset
+        Client.Character.m_iJoinReqClanRequierID = 0;
+        Client.Character.m_iJoinReqClan = 0;
+    }
+
     public void RemoveItem(byte slotType, byte pos, uint itemId) {
         Client.Session.SendAsync(MessageBuilder.MsgSend_ItemRemove(slotType, pos, itemId)).ConfigureAwait(false);
         Client.Session.SendAsync(MessageBuilder.MsgSend_ShoppingMall((byte)ShoppingMallType.STORE_CLOSE)).ConfigureAwait(false);
@@ -1638,10 +1656,10 @@ public class CharacterHandler : IDisposable {
 
             var moveTowards = MoveTowards(startPosition, movePosition);
 
-            //if (startPosition == moveTowards)
-            // MySelf.SetMovePosition(Vector3.Zero);
-            //else
-            SendMove(startPosition, moveTowards, MySelf.Speed, 0);
+            if (startPosition == moveTowards)
+                MySelf.SetMovePosition(Vector3.Zero);
+            else
+                SendMove(startPosition, moveTowards, MySelf.Speed, 3);
 
             MySelf.SetPosition(moveTowards);
         }

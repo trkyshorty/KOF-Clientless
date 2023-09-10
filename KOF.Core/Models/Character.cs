@@ -10,6 +10,12 @@ namespace KOF.Core.Models;
 public class Character
 {
     [Browsable(false)]
+    public int m_iJoinReqClanRequierID { get; set; }
+
+    [Browsable(false)]
+    public short m_iJoinReqClan { get; set; }
+
+    [Browsable(false)]
     public long bundlecount { get; set; }
 
     [Browsable(false)]

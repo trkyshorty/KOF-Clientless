@@ -43,6 +43,8 @@ partial class ClientController {
         HyperNoahCheckBox = new CheckBox();
         SpeedhackCheckbox = new CheckBox();
         groupBox13 = new GroupBox();
+        KeepFollowingcheckBox = new CheckBox();
+        gotoMasterCharacter = new Button();
         MasterGiveNoahAmount = new NumericUpDown();
         label4 = new Label();
         SendTradeMasterNearby = new CheckBox();
@@ -90,6 +92,8 @@ partial class ClientController {
         NearbyPlayerListDataGrid = new DataGridView();
         PartyListGroupBox = new GroupBox();
         groupBox10 = new GroupBox();
+        PartyAddPrefixtextBox = new TextBox();
+        AutoPartycheckBox = new CheckBox();
         SummonButton = new Button();
         SwiftPartyMemberCheckBox = new CheckBox();
         PartyMakeLeaderButton = new Button();
@@ -431,6 +435,8 @@ partial class ClientController {
         // 
         // groupBox13
         // 
+        groupBox13.Controls.Add(KeepFollowingcheckBox);
+        groupBox13.Controls.Add(gotoMasterCharacter);
         groupBox13.Controls.Add(MasterGiveNoahAmount);
         groupBox13.Controls.Add(label4);
         groupBox13.Controls.Add(SendTradeMasterNearby);
@@ -442,6 +448,28 @@ partial class ClientController {
         groupBox13.TabIndex = 1;
         groupBox13.TabStop = false;
         groupBox13.Text = "Master Character";
+        // 
+        // KeepFollowingcheckBox
+        // 
+        KeepFollowingcheckBox.AutoSize = true;
+        KeepFollowingcheckBox.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point);
+        KeepFollowingcheckBox.Location = new Point(167, 18);
+        KeepFollowingcheckBox.Name = "KeepFollowingcheckBox";
+        KeepFollowingcheckBox.Size = new Size(76, 30);
+        KeepFollowingcheckBox.TabIndex = 6;
+        KeepFollowingcheckBox.Text = "Keep\r\nfollowing";
+        KeepFollowingcheckBox.UseVisualStyleBackColor = true;
+        KeepFollowingcheckBox.CheckedChanged += KeepFollowingcheckBox_CheckedChanged;
+        // 
+        // gotoMasterCharacter
+        // 
+        gotoMasterCharacter.Location = new Point(6, 46);
+        gotoMasterCharacter.Name = "gotoMasterCharacter";
+        gotoMasterCharacter.Size = new Size(155, 23);
+        gotoMasterCharacter.TabIndex = 5;
+        gotoMasterCharacter.Text = "go if nearby";
+        gotoMasterCharacter.UseVisualStyleBackColor = true;
+        gotoMasterCharacter.Click += gotoMasterCharacter_Click;
         // 
         // MasterGiveNoahAmount
         // 
@@ -466,7 +494,7 @@ partial class ClientController {
         // SendTradeMasterNearby
         // 
         SendTradeMasterNearby.AutoSize = true;
-        SendTradeMasterNearby.Location = new Point(247, 20);
+        SendTradeMasterNearby.Location = new Point(301, 18);
         SendTradeMasterNearby.Name = "SendTradeMasterNearby";
         SendTradeMasterNearby.Size = new Size(131, 19);
         SendTradeMasterNearby.TabIndex = 2;
@@ -963,6 +991,8 @@ partial class ClientController {
         // 
         // groupBox10
         // 
+        groupBox10.Controls.Add(PartyAddPrefixtextBox);
+        groupBox10.Controls.Add(AutoPartycheckBox);
         groupBox10.Controls.Add(SummonButton);
         groupBox10.Controls.Add(SwiftPartyMemberCheckBox);
         groupBox10.Location = new Point(6, 243);
@@ -972,11 +1002,32 @@ partial class ClientController {
         groupBox10.TabStop = false;
         groupBox10.Text = "Settings";
         // 
+        // PartyAddPrefixtextBox
+        // 
+        PartyAddPrefixtextBox.Location = new Point(186, 18);
+        PartyAddPrefixtextBox.Name = "PartyAddPrefixtextBox";
+        PartyAddPrefixtextBox.PlaceholderText = "party prefix";
+        PartyAddPrefixtextBox.Size = new Size(79, 23);
+        PartyAddPrefixtextBox.TabIndex = 19;
+        PartyAddPrefixtextBox.TextAlign = HorizontalAlignment.Center;
+        PartyAddPrefixtextBox.TextChanged += PartyAddPrefixtextBox_TextChanged;
+        // 
+        // AutoPartycheckBox
+        // 
+        AutoPartycheckBox.AutoSize = true;
+        AutoPartycheckBox.Location = new Point(96, 22);
+        AutoPartycheckBox.Name = "AutoPartycheckBox";
+        AutoPartycheckBox.Size = new Size(80, 19);
+        AutoPartycheckBox.TabIndex = 18;
+        AutoPartycheckBox.Text = "auto party";
+        AutoPartycheckBox.UseVisualStyleBackColor = true;
+        AutoPartycheckBox.CheckedChanged += AutoPartycheckBox_CheckedChanged;
+        // 
         // SummonButton
         // 
-        SummonButton.Location = new Point(271, 18);
+        SummonButton.Location = new Point(287, 18);
         SummonButton.Name = "SummonButton";
-        SummonButton.Size = new Size(154, 23);
+        SummonButton.Size = new Size(138, 23);
         SummonButton.TabIndex = 17;
         SummonButton.Text = "Summon ( only mage )";
         SummonButton.UseVisualStyleBackColor = true;
@@ -989,9 +1040,9 @@ partial class ClientController {
         SwiftPartyMemberCheckBox.CheckState = CheckState.Checked;
         SwiftPartyMemberCheckBox.Location = new Point(6, 22);
         SwiftPartyMemberCheckBox.Name = "SwiftPartyMemberCheckBox";
-        SwiftPartyMemberCheckBox.Size = new Size(130, 19);
+        SwiftPartyMemberCheckBox.Size = new Size(82, 19);
         SwiftPartyMemberCheckBox.TabIndex = 16;
-        SwiftPartyMemberCheckBox.Text = "Swift party member";
+        SwiftPartyMemberCheckBox.Text = "Swift party";
         SwiftPartyMemberCheckBox.UseVisualStyleBackColor = true;
         SwiftPartyMemberCheckBox.CheckedChanged += SwiftPartyMemberCheckBox_CheckedChanged;
         // 
@@ -2144,4 +2195,8 @@ partial class ClientController {
     private CheckBox PrivateChatcheckBox;
     private CheckBox TradeBlockcheckBox;
     private TextBox SendPartyPlayerNametextBox;
+    private Button gotoMasterCharacter;
+    private CheckBox KeepFollowingcheckBox;
+    private TextBox PartyAddPrefixtextBox;
+    private CheckBox AutoPartycheckBox;
 }

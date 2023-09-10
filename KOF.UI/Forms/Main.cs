@@ -773,4 +773,73 @@ public partial class Main : Form {
             client.CharacterHandler.Controller.SetControl("PrivateChatcheckBox", PrivateChatcheckBox.Checked);
         }
     }
+
+    private void EnableLoot_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("EnableLoot", EnableLoot.Checked);
+        }
+    }
+
+    private void FastLootMoney_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl("FastLootMoney", FastLootMoney.Checked);
+        }
+    }
+
+    private void RegenButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            if (client.CharacterHandler.IsRouting())
+                continue;
+
+            client.CharacterHandler.Regen();
+        }
+    }
+
+    private void ClanAcceptButton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.ClanAccept();
+        }
+    }
 }

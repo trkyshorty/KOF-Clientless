@@ -1885,4 +1885,60 @@ public partial class ClientController : Form {
             SendPartyPlayerNametextBox.Text = player.Name;
         }
     }
+
+    private void gotoMasterCharacter_Click(object sender, EventArgs e) {
+        if (string.IsNullOrEmpty(MasterCharacter.Text))
+            return;
+
+        var target = CharacterHandler.GetPlayerList().FirstOrDefault(x => x?.Name.ToLower() == MasterCharacter.Text.ToLower());
+
+        if (target != null) {
+            if (target.GetPosition() != CharacterHandler.MySelf.GetPosition() || Vector3.Distance(CharacterHandler.MySelf.GetPosition(), target.GetPosition()) <= (float)45.0f) {
+                CharacterHandler.MySelf.SetMovePosition(target.GetPosition());
+            }
+        }
+    }
+    CancellationTokenSource move_cts = default!;
+    private void KeepFollowingcheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(KeepFollowingcheckBox.Name, KeepFollowingcheckBox.Checked);
+
+        if (string.IsNullOrEmpty(MasterCharacter.Text))
+            return;
+
+        if (KeepFollowingcheckBox.Checked) {
+
+            move_cts = new();
+
+            var moveTask = Task.Run(() => {
+
+                var target = CharacterHandler.GetPlayerList().FirstOrDefault(x => x?.Name.ToLower() == MasterCharacter.Text.ToLower());
+
+                if (target is null)
+                    return;
+
+                while (!move_cts.Token.IsCancellationRequested && KeepFollowingcheckBox.Checked) {
+                    if (target.GetPosition() != CharacterHandler.MySelf.GetPosition() || Vector3.Distance(CharacterHandler.MySelf.GetPosition(), target.GetPosition()) <= (float)45.0f)
+                        CharacterHandler.MySelf.SetMovePosition(target.GetPosition());
+                }
+            }, move_cts.Token);
+        }
+        else
+            move_cts.Cancel();
+    }
+
+    private void AutoPartycheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(AutoPartycheckBox.Name, AutoPartycheckBox.Checked);
+    }
+
+    private void PartyAddPrefixtextBox_TextChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+        Controller.SetControl(PartyAddPrefixtextBox.Name, PartyAddPrefixtextBox.Text);
+    }
 }

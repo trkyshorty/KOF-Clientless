@@ -1016,6 +1016,19 @@ public class MessageBuilder
         return msg;
     }
 
+    //
+
+    public static Message MsgSend_KnightsAccept(bool yesNo,int m_iJoinReqClanRequierID,short m_iJoinReqClan) {
+        var msg = new Message(MessageID.WIZ_KNIGHTS_PROCESS);
+
+        msg.Write(0x11); // N3_SP_KNIGHTS_JOIN_REQ
+        msg.Write(yesNo);
+        msg.Write(m_iJoinReqClanRequierID);
+        msg.Write(m_iJoinReqClan);
+
+        return msg;
+    }
+
     public static Message MsgSend_SkillDataProcess(ushort command)
     {
         var msg = new Message(MessageID.WIZ_SKILLDATA);

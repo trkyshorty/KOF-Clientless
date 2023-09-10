@@ -5,10 +5,8 @@ using KOF.Core.Handlers;
 using KOF.Core.Models;
 using KOF.Cryptography;
 using KOF.Data;
-using KOF.Data.Models;
 using KOF.Database;
 using KOF.Database.Models;
-using System;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -16,14 +14,77 @@ namespace KOF.Core.Services;
 
 public partial class GameService {
 
+    [MessageHandler(MessageID.WIZ_KNIGHTS_PROCESS)]
+    public Task MsgRecv_Knights(Session session, Message msg) {
+
+        var cmd = msg.Read<byte>();
+
+        switch (cmd) {
+            case 0x11: // N3_SP_KNIGHTS_JOIN_REQ
+            {
+                _ = msg.Read<byte>();
+                session.Client.Character.m_iJoinReqClanRequierID = msg.Read<int>();
+                session.Client.Character.m_iJoinReqClan = msg.Read<short>();
+            }
+            break;
+
+            default:
+                break;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    [MessageHandler(MessageID.WIZ_CHAT)]
+    public Task MsgRecv_Chat(Session session, Message msg) {
+
+        var chatType = msg.Read<byte>();
+
+        switch (chatType) {
+            case 1: // all chat
+            case 2: // private chat
+            case 3: // party chat
+            case 5: // shout chat
+            case 6: // clan chat
+                {
+
+#pragma warning disable IDE0059
+                var senderNation = msg.Read<byte>();
+                var senderUniqueId = msg.Read<int>();
+                var senderName = msg.Read(false);
+                var senderMessage = msg.Read(true);
+#pragma warning restore IDE0059
+
+                if (chatType == 2 && session.Client.CharacterHandler.Controller.GetControl("AutoPartycheckBox", true)) {
+
+                    var party_prefix = session.Client.CharacterHandler.Controller.GetControl("PartyAddPrefixtextBox", "");
+
+                    if (!string.IsNullOrEmpty(party_prefix) && senderMessage.ToLower() != party_prefix.ToLower())
+                        return Task.CompletedTask;
+
+                    if (!session.Client.CharacterHandler.MySelf.Party.IsInParty())
+                        return session.SendAsync(MessageBuilder.MsgSend_PartyCreate(senderName));
+                    else
+                        return session.SendAsync(MessageBuilder.MsgSend_PartyInsert(senderName));
+
+                }
+
+            }
+            break;
+            default:
+                break;
+        }
+        return Task.CompletedTask;
+    }
+
     [MessageHandler(MessageID.WIZ_SEALEXP)]
-    public Task MsgRecv_ExpSeal(Session session,Message msg) {
+    public Task MsgRecv_ExpSeal(Session session, Message msg) {
 
         byte subcode = msg.Read<byte>();
 
-        if(subcode == 0x02) {
+        if (subcode == 0x02) {
             if (session.Client.CharacterHandler.Controller.GetControl("ExpSealcheckBox", true))
-               return session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true));
+                return session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true));
         }
 
         return Task.CompletedTask;

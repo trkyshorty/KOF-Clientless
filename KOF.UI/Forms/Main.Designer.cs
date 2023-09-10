@@ -44,23 +44,27 @@
             tabPage1 = new TabPage();
             ClientTabPage = new TabPage();
             groupBox5 = new GroupBox();
+            FastLootMoney = new CheckBox();
+            EnableLoot = new CheckBox();
+            FlagSet = new Button();
             SetGroupColorButton = new Button();
             groupBox6 = new GroupBox();
             ClearFollowButton = new Button();
             SetFollowButton = new Button();
-            groupBox3 = new GroupBox();
-            FlagSet = new Button();
-            TownButton = new Button();
             PrivateChatcheckBox = new CheckBox();
+            groupBox3 = new GroupBox();
+            RegenButton = new Button();
+            TownButton = new Button();
             RunRouteButton = new Button();
-            TradeBlockcheckBox = new CheckBox();
             CloseClientButton = new Button();
-            ExpSealcheckBox = new CheckBox();
+            ClientListDataGrid = new DataGridView();
+            TradeBlockcheckBox = new CheckBox();
             DisableSkillCasting = new CheckBox();
             SpeedhackCheckbox = new CheckBox();
-            ClientListDataGrid = new DataGridView();
+            ExpSealcheckBox = new CheckBox();
             GroupColorDialog = new ColorDialog();
             SystemTrayNotify = new NotifyIcon(components);
+            ClanAcceptButton = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
@@ -274,6 +278,8 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(FastLootMoney);
+            groupBox5.Controls.Add(EnableLoot);
             groupBox5.Controls.Add(FlagSet);
             groupBox5.Controls.Add(SetGroupColorButton);
             groupBox5.Controls.Add(groupBox6);
@@ -290,6 +296,40 @@
             groupBox5.TabIndex = 0;
             groupBox5.TabStop = false;
             groupBox5.Text = "Client";
+            // 
+            // FastLootMoney
+            // 
+            FastLootMoney.AutoSize = true;
+            FastLootMoney.Location = new Point(275, 577);
+            FastLootMoney.Name = "FastLootMoney";
+            FastLootMoney.Size = new Size(150, 19);
+            FastLootMoney.TabIndex = 28;
+            FastLootMoney.Text = "Fast Loot (Only Money)";
+            FastLootMoney.UseVisualStyleBackColor = true;
+            FastLootMoney.CheckedChanged += FastLootMoney_CheckedChanged;
+            // 
+            // EnableLoot
+            // 
+            EnableLoot.AutoSize = true;
+            EnableLoot.Checked = true;
+            EnableLoot.CheckState = CheckState.Indeterminate;
+            EnableLoot.Location = new Point(275, 552);
+            EnableLoot.Name = "EnableLoot";
+            EnableLoot.Size = new Size(127, 19);
+            EnableLoot.TabIndex = 27;
+            EnableLoot.Text = "Enabled (auto loot)";
+            EnableLoot.UseVisualStyleBackColor = true;
+            EnableLoot.CheckedChanged += EnableLoot_CheckedChanged;
+            // 
+            // FlagSet
+            // 
+            FlagSet.Location = new Point(141, 598);
+            FlagSet.Name = "FlagSet";
+            FlagSet.Size = new Size(278, 23);
+            FlagSet.TabIndex = 26;
+            FlagSet.Text = "Set all flag | (pm / trade / exp seal .. etc.)";
+            FlagSet.UseVisualStyleBackColor = true;
+            FlagSet.Click += FlagSet_Click;
             // 
             // SetGroupColorButton
             // 
@@ -333,39 +373,6 @@
             SetFollowButton.UseVisualStyleBackColor = true;
             SetFollowButton.Click += SetFollowButton_Click;
             // 
-            // groupBox3
-            // 
-            groupBox3.Controls.Add(TownButton);
-            groupBox3.Controls.Add(RunRouteButton);
-            groupBox3.Controls.Add(CloseClientButton);
-            groupBox3.Location = new Point(299, 22);
-            groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(562, 55);
-            groupBox3.TabIndex = 6;
-            groupBox3.TabStop = false;
-            groupBox3.Text = "Action";
-            // 
-            // FlagSet
-            // 
-            FlagSet.Location = new Point(319, 597);
-            FlagSet.Name = "FlagSet";
-            FlagSet.Size = new Size(238, 23);
-            FlagSet.TabIndex = 26;
-            FlagSet.Text = "Set all flag | (pm / trade / exp seal .. etc.)";
-            FlagSet.UseVisualStyleBackColor = true;
-            FlagSet.Click += FlagSet_Click;
-            // 
-            // TownButton
-            // 
-            TownButton.ForeColor = SystemColors.ControlText;
-            TownButton.Location = new Point(127, 20);
-            TownButton.Name = "TownButton";
-            TownButton.Size = new Size(115, 23);
-            TownButton.TabIndex = 4;
-            TownButton.Text = "Send Town";
-            TownButton.UseVisualStyleBackColor = true;
-            TownButton.Click += TownButton_Click;
-            // 
             // PrivateChatcheckBox
             // 
             PrivateChatcheckBox.AutoSize = true;
@@ -379,29 +386,52 @@
             PrivateChatcheckBox.UseVisualStyleBackColor = true;
             PrivateChatcheckBox.CheckedChanged += PrivateChatcheckBox_CheckedChanged;
             // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(ClanAcceptButton);
+            groupBox3.Controls.Add(RegenButton);
+            groupBox3.Controls.Add(TownButton);
+            groupBox3.Controls.Add(RunRouteButton);
+            groupBox3.Controls.Add(CloseClientButton);
+            groupBox3.Location = new Point(299, 22);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(562, 55);
+            groupBox3.TabIndex = 6;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Action";
+            // 
+            // RegenButton
+            // 
+            RegenButton.ForeColor = SystemColors.ControlText;
+            RegenButton.Location = new Point(203, 20);
+            RegenButton.Name = "RegenButton";
+            RegenButton.Size = new Size(99, 23);
+            RegenButton.TabIndex = 5;
+            RegenButton.Text = "Regen";
+            RegenButton.UseVisualStyleBackColor = true;
+            RegenButton.Click += RegenButton_Click;
+            // 
+            // TownButton
+            // 
+            TownButton.ForeColor = SystemColors.ControlText;
+            TownButton.Location = new Point(111, 20);
+            TownButton.Name = "TownButton";
+            TownButton.Size = new Size(84, 23);
+            TownButton.TabIndex = 4;
+            TownButton.Text = "Town";
+            TownButton.UseVisualStyleBackColor = true;
+            TownButton.Click += TownButton_Click;
+            // 
             // RunRouteButton
             // 
             RunRouteButton.ForeColor = SystemColors.ControlText;
             RunRouteButton.Location = new Point(5, 20);
             RunRouteButton.Name = "RunRouteButton";
-            RunRouteButton.Size = new Size(115, 23);
+            RunRouteButton.Size = new Size(98, 23);
             RunRouteButton.TabIndex = 3;
             RunRouteButton.Text = "Run Route";
             RunRouteButton.UseVisualStyleBackColor = true;
             RunRouteButton.Click += RunRouteButton_Click;
-            // 
-            // TradeBlockcheckBox
-            // 
-            TradeBlockcheckBox.AutoSize = true;
-            TradeBlockcheckBox.Checked = true;
-            TradeBlockcheckBox.CheckState = CheckState.Indeterminate;
-            TradeBlockcheckBox.Location = new Point(6, 577);
-            TradeBlockcheckBox.Name = "TradeBlockcheckBox";
-            TradeBlockcheckBox.Size = new Size(86, 19);
-            TradeBlockcheckBox.TabIndex = 24;
-            TradeBlockcheckBox.Text = "Trade Block";
-            TradeBlockcheckBox.UseVisualStyleBackColor = true;
-            TradeBlockcheckBox.CheckedChanged += TradeBlockcheckBox_CheckedChanged;
             // 
             // CloseClientButton
             // 
@@ -413,42 +443,6 @@
             CloseClientButton.Text = "Disconnect";
             CloseClientButton.UseVisualStyleBackColor = true;
             CloseClientButton.Click += CloseClientButton_Click;
-            // 
-            // ExpSealcheckBox
-            // 
-            ExpSealcheckBox.AutoSize = true;
-            ExpSealcheckBox.Checked = true;
-            ExpSealcheckBox.CheckState = CheckState.Indeterminate;
-            ExpSealcheckBox.Location = new Point(6, 602);
-            ExpSealcheckBox.Name = "ExpSealcheckBox";
-            ExpSealcheckBox.Size = new Size(129, 19);
-            ExpSealcheckBox.TabIndex = 22;
-            ExpSealcheckBox.Text = "Exp Seal ( 30 lv. >=)";
-            ExpSealcheckBox.UseVisualStyleBackColor = true;
-            ExpSealcheckBox.CheckedChanged += ExpSealcheckBox_CheckedChanged;
-            // 
-            // DisableSkillCasting
-            // 
-            DisableSkillCasting.AutoSize = true;
-            DisableSkillCasting.ForeColor = Color.Red;
-            DisableSkillCasting.Location = new Point(141, 578);
-            DisableSkillCasting.Name = "DisableSkillCasting";
-            DisableSkillCasting.Size = new Size(128, 19);
-            DisableSkillCasting.TabIndex = 10;
-            DisableSkillCasting.Text = "Disable skill casting";
-            DisableSkillCasting.UseVisualStyleBackColor = true;
-            DisableSkillCasting.CheckedChanged += DisableSkillCasting_CheckedChanged;
-            // 
-            // SpeedhackCheckbox
-            // 
-            SpeedhackCheckbox.AutoSize = true;
-            SpeedhackCheckbox.Location = new Point(141, 553);
-            SpeedhackCheckbox.Name = "SpeedhackCheckbox";
-            SpeedhackCheckbox.Size = new Size(83, 19);
-            SpeedhackCheckbox.TabIndex = 5;
-            SpeedhackCheckbox.Text = "Speedhack";
-            SpeedhackCheckbox.UseVisualStyleBackColor = true;
-            SpeedhackCheckbox.CheckedChanged += SpeedhackCheckbox_CheckedChanged;
             // 
             // ClientListDataGrid
             // 
@@ -470,12 +464,72 @@
             ClientListDataGrid.VirtualMode = true;
             ClientListDataGrid.CellDoubleClick += ClientListDataGrid_CellDoubleClick;
             // 
+            // TradeBlockcheckBox
+            // 
+            TradeBlockcheckBox.AutoSize = true;
+            TradeBlockcheckBox.Checked = true;
+            TradeBlockcheckBox.CheckState = CheckState.Indeterminate;
+            TradeBlockcheckBox.Location = new Point(6, 577);
+            TradeBlockcheckBox.Name = "TradeBlockcheckBox";
+            TradeBlockcheckBox.Size = new Size(86, 19);
+            TradeBlockcheckBox.TabIndex = 24;
+            TradeBlockcheckBox.Text = "Trade Block";
+            TradeBlockcheckBox.UseVisualStyleBackColor = true;
+            TradeBlockcheckBox.CheckedChanged += TradeBlockcheckBox_CheckedChanged;
+            // 
+            // DisableSkillCasting
+            // 
+            DisableSkillCasting.AutoSize = true;
+            DisableSkillCasting.ForeColor = Color.Red;
+            DisableSkillCasting.Location = new Point(141, 578);
+            DisableSkillCasting.Name = "DisableSkillCasting";
+            DisableSkillCasting.Size = new Size(128, 19);
+            DisableSkillCasting.TabIndex = 10;
+            DisableSkillCasting.Text = "Disable skill casting";
+            DisableSkillCasting.UseVisualStyleBackColor = true;
+            DisableSkillCasting.CheckedChanged += DisableSkillCasting_CheckedChanged;
+            // 
+            // SpeedhackCheckbox
+            // 
+            SpeedhackCheckbox.AutoSize = true;
+            SpeedhackCheckbox.Location = new Point(141, 552);
+            SpeedhackCheckbox.Name = "SpeedhackCheckbox";
+            SpeedhackCheckbox.Size = new Size(83, 19);
+            SpeedhackCheckbox.TabIndex = 5;
+            SpeedhackCheckbox.Text = "Speedhack";
+            SpeedhackCheckbox.UseVisualStyleBackColor = true;
+            SpeedhackCheckbox.CheckedChanged += SpeedhackCheckbox_CheckedChanged;
+            // 
+            // ExpSealcheckBox
+            // 
+            ExpSealcheckBox.AutoSize = true;
+            ExpSealcheckBox.Checked = true;
+            ExpSealcheckBox.CheckState = CheckState.Indeterminate;
+            ExpSealcheckBox.Location = new Point(6, 602);
+            ExpSealcheckBox.Name = "ExpSealcheckBox";
+            ExpSealcheckBox.Size = new Size(129, 19);
+            ExpSealcheckBox.TabIndex = 22;
+            ExpSealcheckBox.Text = "Exp Seal ( 30 lv. >=)";
+            ExpSealcheckBox.UseVisualStyleBackColor = true;
+            ExpSealcheckBox.CheckedChanged += ExpSealcheckBox_CheckedChanged;
+            // 
             // SystemTrayNotify
             // 
             SystemTrayNotify.Icon = (Icon)resources.GetObject("SystemTrayNotify.Icon");
             SystemTrayNotify.Text = "KOF continues to run in the background";
             SystemTrayNotify.Visible = true;
             SystemTrayNotify.MouseDoubleClick += SystemTrayNotify_MouseDoubleClick;
+            // 
+            // ClanAcceptButton
+            // 
+            ClanAcceptButton.ForeColor = SystemColors.ControlText;
+            ClanAcceptButton.Location = new Point(308, 20);
+            ClanAcceptButton.Name = "ClanAcceptButton";
+            ClanAcceptButton.Size = new Size(99, 23);
+            ClanAcceptButton.TabIndex = 6;
+            ClanAcceptButton.Text = "Clan accept";
+            ClanAcceptButton.UseVisualStyleBackColor = true;
+            ClanAcceptButton.Click += ClanAcceptButton_Click;
             // 
             // Main
             // 
@@ -547,5 +601,9 @@
         private CheckBox PrivateChatcheckBox;
         private CheckBox TradeBlockcheckBox;
         private Button FlagSet;
+        private CheckBox FastLootMoney;
+        private CheckBox EnableLoot;
+        private Button RegenButton;
+        private Button ClanAcceptButton;
     }
 }
