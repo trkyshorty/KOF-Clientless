@@ -10,6 +10,7 @@ using KOF.Database;
 using AStar;
 using AStar.Options;
 using KOF.Database.Models;
+using System.Net.Sockets;
 
 namespace KOF.Core.Handlers;
 
@@ -940,6 +941,37 @@ public class CharacterHandler : IDisposable {
         // reset
         Client.Character.m_iJoinReqClanRequierID = 0;
         Client.Character.m_iJoinReqClan = 0;
+    }
+
+    private Message SendSkil(uint skillId) {
+        var msg = new Message(MessageID.WIZ_MAGIC_PROCESS);
+
+        msg.Write<byte>(0x03);
+
+        msg.Write(skillId);
+        msg.Write(MySelf.Id);
+        msg.Write(MySelf.Id);
+
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
+
+        msg.Write(0);
+        msg.Write(0);
+        msg.Write(0);
+
+        msg.Write(0);
+        msg.Write<ushort>(0);
+
+        return msg;
+    }
+
+    public void TransformationScroll(uint transformationId) {
+
+        Client.Session.SendAsync(SendSkil(472001)).ConfigureAwait(false);
+        Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+        Client.Session.SendAsync(SendSkil(transformationId)).ConfigureAwait(false);
+
     }
 
     public async Task PacketSend_Continous(string[] packet_array, int repeat, int delay, CancellationToken cancellationToken = default!) {

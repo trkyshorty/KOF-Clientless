@@ -1641,7 +1641,7 @@ partial class ClientController {
         PacketTextBox.Name = "PacketTextBox";
         PacketTextBox.Size = new Size(426, 139);
         PacketTextBox.TabIndex = 0;
-        PacketTextBox.Text = "64070D160000\n55001132353032335F45785F576F726D2E6C7561\n55001132353032335F45785F576F726D2E6C7561";
+        PacketTextBox.Text = "";
         // 
         // StatusGroupBox
         // 

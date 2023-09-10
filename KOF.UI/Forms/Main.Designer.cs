@@ -44,6 +44,8 @@
             tabPage1 = new TabPage();
             ClientTabPage = new TabPage();
             groupBox5 = new GroupBox();
+            TransformationIdTextBox = new TextBox();
+            TransformationScrollbutton = new Button();
             groupBox17 = new GroupBox();
             SendPacketStop = new Button();
             SendPacketRepeatCount = new NumericUpDown();
@@ -288,6 +290,8 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(TransformationIdTextBox);
+            groupBox5.Controls.Add(TransformationScrollbutton);
             groupBox5.Controls.Add(groupBox17);
             groupBox5.Controls.Add(FastLootMoney);
             groupBox5.Controls.Add(EnableLoot);
@@ -306,6 +310,28 @@
             groupBox5.TabIndex = 0;
             groupBox5.TabStop = false;
             groupBox5.Text = "Client";
+            // 
+            // TransformationIdTextBox
+            // 
+            TransformationIdTextBox.Location = new Point(291, 597);
+            TransformationIdTextBox.MaxLength = 6;
+            TransformationIdTextBox.Name = "TransformationIdTextBox";
+            TransformationIdTextBox.PlaceholderText = "Transformation ID";
+            TransformationIdTextBox.Size = new Size(111, 23);
+            TransformationIdTextBox.TabIndex = 30;
+            TransformationIdTextBox.Text = "472150";
+            TransformationIdTextBox.TextAlign = HorizontalAlignment.Center;
+            // 
+            // TransformationScrollbutton
+            // 
+            TransformationScrollbutton.ForeColor = SystemColors.ControlText;
+            TransformationScrollbutton.Location = new Point(139, 598);
+            TransformationScrollbutton.Name = "TransformationScrollbutton";
+            TransformationScrollbutton.Size = new Size(145, 23);
+            TransformationScrollbutton.TabIndex = 7;
+            TransformationScrollbutton.Text = "Transformation scroll";
+            TransformationScrollbutton.UseVisualStyleBackColor = true;
+            TransformationScrollbutton.Click += TransformationScrollbutton_Click;
             // 
             // groupBox17
             // 
@@ -488,9 +514,9 @@
             // ClanAcceptButton
             // 
             ClanAcceptButton.ForeColor = SystemColors.ControlText;
-            ClanAcceptButton.Location = new Point(308, 20);
+            ClanAcceptButton.Location = new Point(215, 20);
             ClanAcceptButton.Name = "ClanAcceptButton";
-            ClanAcceptButton.Size = new Size(99, 23);
+            ClanAcceptButton.Size = new Size(88, 23);
             ClanAcceptButton.TabIndex = 6;
             ClanAcceptButton.Text = "Clan accept";
             ClanAcceptButton.UseVisualStyleBackColor = true;
@@ -499,9 +525,9 @@
             // RegenButton
             // 
             RegenButton.ForeColor = SystemColors.ControlText;
-            RegenButton.Location = new Point(203, 20);
+            RegenButton.Location = new Point(145, 20);
             RegenButton.Name = "RegenButton";
-            RegenButton.Size = new Size(99, 23);
+            RegenButton.Size = new Size(64, 23);
             RegenButton.TabIndex = 5;
             RegenButton.Text = "Regen";
             RegenButton.UseVisualStyleBackColor = true;
@@ -510,9 +536,9 @@
             // TownButton
             // 
             TownButton.ForeColor = SystemColors.ControlText;
-            TownButton.Location = new Point(111, 20);
+            TownButton.Location = new Point(83, 20);
             TownButton.Name = "TownButton";
-            TownButton.Size = new Size(84, 23);
+            TownButton.Size = new Size(56, 23);
             TownButton.TabIndex = 4;
             TownButton.Text = "Town";
             TownButton.UseVisualStyleBackColor = true;
@@ -523,7 +549,7 @@
             RunRouteButton.ForeColor = SystemColors.ControlText;
             RunRouteButton.Location = new Point(5, 20);
             RunRouteButton.Name = "RunRouteButton";
-            RunRouteButton.Size = new Size(98, 23);
+            RunRouteButton.Size = new Size(72, 23);
             RunRouteButton.TabIndex = 3;
             RunRouteButton.Text = "Run Route";
             RunRouteButton.UseVisualStyleBackColor = true;
@@ -701,5 +727,8 @@
         private Label label8;
         private Button SendPacket;
         private RichTextBox PacketTextBox;
+        private TextBox textBox1;
+        private Button TransformationScrollbutton;
+        private TextBox TransformationIdTextBox;
     }
 }

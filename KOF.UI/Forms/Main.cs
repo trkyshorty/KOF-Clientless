@@ -778,6 +778,8 @@ public partial class Main : Form {
                 continue;
 
             client.CharacterHandler.Controller.SetControl("FastLootMoney", FastLootMoney.Checked);
+            if (FastLootMoney.Checked == false)
+                client.Character.bundlecount = 0;
         }
     }
 
@@ -843,5 +845,24 @@ public partial class Main : Form {
     private void SendPacketStop_Click(object sender, EventArgs e) {
         pkt_cts?.Cancel();
         pkt_cts = null!;
+    }
+
+    private void TransformationScrollbutton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            if (string.IsNullOrEmpty(TransformationIdTextBox.Text))
+                continue;
+
+            client.CharacterHandler.TransformationScroll(uint.Parse(TransformationIdTextBox.Text));
+        }
     }
 }
