@@ -180,7 +180,7 @@ public class CharacterHandler : IDisposable {
         MySelf.Loyalty = msg.Read<uint>();
         MySelf.LoyaltyMonthly = msg.Read<uint>();
         MySelf.Knight = msg.Read<short>();
-        MySelf.Fame = msg.Read<byte>();
+        MySelf.Fame = msg.Read<byte>(); // clan rank status -  1 leader / 2 assist / 5 member 
 
         MySelf.Knights = MySelf.FromKnightsMessage(msg);
 
@@ -936,11 +936,20 @@ public class CharacterHandler : IDisposable {
         if (m_iJoinReqClanRequierID == 0 && m_iJoinReqClan == 0)
             return;
 
-        Client.Session.SendAsync(MessageBuilder.MsgSend_KnightsAccept(true, m_iJoinReqClanRequierID, m_iJoinReqClan)).ConfigureAwait(false);
+        Client.Session.SendAsync(MessageBuilder.MsgSend_KnightsAccept(m_iJoinReqClanRequierID, m_iJoinReqClan)).ConfigureAwait(false);
 
         // reset
         Client.Character.m_iJoinReqClanRequierID = 0;
         Client.Character.m_iJoinReqClan = 0;
+    }
+
+    public void ClanDisband() {
+
+        if (Client.Character.Fame == 1) // leader ???
+            return;
+
+        if (Client.Character.IsInClan())
+            Client.Session.SendAsync(MessageBuilder.MsgSend_KnightsWithdraw()).ConfigureAwait(false);
     }
 
     private Message SendSkil(uint skillId) {
@@ -1767,7 +1776,8 @@ public class CharacterHandler : IDisposable {
                     followedClient.Character.Zone == MySelf.Zone) {
                     // Moving to followed client
                     if (!MySelf.IsDead() && !IsRouting() && !IsMovingToLoot() && !MySelf.IsTrading
-                        && followedClient.Character.GetPosition() != MySelf.GetPosition()) {
+                        && followedClient.Character.GetPosition() != MySelf.GetPosition()
+                        && !Controller.GetControl("FastLootMoney", true)) {
                         var followPosition = followedClient.Character.GetPosition();
 
                         MySelf.SetMovePosition(followPosition);

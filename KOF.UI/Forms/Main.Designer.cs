@@ -44,6 +44,7 @@
             tabPage1 = new TabPage();
             ClientTabPage = new TabPage();
             groupBox5 = new GroupBox();
+            FollowTargetSync = new CheckBox();
             TransformationIdTextBox = new TextBox();
             TransformationScrollbutton = new Button();
             groupBox17 = new GroupBox();
@@ -62,6 +63,7 @@
             SetFollowButton = new Button();
             PrivateChatcheckBox = new CheckBox();
             groupBox3 = new GroupBox();
+            ClanDisbandbutton = new Button();
             ClanAcceptButton = new Button();
             RegenButton = new Button();
             TownButton = new Button();
@@ -74,6 +76,8 @@
             ExpSealcheckBox = new CheckBox();
             GroupColorDialog = new ColorDialog();
             SystemTrayNotify = new NotifyIcon(components);
+            label5 = new Label();
+            AttackSpeed = new NumericUpDown();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
@@ -88,6 +92,7 @@
             groupBox6.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ClientListDataGrid).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AttackSpeed).BeginInit();
             SuspendLayout();
             // 
             // FollowSelect
@@ -290,6 +295,9 @@
             // 
             // groupBox5
             // 
+            groupBox5.Controls.Add(label5);
+            groupBox5.Controls.Add(AttackSpeed);
+            groupBox5.Controls.Add(FollowTargetSync);
             groupBox5.Controls.Add(TransformationIdTextBox);
             groupBox5.Controls.Add(TransformationScrollbutton);
             groupBox5.Controls.Add(groupBox17);
@@ -311,13 +319,26 @@
             groupBox5.TabStop = false;
             groupBox5.Text = "Client";
             // 
+            // FollowTargetSync
+            // 
+            FollowTargetSync.AutoSize = true;
+            FollowTargetSync.Checked = true;
+            FollowTargetSync.CheckState = CheckState.Indeterminate;
+            FollowTargetSync.Location = new Point(141, 602);
+            FollowTargetSync.Name = "FollowTargetSync";
+            FollowTargetSync.Size = new Size(167, 19);
+            FollowTargetSync.TabIndex = 31;
+            FollowTargetSync.Text = "Followed client target sync";
+            FollowTargetSync.UseVisualStyleBackColor = true;
+            FollowTargetSync.CheckedChanged += FollowTargetSync_CheckedChanged;
+            // 
             // TransformationIdTextBox
             // 
-            TransformationIdTextBox.Location = new Point(291, 597);
+            TransformationIdTextBox.Location = new Point(299, 516);
             TransformationIdTextBox.MaxLength = 6;
             TransformationIdTextBox.Name = "TransformationIdTextBox";
             TransformationIdTextBox.PlaceholderText = "Transformation ID";
-            TransformationIdTextBox.Size = new Size(111, 23);
+            TransformationIdTextBox.Size = new Size(77, 23);
             TransformationIdTextBox.TabIndex = 30;
             TransformationIdTextBox.Text = "472150";
             TransformationIdTextBox.TextAlign = HorizontalAlignment.Center;
@@ -325,7 +346,7 @@
             // TransformationScrollbutton
             // 
             TransformationScrollbutton.ForeColor = SystemColors.ControlText;
-            TransformationScrollbutton.Location = new Point(139, 598);
+            TransformationScrollbutton.Location = new Point(141, 516);
             TransformationScrollbutton.Name = "TransformationScrollbutton";
             TransformationScrollbutton.Size = new Size(145, 23);
             TransformationScrollbutton.TabIndex = 7;
@@ -421,7 +442,7 @@
             // FastLootMoney
             // 
             FastLootMoney.AutoSize = true;
-            FastLootMoney.Location = new Point(275, 577);
+            FastLootMoney.Location = new Point(321, 577);
             FastLootMoney.Name = "FastLootMoney";
             FastLootMoney.Size = new Size(150, 19);
             FastLootMoney.TabIndex = 28;
@@ -434,7 +455,7 @@
             EnableLoot.AutoSize = true;
             EnableLoot.Checked = true;
             EnableLoot.CheckState = CheckState.Indeterminate;
-            EnableLoot.Location = new Point(275, 552);
+            EnableLoot.Location = new Point(321, 552);
             EnableLoot.Name = "EnableLoot";
             EnableLoot.Size = new Size(127, 19);
             EnableLoot.TabIndex = 27;
@@ -499,6 +520,7 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(ClanDisbandbutton);
             groupBox3.Controls.Add(ClanAcceptButton);
             groupBox3.Controls.Add(RegenButton);
             groupBox3.Controls.Add(TownButton);
@@ -511,10 +533,21 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Action";
             // 
+            // ClanDisbandbutton
+            // 
+            ClanDisbandbutton.ForeColor = SystemColors.ControlText;
+            ClanDisbandbutton.Location = new Point(317, 20);
+            ClanDisbandbutton.Name = "ClanDisbandbutton";
+            ClanDisbandbutton.Size = new Size(88, 23);
+            ClanDisbandbutton.TabIndex = 7;
+            ClanDisbandbutton.Text = "Clan disband";
+            ClanDisbandbutton.UseVisualStyleBackColor = true;
+            ClanDisbandbutton.Click += ClanDisbandbutton_Click;
+            // 
             // ClanAcceptButton
             // 
             ClanAcceptButton.ForeColor = SystemColors.ControlText;
-            ClanAcceptButton.Location = new Point(215, 20);
+            ClanAcceptButton.Location = new Point(221, 20);
             ClanAcceptButton.Name = "ClanAcceptButton";
             ClanAcceptButton.Size = new Size(88, 23);
             ClanAcceptButton.TabIndex = 6;
@@ -525,7 +558,7 @@
             // RegenButton
             // 
             RegenButton.ForeColor = SystemColors.ControlText;
-            RegenButton.Location = new Point(145, 20);
+            RegenButton.Location = new Point(149, 20);
             RegenButton.Name = "RegenButton";
             RegenButton.Size = new Size(64, 23);
             RegenButton.TabIndex = 5;
@@ -536,7 +569,7 @@
             // TownButton
             // 
             TownButton.ForeColor = SystemColors.ControlText;
-            TownButton.Location = new Point(83, 20);
+            TownButton.Location = new Point(85, 20);
             TownButton.Name = "TownButton";
             TownButton.Size = new Size(56, 23);
             TownButton.TabIndex = 4;
@@ -603,7 +636,7 @@
             // 
             DisableSkillCasting.AutoSize = true;
             DisableSkillCasting.ForeColor = Color.Red;
-            DisableSkillCasting.Location = new Point(141, 578);
+            DisableSkillCasting.Location = new Point(141, 577);
             DisableSkillCasting.Name = "DisableSkillCasting";
             DisableSkillCasting.Size = new Size(128, 19);
             DisableSkillCasting.TabIndex = 10;
@@ -642,6 +675,28 @@
             SystemTrayNotify.Visible = true;
             SystemTrayNotify.MouseDoubleClick += SystemTrayNotify_MouseDoubleClick;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(321, 606);
+            label5.Name = "label5";
+            label5.Size = new Size(81, 15);
+            label5.TabIndex = 33;
+            label5.Text = "Attack speed :";
+            // 
+            // AttackSpeed
+            // 
+            AttackSpeed.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            AttackSpeed.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            AttackSpeed.Location = new Point(408, 602);
+            AttackSpeed.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+            AttackSpeed.Name = "AttackSpeed";
+            AttackSpeed.Size = new Size(54, 23);
+            AttackSpeed.TabIndex = 32;
+            AttackSpeed.TextAlign = HorizontalAlignment.Center;
+            AttackSpeed.Value = new decimal(new int[] { 1000, 0, 0, 0 });
+            AttackSpeed.ValueChanged += AttackSpeed_ValueChanged;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -676,6 +731,7 @@
             groupBox6.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ClientListDataGrid).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AttackSpeed).EndInit();
             ResumeLayout(false);
         }
         #endregion
@@ -730,5 +786,9 @@
         private TextBox textBox1;
         private Button TransformationScrollbutton;
         private TextBox TransformationIdTextBox;
+        private Button ClanDisbandbutton;
+        private CheckBox FollowTargetSync;
+        private Label label5;
+        private NumericUpDown AttackSpeed;
     }
 }

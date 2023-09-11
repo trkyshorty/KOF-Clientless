@@ -86,6 +86,13 @@ partial class ClientController {
         SkillGroupBox = new GroupBox();
         AttackSkillCheckedListBox = new CheckedListBox();
         PartyPage = new TabPage();
+        groupBox20 = new GroupBox();
+        ClanDisbandbutton = new Button();
+        ClanAcceptbutton = new Button();
+        label12 = new Label();
+        label11 = new Label();
+        ClanAddPrefixcheckBox = new CheckBox();
+        ClanAddPrefixTextBox = new TextBox();
         groupBox9 = new GroupBox();
         SendPartyPlayerNametextBox = new TextBox();
         SendPartyButton = new Button();
@@ -206,6 +213,7 @@ partial class ClientController {
         groupBox2.SuspendLayout();
         SkillGroupBox.SuspendLayout();
         PartyPage.SuspendLayout();
+        groupBox20.SuspendLayout();
         groupBox9.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)NearbyPlayerListDataGrid).BeginInit();
         PartyListGroupBox.SuspendLayout();
@@ -918,6 +926,7 @@ partial class ClientController {
         // 
         // PartyPage
         // 
+        PartyPage.Controls.Add(groupBox20);
         PartyPage.Controls.Add(groupBox9);
         PartyPage.Controls.Add(PartyListGroupBox);
         PartyPage.Location = new Point(4, 24);
@@ -926,6 +935,80 @@ partial class ClientController {
         PartyPage.TabIndex = 2;
         PartyPage.Text = "Party";
         PartyPage.UseVisualStyleBackColor = true;
+        // 
+        // groupBox20
+        // 
+        groupBox20.Controls.Add(ClanDisbandbutton);
+        groupBox20.Controls.Add(ClanAcceptbutton);
+        groupBox20.Controls.Add(label12);
+        groupBox20.Controls.Add(label11);
+        groupBox20.Controls.Add(ClanAddPrefixcheckBox);
+        groupBox20.Controls.Add(ClanAddPrefixTextBox);
+        groupBox20.Location = new Point(5, 642);
+        groupBox20.Name = "groupBox20";
+        groupBox20.Size = new Size(431, 128);
+        groupBox20.TabIndex = 23;
+        groupBox20.TabStop = false;
+        groupBox20.Text = "clan action";
+        // 
+        // ClanDisbandbutton
+        // 
+        ClanDisbandbutton.Location = new Point(349, 99);
+        ClanDisbandbutton.Name = "ClanDisbandbutton";
+        ClanDisbandbutton.Size = new Size(82, 23);
+        ClanDisbandbutton.TabIndex = 25;
+        ClanDisbandbutton.Text = "Disband";
+        ClanDisbandbutton.UseVisualStyleBackColor = true;
+        ClanDisbandbutton.Click += ClanDisbandbutton_Click;
+        // 
+        // ClanAcceptbutton
+        // 
+        ClanAcceptbutton.Location = new Point(6, 99);
+        ClanAcceptbutton.Name = "ClanAcceptbutton";
+        ClanAcceptbutton.Size = new Size(82, 23);
+        ClanAcceptbutton.TabIndex = 24;
+        ClanAcceptbutton.Text = "Accept";
+        ClanAcceptbutton.UseVisualStyleBackColor = true;
+        ClanAcceptbutton.Click += ClanAcceptbutton_Click;
+        // 
+        // label12
+        // 
+        label12.AutoSize = true;
+        label12.Location = new Point(10, 47);
+        label12.Name = "label12";
+        label12.Size = new Size(34, 15);
+        label12.TabIndex = 23;
+        label12.Text = "Clan:";
+        // 
+        // label11
+        // 
+        label11.AutoSize = true;
+        label11.Location = new Point(58, 47);
+        label11.Name = "label11";
+        label11.Size = new Size(12, 15);
+        label11.TabIndex = 22;
+        label11.Text = "-";
+        // 
+        // ClanAddPrefixcheckBox
+        // 
+        ClanAddPrefixcheckBox.AutoSize = true;
+        ClanAddPrefixcheckBox.Location = new Point(10, 25);
+        ClanAddPrefixcheckBox.Name = "ClanAddPrefixcheckBox";
+        ClanAddPrefixcheckBox.Size = new Size(75, 19);
+        ClanAddPrefixcheckBox.TabIndex = 20;
+        ClanAddPrefixcheckBox.Text = "auto clan";
+        ClanAddPrefixcheckBox.UseVisualStyleBackColor = true;
+        ClanAddPrefixcheckBox.CheckedChanged += ClanAddPrefixcheckBox_CheckedChanged;
+        // 
+        // ClanAddPrefixTextBox
+        // 
+        ClanAddPrefixTextBox.Location = new Point(93, 21);
+        ClanAddPrefixTextBox.Name = "ClanAddPrefixTextBox";
+        ClanAddPrefixTextBox.PlaceholderText = "clan prefix";
+        ClanAddPrefixTextBox.Size = new Size(79, 23);
+        ClanAddPrefixTextBox.TabIndex = 21;
+        ClanAddPrefixTextBox.TextAlign = HorizontalAlignment.Center;
+        ClanAddPrefixTextBox.TextChanged += ClanAddPrefixTextBox_TextChanged;
         // 
         // groupBox9
         // 
@@ -2001,6 +2084,8 @@ partial class ClientController {
         groupBox2.ResumeLayout(false);
         SkillGroupBox.ResumeLayout(false);
         PartyPage.ResumeLayout(false);
+        groupBox20.ResumeLayout(false);
+        groupBox20.PerformLayout();
         groupBox9.ResumeLayout(false);
         groupBox9.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)NearbyPlayerListDataGrid).EndInit();
@@ -2200,4 +2285,11 @@ partial class ClientController {
     private CheckBox KeepFollowingcheckBox;
     private TextBox PartyAddPrefixtextBox;
     private CheckBox AutoPartycheckBox;
+    private GroupBox groupBox20;
+    private CheckBox ClanAddPrefixcheckBox;
+    private TextBox ClanAddPrefixTextBox;
+    private Label label12;
+    private Label label11;
+    private Button ClanDisbandbutton;
+    private Button ClanAcceptbutton;
 }

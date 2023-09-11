@@ -1941,4 +1941,26 @@ public partial class ClientController : Form {
             return;
         Controller.SetControl(PartyAddPrefixtextBox.Name, PartyAddPrefixtextBox.Text);
     }
+
+    private void ClanAddPrefixcheckBox_CheckedChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(ClanAddPrefixcheckBox.Name, ClanAddPrefixcheckBox.Checked);
+    }
+
+    private void ClanAddPrefixTextBox_TextChanged(object sender, EventArgs e) {
+        if (Controller == null)
+            return;
+
+        Controller.SetControl(ClanAddPrefixTextBox.Name, ClanAddPrefixTextBox.Text);
+    }
+
+    private void ClanAcceptbutton_Click(object sender, EventArgs e) {
+        CharacterHandler.ClanAccept();
+    }
+
+    private void ClanDisbandbutton_Click(object sender, EventArgs e) {
+        CharacterHandler.ClanDisband();
+    }
 }

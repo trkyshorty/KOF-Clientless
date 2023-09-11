@@ -124,12 +124,12 @@ public partial class CharacterCreate : Form
             character.Race = (byte)Race.SelectedValue;
             character.Class = (ushort)Class.SelectedValue;
 
-            character.Face = 4;
-            character.Hair = 14;
+            character.Face = 1;
+            character.Hair = 0;
 
-            character.R = 44;
-            character.G = 50;
-            character.B = 25;
+            character.R = 1;
+            character.G = 2;
+            character.B = 3;
 
             if(NewCharacterValid(character) == false)
             {

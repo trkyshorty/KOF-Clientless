@@ -817,6 +817,22 @@ public partial class Main : Form {
             client.CharacterHandler.ClanAccept();
         }
     }
+    private void ClanDisbandbutton_Click(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.ClanDisband();
+        }
+    }
+
     CancellationTokenSource pkt_cts = default!;
     private void SendPacket_Click(object sender, EventArgs e) {
 
@@ -863,6 +879,40 @@ public partial class Main : Form {
                 continue;
 
             client.CharacterHandler.TransformationScroll(uint.Parse(TransformationIdTextBox.Text));
+        }
+    }
+
+    private void FollowTargetSync_CheckedChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl(FollowTargetSync.Name, FollowTargetSync.Checked);
+        }
+    }
+
+    private void AttackSpeed_ValueChanged(object sender, EventArgs e) {
+        foreach (DataGridViewRow row in ClientListDataGrid.SelectedRows) {
+
+            var client = (Client)row.DataBoundItem;
+
+            if (client == null)
+                return;
+
+            var character = client.CharacterHandler;
+
+            if (character.GetGameState() != GameState.GAME_STATE_INGAME)
+                continue;
+
+            client.CharacterHandler.Controller.SetControl(AttackSpeed.Name, AttackSpeed.Value);
         }
     }
 }

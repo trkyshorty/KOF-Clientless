@@ -19,7 +19,30 @@ public partial class GameService {
 
         var cmd = msg.Read<byte>();
 
+        //11:57:57 RECV: 3c03 01 d6000000000000
+
         switch (cmd) {
+
+            case 0x03: { // clan quit
+                if (msg.Read<byte>() == 0x01) {
+
+                    var targetId = msg.Read<int>();
+
+                    if (session.Client.Character.Id == targetId) { // MySelf
+                        session.Client.Character.Knight = 0;
+                        session.Client.Character.Knights = new();
+                    }
+                    else { // Other
+                        var user = session.Client.CharacterHandler.PlayerList.FirstOrDefault(x => x.Id == targetId);
+                        if (user != null) {
+                            user.Knight = 0;
+                            user.Knights = new();
+                        }
+                    }
+                }
+            }
+            break;
+
             case 0x11: // N3_SP_KNIGHTS_JOIN_REQ
             {
                 _ = msg.Read<byte>();
@@ -55,18 +78,44 @@ public partial class GameService {
                 var senderMessage = msg.Read(true);
 #pragma warning restore IDE0059
 
-                if (chatType == 2 && session.Client.CharacterHandler.Controller.GetControl("AutoPartycheckBox", true)) {
+                if (chatType == 2) { // WHISPER
 
                     var party_prefix = session.Client.CharacterHandler.Controller.GetControl("PartyAddPrefixtextBox", "");
+                    var clan_prefix = session.Client.CharacterHandler.Controller.GetControl("ClanAddPrefixTextBox", "");
 
-                    if (!string.IsNullOrEmpty(party_prefix) && senderMessage.ToLower() != party_prefix.ToLower())
-                        return Task.CompletedTask;
+                    // AUTO PARTY
+                    if (session.Client.CharacterHandler.Controller.GetControl("AutoPartycheckBox", true) 
+                        && !string.IsNullOrEmpty(party_prefix) 
+                        && senderMessage.ToLower() == party_prefix.ToLower()) {
 
-                    if (!session.Client.CharacterHandler.MySelf.Party.IsInParty())
-                        return session.SendAsync(MessageBuilder.MsgSend_PartyCreate(senderName));
-                    else
-                        return session.SendAsync(MessageBuilder.MsgSend_PartyInsert(senderName));
+                        if (!session.Client.CharacterHandler.MySelf.Party.IsInParty())
+                            return session.SendAsync(MessageBuilder.MsgSend_PartyCreate(senderName));
+                        else
+                            return session.SendAsync(MessageBuilder.MsgSend_PartyInsert(senderName));
 
+                    }
+
+                    // AUTO CLAN
+
+                    if (session.Client.CharacterHandler.Controller.GetControl("ClanAddPrefixcheckBox", true) 
+                        && !string.IsNullOrEmpty(clan_prefix) 
+                        && senderMessage.ToLower() == clan_prefix.ToLower()) {
+
+                        if (!session.Client.CharacterHandler.MySelf.IsInClan())
+                            return Task.CompletedTask;
+
+                        var user = session.Client.CharacterHandler.PlayerList.FirstOrDefault(x => x.Id == senderUniqueId);
+                        if (user is null)
+                            return Task.CompletedTask;
+
+                        if (user.IsInClan()) 
+                            return Task.CompletedTask;
+
+                        // Leader == 1 or Assistan == 2
+                        if (session.Client.CharacterHandler.MySelf.Fame == 0x01 || session.Client.CharacterHandler.MySelf.Fame == 0x02) 
+                            return session.SendAsync(MessageBuilder.MsgSend_KnightsJoin(senderUniqueId));
+  
+                    }
                 }
 
             }
@@ -1025,6 +1074,9 @@ public partial class GameService {
 
         if (id == session.Client.Character.Id) {
             session.Client.Character.Level = level;
+
+            if (Character.GetRepresentClass(session.Client.Character.Class) == (int)ClassRepresentType.CLASS_REPRESENT_WIZARD && level >= 33) // only mage
+                session.SendAsync(MessageBuilder.MsgSend_ExpSeal(true)).ConfigureAwait(false);
 
             session.Client.Character.Points = msg.Read<byte>();
 

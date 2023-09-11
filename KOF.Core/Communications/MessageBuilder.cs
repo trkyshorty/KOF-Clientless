@@ -82,7 +82,7 @@ public class MessageBuilder
         var msg = new Message(MessageID.WIZ_NEW_CHAR);
 
         msg.Write((byte)lobby.Slot);
-        msg.Write(lobby.Name, true);
+        msg.Write(lobby.Name, "gb2312", true);
         msg.Write(lobby.Race);
         msg.Write(lobby.Class);
         msg.Write(lobby.Face);
@@ -1018,13 +1018,30 @@ public class MessageBuilder
 
     //
 
-    public static Message MsgSend_KnightsAccept(bool yesNo,int m_iJoinReqClanRequierID,short m_iJoinReqClan) {
+    public static Message MsgSend_KnightsAccept(int m_iJoinReqClanRequierID,short m_iJoinReqClan) {
         var msg = new Message(MessageID.WIZ_KNIGHTS_PROCESS);
 
-        msg.Write(0x11); // N3_SP_KNIGHTS_JOIN_REQ
-        msg.Write(yesNo);
+        msg.Write<byte>(0x11); // N3_SP_KNIGHTS_JOIN_REQ
+        msg.Write<byte>(0x01);
         msg.Write(m_iJoinReqClanRequierID);
         msg.Write(m_iJoinReqClan);
+
+        return msg;
+    }
+
+    public static Message MsgSend_KnightsJoin(int targetId) {
+        var msg = new Message(MessageID.WIZ_KNIGHTS_PROCESS);
+
+        msg.Write<byte>(0x02); // N3_SP_KNIGHTS_JOIN_REQ
+        msg.Write(targetId);
+
+        return msg;
+    }
+
+    public static Message MsgSend_KnightsWithdraw() {
+        var msg = new Message(MessageID.WIZ_KNIGHTS_PROCESS);
+
+        msg.Write<byte>(0x03); // N3_SP_KNIGHTS_JOIN_WHITDRAW
 
         return msg;
     }
